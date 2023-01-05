@@ -8,11 +8,14 @@ HIT_SIZE = 50
 class Spinner:
     ...
 
-import hikari
-hikari.GatewayBot
+
 class Circle(pg.sprite.Sprite):
-    appr_circle = pg.transform.scale(pg.image.load('./skin/approachcircle.png'), (APPR_SIZE, APPR_SIZE))
-    hit_circle = pg.transform.scale(pg.image.load('./skin/hitcircle.png'), (HIT_SIZE, HIT_SIZE))
+    appr_circle = pg.transform.scale(
+        pg.image.load("./skin/approachcircle.png"), (APPR_SIZE, APPR_SIZE)
+    )
+    hit_circle = pg.transform.scale(
+        pg.image.load("./skin/hitcircle.png"), (HIT_SIZE, HIT_SIZE)
+    )
 
     def __init__(
         self,
@@ -45,7 +48,7 @@ class Circle(pg.sprite.Sprite):
         """
 
         super().__init__(*group)
-    
+
         self.timing = timing
         self.appear_time = appear_time
         self.fade_in_time = fade_in_time
@@ -60,31 +63,24 @@ class Circle(pg.sprite.Sprite):
         self.rect.y = location[1]
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
-        '''Draws approach circle from current time'''
+        """Draws approach circle from current time"""
         new_size = (self.timing - time) * self.shrink_pms
         screen.blit(
-            pg.transform.scale(
-                Circle.appr_circle,
-                (new_size, new_size)
-            ), (
-                self.rect.x + new_size / 2,
-                self.rect.y + new_size / 2
-            )
+            pg.transform.scale(Circle.appr_circle, (new_size, new_size)),
+            (self.rect.x + new_size / 2, self.rect.y + new_size / 2),
         )
 
     def draw_hit_circle(self, screen: pg.Surface, time: int):
-        '''Draws hit circle from current time'''
+        """Draws hit circle from current time"""
         circle = Circle.hit_circle.copy()
         circle.set_alpha((time - self.appear_time) * self.fade_pms)
-        screen.blit(
-            circle, self.rect
-        )
+        screen.blit(circle, self.rect)
 
     def draw(self, screen: pg.Surface, time: int):
-        '''Draws approach and hit circles from time'''
+        """Draws approach and hit circles from time"""
         self.draw_appr_circle(screen, time)
         self.draw_hit_circle(screen, time)
-    
+
     def hit(self, time: int, pos: tuple):
         """Called when player clicks circle. Colission should be checked manually
 
