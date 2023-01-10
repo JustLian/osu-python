@@ -25,6 +25,8 @@ class Circle(pg.sprite.Sprite):
         location: tuple,
         new_combo: bool,
         sound_types: tuple,
+        hit_size: tuple,
+        appr_size: tuple,
         *group
     ):
         """Circle object
@@ -45,6 +47,10 @@ class Circle(pg.sprite.Sprite):
             Should circle start new combo?
         sound_types : tuple:
             Which sounds should circle emit when clicked
+        hit_size : tuple:
+            Size of hit circle (in px, not osu!pixels!)
+        appr_size : tuple:
+            Size of approach circle (in px, not osu!pixels!)
         """
 
         super().__init__(*group)
@@ -55,7 +61,8 @@ class Circle(pg.sprite.Sprite):
         self.new_combo = new_combo
         self.sound_types = sound_types
 
-        self.shrink_pms = (APPR_SIZE - HIT_SIZE) / (timing - appear_time)
+        self.hit_size = hit_size
+        self.shrink_pms = (appr_size - hit_size) / (timing - appear_time)
         self.fade_pms = 255 / (timing - fade_in_time)
 
         self.rect = Circle.hit_circle.get_rect()
@@ -65,9 +72,10 @@ class Circle(pg.sprite.Sprite):
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
         new_size = (self.timing - time) * self.shrink_pms
+        size_diff = (new_size - self.hit_size) / 2
         screen.blit(
             pg.transform.scale(Circle.appr_circle, (new_size, new_size)),
-            (self.rect.x + new_size / 2, self.rect.y + new_size / 2),
+            (self.rect.x - size_diff, self.rect.y - size_diff),
         )
 
     def draw_hit_circle(self, screen: pg.Surface, time: int):

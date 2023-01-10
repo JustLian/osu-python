@@ -1,6 +1,6 @@
 import pygame as pg
 import sys
-from osu_python import classes
+from osu_python import classes, utils
 
 
 def update(dt):
@@ -8,9 +8,6 @@ def update(dt):
         if event.type == pg.QUIT:
             pg.quit()
             sys.exit()
-
-
-circle = classes.game_object.Circle(4000, 2800, 3600, (500, 500), False, ())
 
 
 def draw(screen: pg.Surface):
@@ -23,7 +20,7 @@ def draw(screen: pg.Surface):
 
 
 def run():
-    global current_time
+    global current_time, circle
     pg.init()
 
     current_time = 0
@@ -33,6 +30,15 @@ def run():
     width, height = 1280, 720
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("osu!python")
+
+    m, n = utils.playfield_size(height)
+    h_scale = utils.pixel_horizontal_scaling(m)
+    v_scale = utils.pixel_vertical_scaling(n)
+    
+    cs = utils.calculate_cs(8)
+    circle = classes.game_object.Circle(
+        4000, 2800, 3600, (500, 500), False, ()
+    )
 
     dt = 1 / fps
     while True:
