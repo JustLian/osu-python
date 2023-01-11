@@ -13,12 +13,20 @@ def calculate_ar(ar: float) -> t.Tuple[float, float]:
         return (1200 - 750 * (ar - 5) / 5, 800 - 500 * (ar - 5) / 5)
 
 
-def calculate_cs(cs: float) -> float:
+def calculate_hit_r(cs: float) -> float:
     """
-    Calculates circle radius from CS in osu!pixels
+    Calculates hit circle radius from CS in osu!pixels
     Use convertion function to get size in pixels
     """
     return 54.4 - 4.48 * cs
+
+
+def calculate_appr_r(cs: float) -> float:
+    """
+    Calculates approach circle radius from CS in osu!pixels
+    Use convertion function to get size in pixels
+    """
+    return calculate_hit_r(cs) * 2
 
 
 def playfield_size(h: int) -> t.Tuple[int, int]:

@@ -35,9 +35,13 @@ def run():
     h_scale = utils.pixel_horizontal_scaling(m)
     v_scale = utils.pixel_vertical_scaling(n)
     
-    cs = utils.calculate_cs(8)
+    cs = 2.5
+    hit_r = utils.calculate_hit_r(cs)
+    appr_r = utils.calculate_appr_r(cs)
+    #print(hit_r, appr_r)
+
     circle = classes.game_object.Circle(
-        4000, 2800, 3600, (500, 500), False, ()
+        4000, 2800, 3600, (500, 500), False, (), hit_r, appr_r
     )
 
     dt = 1 / fps
