@@ -8,7 +8,7 @@ class Spinner:
 class Circle(pg.sprite.Sprite):
     def __init__(
         self,
-        timing: int,
+        hit_time: int,
         appear_time: int,
         fade_in_time: int,
         location: tuple,
@@ -24,7 +24,7 @@ class Circle(pg.sprite.Sprite):
 
         Parameters
         ----------
-        timing : int
+        hit_time : int
             Hit time of circle
         appear_time : int
             Time when circle will start fade_in phase (pre-calculated from AR)
@@ -55,27 +55,33 @@ class Circle(pg.sprite.Sprite):
             pg.image.load("./skin/approachcircle.png"), (self.appr_size, self.appr_size)
         )
 
-        self.timing = timing
+        self.hit_time = hit_time
         self.appear_time = appear_time
         self.fade_in_time = fade_in_time
+
         self.new_combo = new_combo
         self.sound_types = sound_types
 
-        self.shrink_pms = (appr_size - hit_size) / (timing - appear_time)
-        self.fade_pms = 255 / (timing - fade_in_time)
+        self.shrink_pms = (appr_size - hit_size) / (self.hit_time - fade_in_time)
+        self.fade_pms = 255 / (self.hit_time - fade_in_time)
 
         self.rect = self.hit_circle.get_rect()
-        self.rect.x = location[0]
-        self.rect.y = location[1]
+        self.rect.x, self.rect.y = location[0], location[1]
+
+        self.is_hit = False
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
-        new_size = abs(self.timing - time) * self.shrink_pms
-        size_diff = (new_size - self.hit_size) / 2
-        screen.blit(
-            pg.transform.scale(self.appr_circle, (new_size, new_size)),
-            (self.rect.x - size_diff, self.rect.y - size_diff),
-        )
+        if self.is_hit:
+            # don't check yet whether click on right moment or not
+            pass
+        elif time >= self.fade_in_time:
+            new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
+            size_diff = (new_size - self.hit_size) / 2
+            screen.blit(
+                pg.transform.scale(self.appr_circle, (new_size, new_size)),
+                (self.rect.x - size_diff, self.rect.y - size_diff),
+            )
 
     def draw_hit_circle(self, screen: pg.Surface, time: int):
         """Draws hit circle from current time"""

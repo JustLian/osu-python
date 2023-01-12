@@ -8,6 +8,9 @@ def update(dt):
         if event.type == pg.QUIT:
             pg.quit()
             sys.exit()
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if circle.rect.collidepoint(pg.mouse.get_pos()):
+                circle.is_hit = True
 
 
 def draw(screen: pg.Surface):
@@ -35,13 +38,12 @@ def run():
     h_scale = utils.pixel_horizontal_scaling(m)
     v_scale = utils.pixel_vertical_scaling(n)
     
-    cs = 2.5
+    cs = 0
     hit_r = utils.calculate_hit_r(cs)
     appr_r = utils.calculate_appr_r(cs)
-    #print(hit_r, appr_r)
 
     circle = classes.game_object.Circle(
-        4000, 2800, 3600, (500, 500), False, (), hit_r, appr_r
+        3000, 1800, 2600, (500, 500), False, (), hit_r, appr_r
     )
 
     dt = 1 / fps

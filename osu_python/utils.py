@@ -1,16 +1,28 @@
 import typing as t
 
 
-def calculate_ar(ar: float) -> t.Tuple[float, float]:
-    """Calculates preempt and fade_in time from AR"""
+def calculate_fade_in(ar: float) -> t.Tuple[float, float]:
+    """Calculates fade_in time from AR"""
     if ar < 5:
-        return (1200 + 600 * (5 - ar) / 5, 800 + 400 * (5 - ar) / 5)
+        return 800 + 400 * (5 - ar) / 5
 
     if ar == 5:
-        return (1200, 800)
+        return 800
 
     if ar > 5:
-        return (1200 - 750 * (ar - 5) / 5, 800 - 500 * (ar - 5) / 5)
+        return 800 - 500 * (ar - 5) / 5
+
+
+def calculate_preemt(ar: float) -> float:
+    """Calculates preempt from AR"""
+    if ar < 5:
+        return 1200 + 600 * (5 - ar) / 5
+
+    if ar == 5:
+        return 1200
+
+    if ar > 5:
+        return 1200 - 750 * (ar - 5) / 5
 
 
 def calculate_hit_r(cs: float) -> float:
