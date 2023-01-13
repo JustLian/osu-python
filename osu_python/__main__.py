@@ -3,7 +3,13 @@ import sys
 from osu_python import classes, utils
 
 
+# Data from osu-map parser goes here
 all_objects = []
+
+OD = 8
+CS = 1
+AR = 8.5
+scores = utils.calculate_hit_windows(OD)
 
 
 def update(dt):
@@ -29,7 +35,7 @@ def draw(screen: pg.Surface):
 
 
 def run():
-    global current_time, circle
+    global current_time, circle, scores
     pg.init()
 
     current_time = 0
@@ -44,9 +50,10 @@ def run():
     h_scale = utils.pixel_horizontal_scaling(m)
     v_scale = utils.pixel_vertical_scaling(n)
     
-    cs = 1
-    hit_r = utils.calculate_hit_r(cs) * h_scale
-    appr_r = utils.calculate_appr_r(cs) * h_scale
+    hit_r = utils.calculate_hit_r(CS) * h_scale
+    appr_r = utils.calculate_appr_r(CS) * h_scale
+
+    scores = utils.calculate_hit_windows(OD)
 
     circle = classes.game_object.Circle(
         3000, 1800, 2600, (500, 500), False, (), hit_r, appr_r

@@ -1,4 +1,5 @@
 import pygame as pg
+from osu_python import __main__
 
 
 class Spinner:
@@ -69,14 +70,38 @@ class Circle(pg.sprite.Sprite):
         self.rect.x, self.rect.y = location[0], location[1]
 
         self.is_hit = False
+        self.vibration = 0
+        self.no_hit_before = True
+    
+    def draw(self, screen: pg.Surface, time: int):
+        """Draws approach, hit circles and score from time"""
+        if self.is_hit and self.no_hit_before:
+            if abs(self.hit_time - time) <= round(__main__.scores[0] / 2):
+                score_image = pg.image.load('./skin/300score.png')
+                self.no_hit_before = False
+            elif (round(__main__.scores[0] / 2) + __main__.scores[1] >=
+             abs(self.hit_time - time) > round(__main__.scores[0] / 2)):
+                score_image = pg.image.load('./skin/100score.png')
+                self.no_hit_before = False
+            elif (round(__main__.scores[0] / 2) + __main__.scores[1] + __main__.scores[2] >=
+             abs(self.hit_time - time) > round(__main__.scores[0] / 2) + __main__.scores[1]):
+                score_image = pg.image.load('./skin/50score.png')
+                self.no_hit_before = False
+            elif self.hit_time - time > 0:
+                score_image = pg.image.load('./skin/miss_score.png')
+                self.no_hit_before = False
+            elif self.hit_time - time < 0:
+                self.vibration = 8
+
+            screen.blit(score_image, (self.rect.x, self.rect.y))
+        else:
+            self.draw_appr_circle(screen, time)
+            self.draw_hit_circle(screen, time)
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
-        if self.is_hit:
-            # don't check yet whether click on right moment or not
-            pass
-        elif time >= self.fade_in_time:
-            new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
+        new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
+        if new_size != self.hit_size:
             size_diff = (new_size - self.hit_size) / 2
             screen.blit(
                 pg.transform.scale(self.appr_circle, (new_size, new_size)),
@@ -87,24 +112,10 @@ class Circle(pg.sprite.Sprite):
         """Draws hit circle from current time"""
         circle = self.hit_circle.copy()
         circle.set_alpha((time - self.appear_time) * self.fade_pms)
+        if self.vibration != 0:
+            self.rect = self.rect.move(2 if self.vibration % 2 == 0 else -2, 0)
+            self.vibration -= 1
         screen.blit(circle, self.rect)
-
-    def draw(self, screen: pg.Surface, time: int):
-        """Draws approach and hit circles from time"""
-        self.draw_appr_circle(screen, time)
-        self.draw_hit_circle(screen, time)
-
-    def hit(self, time: int, pos: tuple):
-        """Called when player clicks circle. Colission should be checked manually
-
-        Parameters
-        ----------
-        time : int
-            Current time
-        pos : tuple:
-            Position of cursour
-        """
-        raise NotImplemented
 
 
 class Slider(Circle):

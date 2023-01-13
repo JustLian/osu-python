@@ -28,7 +28,7 @@ def calculate_preemt(ar: float) -> float:
 def calculate_hit_r(cs: float) -> float:
     """
     Calculates hit circle radius from CS in osu!pixels
-    Use convertion function to get size in pixels
+    Use convertion function to get size in pixels by using scaling
     """
     return 54.4 - 4.48 * cs
 
@@ -36,7 +36,7 @@ def calculate_hit_r(cs: float) -> float:
 def calculate_appr_r(cs: float) -> float:
     """
     Calculates approach circle radius from CS in osu!pixels
-    Use convertion function to get size in pixels
+    Use convertion function to get size in pixels by using scaling
     """
     return calculate_hit_r(cs) * 2
 
@@ -75,3 +75,12 @@ def pixel_vertical_scaling(n: int) -> float:
         Height of playfield (in px)
     """
     return n / 384
+
+
+def calculate_hit_windows(od: float) -> t.Tuple[int, int, int]:
+    """
+    Calculates score from OD
+    Returns tuple of time windows in ms
+    of 300, 100 and 50 hit results
+    """
+    return (80 - 6 * od, 140 - 8 * od, 200 - 10 * od)
