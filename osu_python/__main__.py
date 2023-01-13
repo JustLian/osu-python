@@ -1,6 +1,6 @@
 import pygame as pg
 import sys
-from osu_python import classes, utils
+from osu_python import classes, utils, map_loader
 
 
 # Data from osu-map parser goes here
@@ -18,24 +18,35 @@ def update(dt):
             pg.quit()
             sys.exit()
         if event.type == pg.MOUSEBUTTONDOWN:
-            if circle.rect.collidepoint(pg.mouse.get_pos()):
-                circle.is_hit = True
+            if all_objects[0].rect.collidepoint(pg.mouse.get_pos()):
+                all_objects[0].is_hit = True
 
 
 def draw(screen: pg.Surface):
     screen.fill((0, 0, 0))
 
-    for object in all_objects:
-        if current_time > object.appear_time:
-            circle.draw(screen, current_time)
-        if current_time > object.hit_time:
-            all_objects.remove(object)
+    pg.draw.rect(
+        screen, 'red', (
+            (add_x, 0),
+            (m, n)
+        ), width=2
+    )
+
+    for obj in all_objects:
+        if current_time < obj.appear_time:
+            break
+        
+        elif current_time > obj.hit_time:
+            all_objects.remove(obj)
+
+        elif obj.appear_time < current_time:
+            obj.draw(screen, current_time)
 
     pg.display.flip()
 
 
 def run():
-    global current_time, circle, scores
+    global current_time, circle, scores, add_x, m, n
     pg.init()
 
     current_time = 0
@@ -49,17 +60,9 @@ def run():
     m, n = utils.playfield_size(height)
     h_scale = utils.pixel_horizontal_scaling(m)
     v_scale = utils.pixel_vertical_scaling(n)
+    add_x = (width - m) / 2
     
-    hit_r = utils.calculate_hit_r(CS) * h_scale
-    appr_r = utils.calculate_appr_r(CS) * h_scale
-
-    scores = utils.calculate_hit_windows(OD)
-
-    circle = classes.game_object.Circle(
-        3000, 1800, 2600, (500, 500), False, (), hit_r, appr_r
-    )
-
-    all_objects.append(circle)
+    all_objects.extend(map_loader.load_map('./osu_python/map.osu', v_scale, h_scale, add_x))
 
     dt = 1 / fps
     while True:
