@@ -3,6 +3,9 @@ import sys
 from osu_python import classes, utils
 
 
+all_objects = []
+
+
 def update(dt):
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -16,8 +19,11 @@ def update(dt):
 def draw(screen: pg.Surface):
     screen.fill((0, 0, 0))
 
-    if 2800 <= current_time <= 4000:
-        circle.draw(screen, current_time)
+    for object in all_objects:
+        if current_time > object.appear_time:
+            circle.draw(screen, current_time)
+        if current_time > object.hit_time:
+            all_objects.remove(object)
 
     pg.display.flip()
 
@@ -38,13 +44,15 @@ def run():
     h_scale = utils.pixel_horizontal_scaling(m)
     v_scale = utils.pixel_vertical_scaling(n)
     
-    cs = 0
-    hit_r = utils.calculate_hit_r(cs)
-    appr_r = utils.calculate_appr_r(cs)
+    cs = 1
+    hit_r = utils.calculate_hit_r(cs) * h_scale
+    appr_r = utils.calculate_appr_r(cs) * h_scale
 
     circle = classes.game_object.Circle(
         3000, 1800, 2600, (500, 500), False, (), hit_r, appr_r
     )
+
+    all_objects.append(circle)
 
     dt = 1 / fps
     while True:
