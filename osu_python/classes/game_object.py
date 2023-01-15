@@ -1,5 +1,5 @@
 import pygame as pg
-from osu_python import __main__
+import typing as t
 
 
 class Spinner:
@@ -7,6 +7,14 @@ class Spinner:
 
 
 class Circle(pg.sprite.Sprite):
+    hit_circle_img = pg.image.load("./skin/hitcircle.png")
+    appr_circle_img = pg.image.load("./skin/approachcircle.png")
+
+    score_300_img = pg.image.load('./skin/300score.png')
+    score_100_img = pg.image.load('./skin/100score.png')
+    score_50_img = pg.image.load('./skin/50score.png')
+    miss_img = pg.image.load('./skin/miss_score.png')
+
     def __init__(
         self,
         hit_time: int,
@@ -17,6 +25,7 @@ class Circle(pg.sprite.Sprite):
         sound_types: tuple,
         hit_size: int,
         appr_size: int,
+        hit_windows: t.Tuple[int, int, int],
         *group
     ):
         """Circle object
@@ -41,6 +50,8 @@ class Circle(pg.sprite.Sprite):
             Radius of hit circle (in px, not osu!pixels!)
         appr_size : int
             Radius of approach circle (in px, not osu!pixels!)
+        hit_windows : Tuple[int, int, int]
+            Hit windows for 300, 100 and 50
         """
 
         super().__init__(*group)
@@ -48,12 +59,14 @@ class Circle(pg.sprite.Sprite):
         self.hit_size = hit_size
         self.appr_size = appr_size
 
+        self.hit_windows = hit_windows
+
         self.hit_circle = pg.transform.scale(
-            pg.image.load("./skin/hitcircle.png"), (self.hit_size, self.hit_size)
+            Circle.hit_circle_img, (self.hit_size, self.hit_size)
         )
 
         self.appr_circle = pg.transform.scale(
-            pg.image.load("./skin/approachcircle.png"), (self.appr_size, self.appr_size)
+            Circle.appr_circle_img, (self.appr_size, self.appr_size)
         )
 
         self.hit_time = hit_time
@@ -76,19 +89,19 @@ class Circle(pg.sprite.Sprite):
     def draw(self, screen: pg.Surface, time: int):
         """Draws approach, hit circles and score from time"""
         if self.is_hit and self.no_hit_before:
-            if abs(self.hit_time - time) <= round(__main__.scores[0] / 2):
-                score_image = pg.image.load('./skin/300score.png')
+            if abs(self.hit_time - time) <= round(self.hit_windows[0] / 2):
+                score_image = Circle.score_300_img
                 self.no_hit_before = False
-            elif (round(__main__.scores[0] / 2) + __main__.scores[1] >=
-             abs(self.hit_time - time) > round(__main__.scores[0] / 2)):
-                score_image = pg.image.load('./skin/100score.png')
+            elif (round(self.hit_windows[0] / 2) + self.hit_windows[1] >=
+             abs(self.hit_time - time) > round(self.hit_windows[0] / 2)):
+                score_image = Circle.score_100_img
                 self.no_hit_before = False
-            elif (round(__main__.scores[0] / 2) + __main__.scores[1] + __main__.scores[2] >=
-             abs(self.hit_time - time) > round(__main__.scores[0] / 2) + __main__.scores[1]):
-                score_image = pg.image.load('./skin/50score.png')
+            elif (round(self.hit_windows[0] / 2) + self.hit_windows[1] + self.hit_windows[2] >=
+             abs(self.hit_time - time) > round(self.hit_windows[0] / 2) + self.hit_windows[1]):
+                score_image = Circle.score_50_img
                 self.no_hit_before = False
             elif self.hit_time - time > 0:
-                score_image = pg.image.load('./skin/miss_score.png')
+                score_image = Circle.miss_img
                 self.no_hit_before = False
             elif self.hit_time - time < 0:
                 self.vibration = 8

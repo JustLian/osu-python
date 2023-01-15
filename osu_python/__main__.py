@@ -9,7 +9,6 @@ all_objects = []
 OD = 8
 CS = 1
 AR = 8.5
-scores = utils.calculate_hit_windows(OD)
 
 
 def update(dt):
@@ -27,7 +26,7 @@ def draw(screen: pg.Surface):
 
     pg.draw.rect(
         screen, 'red', (
-            (add_x, 0),
+            (add_x, add_y),
             (m, n)
         ), width=2
     )
@@ -46,23 +45,23 @@ def draw(screen: pg.Surface):
 
 
 def run():
-    global current_time, circle, scores, add_x, m, n
+    global current_time, circle, scores, add_x, add_y, m, n
     pg.init()
 
     current_time = 0
     fps = 60.0
     fps_clock = pg.time.Clock()
 
-    width, height = 1280, 720
+    width, height = 1920, 1080
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("osu!python")
 
     m, n = utils.playfield_size(height)
-    h_scale = utils.pixel_horizontal_scaling(m)
-    v_scale = utils.pixel_vertical_scaling(n)
+    scale = utils.osu_scale(n)
     add_x = (width - m) / 2
+    add_y = height * .02
     
-    all_objects.extend(map_loader.load_map('./osu_python/map.osu', v_scale, h_scale, add_x))
+    all_objects.extend(map_loader.load_map('./osu_python/map.osu', scale, add_x, add_y))
 
     dt = 1 / fps
     while True:

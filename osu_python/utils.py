@@ -47,8 +47,22 @@ def playfield_size(h: int) -> t.Tuple[int, int]:
     from screen height
     """
     return (
-        (h * 4) // 3, h
+        (4 / 3) * h * .9, h * .9
     )
+
+
+def osu_scale(n: int) -> float:
+    """
+    Calculates scaling applied
+    to osu!pixel values
+
+    Parameters
+    ----------
+    n : int:
+        Height of playfield (in px)
+    """
+
+    return n / 384
 
 
 def pixel_horizontal_scaling(m: int) -> float:
@@ -80,6 +94,7 @@ def pixel_vertical_scaling(n: int) -> float:
 def calculate_hit_windows(od: float) -> t.Tuple[int, int, int]:
     """
     Calculates score from OD
+
     Returns tuple of time windows in ms
     of 300, 100 and 50 hit results
     """
