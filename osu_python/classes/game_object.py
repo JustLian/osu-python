@@ -191,15 +191,15 @@ class Slider(Circle):
             sound_types,
             hit_size,
             appr_size,
-            hit_windows
+            hit_windows,
         )
 
         self.body = body
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
-        pg.draw.lines(screen, 'blue', False, self.body)
-    
+        pg.draw.lines(screen, "blue", False, self.body)
+
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
         self.draw_body(screen, time)

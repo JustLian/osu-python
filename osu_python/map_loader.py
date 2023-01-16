@@ -29,7 +29,7 @@ def load_map(path: os.PathLike, scale, add_x, add_y):
                     hit_windows,
                 )
             )
-        
+
         if isinstance(obj, slider.beatmap.Slider):
             time = obj.time.total_seconds() * 1000
 
@@ -49,7 +49,7 @@ def load_map(path: os.PathLike, scale, add_x, add_y):
                     hit_size,
                     appr_size,
                     hit_windows,
-                    body
+                    body,
                 )
             )
     return queue
