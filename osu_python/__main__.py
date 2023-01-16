@@ -24,17 +24,12 @@ def update(dt):
 def draw(screen: pg.Surface):
     screen.fill((0, 0, 0))
 
-    pg.draw.rect(
-        screen, 'red', (
-            (add_x, add_y),
-            (m, n)
-        ), width=2
-    )
+    pg.draw.rect(screen, "red", ((add_x, add_y), (m, n)), width=2)
 
     for obj in all_objects:
         if current_time < obj.appear_time:
             break
-        
+
         elif current_time > obj.hit_time:
             all_objects.remove(obj)
 
@@ -59,9 +54,9 @@ def run():
     m, n = utils.playfield_size(height)
     scale = utils.osu_scale(n)
     add_x = (width - m) / 2
-    add_y = height * .02
-    
-    all_objects.extend(map_loader.load_map('./osu_python/map.osu', scale, add_x, add_y))
+    add_y = height * 0.02
+
+    all_objects.extend(map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y))
 
     dt = 1 / fps
     while True:

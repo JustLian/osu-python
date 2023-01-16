@@ -46,9 +46,7 @@ def playfield_size(h: int) -> t.Tuple[int, int]:
     Calculates size of playfield
     from screen height
     """
-    return (
-        (4 / 3) * h * .9, h * .9
-    )
+    return ((4 / 3) * h * 0.9, h * 0.9)
 
 
 def osu_scale(n: int) -> float:
