@@ -11,14 +11,14 @@ CS = 1
 AR = 8.5
 
 
-def update(dt):
+def update():
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
             sys.exit()
         if event.type == pg.MOUSEBUTTONDOWN:
             if all_objects[0].rect.collidepoint(pg.mouse.get_pos()):
-                all_objects[0].is_hit = True
+                all_objects[0].hit(current_time)
 
 
 def draw(screen: pg.Surface):
@@ -30,7 +30,7 @@ def draw(screen: pg.Surface):
         if current_time < obj.appear_time:
             break
 
-        elif current_time > obj.hit_time:
+        elif current_time > obj.endtime:
             all_objects.remove(obj)
 
         elif obj.appear_time < current_time:
@@ -61,7 +61,7 @@ def run():
     dt = 1 / fps
     while True:
         current_time += dt
-        update(dt)
+        update()
         draw(screen)
 
         dt = fps_clock.tick(fps)
