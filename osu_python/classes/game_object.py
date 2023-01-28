@@ -91,6 +91,7 @@ class Circle(pg.sprite.Sprite):
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         if self.score is None and time > self.endtime - 400:
+            self.shortening = True
             self.score = miss_img
             self.draw_score(screen, time)
         
@@ -147,9 +148,15 @@ class Circle(pg.sprite.Sprite):
     
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score from current time"""
+        need = (time - self.hit_time + 400) // 100
         score = self.score.copy()
+        w, h = score.get_size()
+
         score.set_alpha(255 - (255 / 400) * (time - self.endtime + 400))
-        screen.blit(score, self.rect)
+        score = pg.transform.scale(score, (w + need, h + need))
+
+        screen.blit(score, (self.rect.left + round((self.rect.width / 2) - (w / 2)),
+                 self.rect.top + round((self.rect.height / 2) - (h / 2))))
 
 
 class Slider(Circle):

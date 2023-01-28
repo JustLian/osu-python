@@ -63,32 +63,6 @@ def osu_scale(n: int) -> float:
     return n / 480
 
 
-def pixel_horizontal_scaling(m: int) -> float:
-    """
-    Calculates horizontal scaling applied
-    to x coord of osu!pixel
-
-    Parameters
-    ----------
-    m : int:
-        Width of playfield (in px)
-    """
-    return m / 512
-
-
-def pixel_vertical_scaling(n: int) -> float:
-    """
-    Calculates vertical scaling applied
-    to y coord of osu!pixel
-
-    Parameters
-    ----------
-    n : int:
-        Height of playfield (in px)
-    """
-    return n / 384
-
-
 def calculate_hit_windows(od: float) -> t.Tuple[int, int, int]:
     """
     Calculates score from OD

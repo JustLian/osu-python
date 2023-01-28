@@ -26,9 +26,8 @@ def update():
 
                 elif obj.appear_time < current_time:
                     if obj.rect.collidepoint(pg.mouse.get_pos()):
-                        print('hit {}'.format(c))
                         c += 1
-                        obj.hit(current_time )
+                        obj.hit(current_time)
 
 
 def draw(screen: pg.Surface):
