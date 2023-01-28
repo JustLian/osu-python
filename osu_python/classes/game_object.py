@@ -74,7 +74,9 @@ class Circle(pg.sprite.Sprite):
         self.hit_time = hit_time
         self.appear_time = appear_time
         self.fade_in_time = fade_in_time
-        self.endtime = hit_time + hit_windows[0] / 2 + hit_windows[1] + hit_windows[2] + 400
+        self.endtime = (
+            hit_time + hit_windows[0] / 2 + hit_windows[1] + hit_windows[2] + 400
+        )
 
         self.new_combo = new_combo
         self.sound_types = sound_types
@@ -87,18 +89,17 @@ class Circle(pg.sprite.Sprite):
 
         self.shortening = False
 
-
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         if self.score is None and time > self.endtime - 400:
             self.shortening = True
             self.score = miss_img
             self.draw_score(screen, time)
-        
+
         elif self.score is None:
             self.draw_appr_circle(screen, time)
             self.draw_hit_circle(screen, time)
-        
+
         else:
             if not self.shortening:
                 self.endtime = time + 400
@@ -109,22 +110,22 @@ class Circle(pg.sprite.Sprite):
         """Controls hit events"""
         if time <= self.endtime - 400:
             if abs(self.hit_time - time) <= round(self.hit_windows[0] / 2):
-                    self.score = score_300_img
+                self.score = score_300_img
             elif (
-                    round(self.hit_windows[0] / 2) + self.hit_windows[1]
-                    >= abs(self.hit_time - time)
-                    > round(self.hit_windows[0] / 2)
-                ):
-                    self.score = score_100_img
+                round(self.hit_windows[0] / 2) + self.hit_windows[1]
+                >= abs(self.hit_time - time)
+                > round(self.hit_windows[0] / 2)
+            ):
+                self.score = score_100_img
             elif (
-                    round(self.hit_windows[0] / 2)
-                    + self.hit_windows[1]
-                    + self.hit_windows[2]
-                    >= abs(self.hit_time - time)
-                    > round(self.hit_windows[0] / 2) + self.hit_windows[1]
-                ):
-                    self.score = score_50_img
-        
+                round(self.hit_windows[0] / 2)
+                + self.hit_windows[1]
+                + self.hit_windows[2]
+                >= abs(self.hit_time - time)
+                > round(self.hit_windows[0] / 2) + self.hit_windows[1]
+            ):
+                self.score = score_50_img
+
         # not vibration working properly
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
@@ -145,7 +146,7 @@ class Circle(pg.sprite.Sprite):
             screen.blit(circle, self.rect)
         else:
             screen.blit(self.hit_circle, self.rect)
-    
+
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score from current time"""
         need = (time - self.hit_time + 400) // 100
@@ -155,8 +156,13 @@ class Circle(pg.sprite.Sprite):
         score.set_alpha(255 - (255 / 400) * (time - self.endtime + 400))
         score = pg.transform.scale(score, (w + need, h + need))
 
-        screen.blit(score, (self.rect.left + round((self.rect.width / 2) - (w / 2)),
-                 self.rect.top + round((self.rect.height / 2) - (h / 2))))
+        screen.blit(
+            score,
+            (
+                self.rect.left + round((self.rect.width / 2) - (w / 2)),
+                self.rect.top + round((self.rect.height / 2) - (h / 2)),
+            ),
+        )
 
 
 class Slider(Circle):

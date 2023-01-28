@@ -9,7 +9,6 @@ all_objects = []
 OD = 8
 CS = 1
 AR = 8.5
-c = 0
 
 
 def update():
@@ -26,7 +25,6 @@ def update():
 
                 elif obj.appear_time < current_time:
                     if obj.rect.collidepoint(pg.mouse.get_pos()):
-                        c += 1
                         obj.hit(current_time)
 
 
@@ -35,15 +33,19 @@ def draw(screen: pg.Surface):
 
     pg.draw.rect(screen, "red", ((add_x, add_y), (m, n)), width=2)
 
+    tmp = []
     for obj in all_objects:
         if current_time < obj.appear_time:
             break
 
         elif current_time > obj.endtime:
-            all_objects.remove(obj)
+            tmp.append(obj)
 
         elif obj.appear_time < current_time:
             obj.draw(screen, current_time)
+
+    # removing objects
+    [all_objects.remove(obj) for obj in tmp]
 
     pg.display.flip()
 
@@ -59,7 +61,7 @@ def run():
     for m in get_monitors():
         if m.is_primary:
             width, height = m.width, m.height
-    
+
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("osu!python")
 
