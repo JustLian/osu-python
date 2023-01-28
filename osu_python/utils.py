@@ -60,7 +60,7 @@ def osu_scale(n: int) -> float:
         Height of playfield (in px)
     """
 
-    return n / 384
+    return n / 480
 
 
 def pixel_horizontal_scaling(m: int) -> float:

@@ -1,7 +1,6 @@
 import pygame as pg
 import typing as t
 
-
 score_300_img = pg.image.load("./skin/300score.png")
 score_100_img = pg.image.load("./skin/100score.png")
 score_50_img = pg.image.load("./skin/50score.png")
@@ -149,7 +148,7 @@ class Circle(pg.sprite.Sprite):
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score from current time"""
         score = self.score.copy()
-        score.set_alpha(255 - (255 / 400) * (time - self.endtime + 200))
+        score.set_alpha(255 - (255 / 400) * (time - self.endtime + 400))
         screen.blit(score, self.rect)
 
 

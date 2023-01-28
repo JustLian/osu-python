@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
 from osu_python import classes, utils, map_loader
-
+from screeninfo import get_monitors
 
 # Data from osu-map parser goes here
 all_objects = []
@@ -47,14 +47,18 @@ def run():
     fps = 60.0
     fps_clock = pg.time.Clock()
 
-    width, height = 1920, 1080
+    for m in get_monitors():
+        if m.is_primary:
+            width, height = m.width, m.height
+    
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("osu!python")
 
     m, n = utils.playfield_size(height)
-    scale = utils.osu_scale(n)
     add_x = (width - m) / 2
     add_y = height * 0.02
+
+    scale = utils.osu_scale(n)
 
     all_objects.extend(map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y))
 

@@ -8,8 +8,8 @@ def load_map(path: os.PathLike, scale, add_x, add_y):
     mp = slider.Beatmap.from_path(path)
     preempt = utils.calculate_preemt(mp.ar())
     fade_in = utils.calculate_fade_in(mp.ar())
-    hit_size = utils.calculate_hit_r(mp.cs()) * scale
-    appr_size = utils.calculate_appr_r(mp.cs()) * scale
+    hit_size = utils.calculate_hit_r(mp.cs()) * scale * 2
+    appr_size = utils.calculate_appr_r(mp.cs()) * scale * 2
     hit_windows = utils.calculate_hit_windows(mp.od())
 
     queue = []
