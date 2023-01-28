@@ -11,5 +11,19 @@ osu!std beatmaps opener written using Python and PyGame. (Yandex Lyceum project)
 
 <h2 align="center">Contributors</h2>
 <p align="center">
-<a href="https://www.justlian.com"><img src="https://avatars.githubusercontent.com/u/85202150" height=16>&nbsp;JustLian</a> &nbsp;&nbsp; <a href="https://github.com/suvoshi"><img src="avatars.githubusercontent.com/u/94275923" height=16>&nbsp;suvoshi</a> &nbsp;&nbsp; <a href="https://github.com/Filo6699"><img src="https://avatars.githubusercontent.com/u/114665857" height=16>&nbsp;Filo</a>
+<a href="https://www.justlian.com"><img src="https://avatars.githubusercontent.com/u/85202150" height=16>&nbsp;JustLian</a> &nbsp;&nbsp; <a href="https://github.com/suvoshi"><img src="https://avatars.githubusercontent.com/u/94275923" height=16>&nbsp;suvoshi</a> &nbsp;&nbsp; <a href="https://github.com/Filo6699"><img src="https://avatars.githubusercontent.com/u/114665857" height=16>&nbsp;Filo</a>
 </p>
+
+
+<h2 align="center">Installation</h2>
+
+* `git clone https://github.com/JustLian/osu-python`
+* `cd osu-python`
+* `python -m pip install -r requirements.txt`
+
+
+<h2 align="center">How to use?</h2>
+
+* Make sure that `osu_python` dir is in your current directory
+* Run `py -m osu_python`
+* Start clicking circles!
