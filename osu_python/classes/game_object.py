@@ -229,5 +229,4 @@ class Slider(Circle):
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
         self.draw_body(screen, time)
-        self.draw_hit_circle(screen, time)
-        self.draw_appr_circle(screen, time)
+        # self.draw_appr_circle(screen, time)

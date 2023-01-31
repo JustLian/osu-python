@@ -18,14 +18,21 @@ def update():
             pg.quit()
             sys.exit()
 
-        if event.type == pg.MOUSEBUTTONDOWN:
+        if (
+            event.type == pg.MOUSEBUTTONDOWN
+            or (
+                event.type == pg.KEYDOWN
+                and event.key in [pg.K_z, pg.K_x]
+            )
+        ):
             for obj in all_objects:
                 if current_time < obj.appear_time:
                     break
 
                 elif obj.appear_time < current_time:
-                    if obj.rect.collidepoint(pg.mouse.get_pos()):
+                    if obj.rect.collidepoint(pg.mouse.get_pos()) and isinstance(obj, classes.game_object.Circle):
                         obj.hit(current_time)
+                        break
 
 
 def draw(screen: pg.Surface):
