@@ -1,11 +1,55 @@
 import slider
 import os
-from osu_python.classes import game_object
+from osu_python.classes import game_object, Config
 from osu_python import utils
+from pathlib import Path
+import zipfile
 
 
-def load_map(path: os.PathLike, scale, add_x, add_y):
+def unpack(path: os.PathLike):
+    """
+    Function for unpacking .osz file
+
+    Parameters
+    ----------
+    path : os.PathLike
+        Path to .osz file
+    """
+    f = zipfile.ZipFile(path, "r")
+
+    path = "{}/songs/{}".format(Config.base_path, Path(path).name)
+    os.mkdir(path)
+
+    f.extractall(path)
+
+
+def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
+    """
+    Function for loading difficulty of beatmap
+
+    Parameters
+    ----------
+    path : os.PathLike
+        Path to .osu file. It should be stored in beatmap folder
+        with song file, background and other
+    scale : float
+        Scale applied to osu!px values
+    add_x : int
+        Horizontal playfield offset
+    add_y : int:
+        Vertical playfield offset
+
+    Returns
+    -------
+    Functions returns tuple:
+    (
+        objects_queue,
+        audio_path,
+        background_path (Not implemented)
+    )
+    """
     mp = slider.Beatmap.from_path(path)
+    parent = Path(path).parent
     preempt = utils.calculate_preemt(mp.ar())
     fade_in = utils.calculate_fade_in(mp.ar())
     hit_size = utils.calculate_hit_r(mp.cs()) * scale * 2
@@ -52,4 +96,4 @@ def load_map(path: os.PathLike, scale, add_x, add_y):
                     body,
                 )
             )
-    return queue
+    return (queue, parent.joinpath(mp.audio_filename).absolute(), None)

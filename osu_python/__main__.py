@@ -6,9 +6,9 @@ from screeninfo import get_monitors
 # Data from osu-map parser goes here
 all_objects = []
 
-OD = 8
-CS = 1
-AR = 8.5
+
+Config = classes.Config
+Config.init()
 
 
 def update():
@@ -18,19 +18,19 @@ def update():
             pg.quit()
             sys.exit()
 
-        if (
-            event.type == pg.MOUSEBUTTONDOWN
-            or (
-                event.type == pg.KEYDOWN
-                and event.key in [pg.K_z, pg.K_x]
-            )
+        if event.type == pg.MOUSEBUTTONDOWN or (
+            event.type == pg.KEYDOWN
+            and int(event.key)
+            in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
         ):
             for obj in all_objects:
                 if current_time < obj.appear_time:
                     break
 
                 elif obj.appear_time < current_time:
-                    if obj.rect.collidepoint(pg.mouse.get_pos()) and isinstance(obj, classes.game_object.Circle):
+                    if obj.rect.collidepoint(pg.mouse.get_pos()) and isinstance(
+                        obj, classes.game_object.Circle
+                    ):
                         obj.hit(current_time)
                         break
 
@@ -78,7 +78,8 @@ def run():
 
     scale = utils.osu_scale(n)
 
-    all_objects.extend(map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y))
+    queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y)
+    all_objects.extend(queue)
 
     dt = 1 / fps
     while True:
