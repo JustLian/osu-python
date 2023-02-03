@@ -80,7 +80,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
             body = []
             for n in range(100):
                 c = obj.curve(n / 100)
-                body.append((add_x + c.x * scale, add_y + c.y * scale))
+                body.append((round(add_x + c.x * scale), round(add_y + c.y * scale)))
 
             queue.append(
                 game_object.Slider(

@@ -1,11 +1,12 @@
 import pygame as pg
 import typing as t
+from screeninfo import get_monitors
 
 score_300_img = pg.image.load("./skin/300score.png")
 score_100_img = pg.image.load("./skin/100score.png")
 score_50_img = pg.image.load("./skin/50score.png")
 miss_img = pg.image.load("./skin/miss_score.png")
-
+num = 1
 
 class Spinner:
     ...
@@ -221,10 +222,69 @@ class Slider(Circle):
         )
 
         self.body = body
+        self.surface = self.create_slider_surface()
+        global num
+        print(f'slider #{num}')
+        num += 1
+    
+    def distance_to_point(self, point: tuple, point_2: tuple):
+        """Calculates distance between two points""" 
+        x1, y1 = point
+        x2, y2 = point_2
+        dist = ((x1 - x2)**2 + (y1 - y2)**2)**0.5
+        return dist
+
+
+    def calc_slider_edges(self, slider: list):
+        """Calculates list of slider edges"""
+        _min = [10000, 10000]
+        _max = [0, 0]
+        for point in slider:
+            if point[0] < _min[0]:
+                _min[0] = int(point[0])
+            if point[1] < _min[1]:
+                _min[1] = int(point[1])
+            if point[0] > _max[0]:
+                _max[0] = int(point[0])
+            if point[1] > _max[1]:
+                _max[1] = int(point[1])
+        
+        radius = round(self.hit_size // 2)
+        _min[0] -= radius
+        _min[1] -= radius
+        _max[0] += radius
+        _max[1] += radius
+        
+        return _min + _max
+
+
+    def create_slider_surface(self):
+        edges = self.calc_slider_edges(self.body)
+        slider_width = edges[2] - edges[0]
+        slider_height = edges[3] - edges[1]
+        print(edges, slider_width, slider_height)
+
+        # TODO: бро умри и оптимизуй
+        for m in get_monitors():
+            if m.is_primary:
+                width, height = m.width, m.height
+
+        surface = pg.Surface([width, height])
+        for x in range(edges[0], slider_width + edges[0]):
+            for y in range(edges[1], slider_height + edges[1]):
+                dist = min(
+                    [self.distance_to_point((x, y), d) for d in self.body]
+                    ) / self.hit_size * 145
+                if dist > 255:
+                    continue
+                surface.set_at((x, y), (dist, dist, dist))
+        return surface
+
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
-        pg.draw.lines(screen, "blue", False, self.body)
+        screen.blit(self.surface, [0, 0])
+
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
