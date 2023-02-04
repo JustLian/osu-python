@@ -6,7 +6,6 @@ score_300_img = pg.image.load("./skin/300score.png")
 score_100_img = pg.image.load("./skin/100score.png")
 score_50_img = pg.image.load("./skin/50score.png")
 miss_img = pg.image.load("./skin/miss_score.png")
-num = 1
 
 class Spinner:
     ...
@@ -220,8 +219,7 @@ class Slider(Circle):
             appr_size,
             hit_windows,
         )
-
-        self.location = body[0]
+        
         self.body = body
         self.edges = self.calc_slider_edges(self.body)
         self.surface = self.create_slider_surface()
@@ -262,11 +260,9 @@ class Slider(Circle):
                 pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 3))
         return surface
 
-
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
         screen.blit(self.surface, [self.hit_size / 2, self.hit_size / 2])
-
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
