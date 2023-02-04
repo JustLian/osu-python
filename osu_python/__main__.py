@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from osu_python import classes, utils, map_loader
 from screeninfo import get_monitors
+from multiprocessing import Process
 
 # Data from osu-map parser goes here
 all_objects = []
@@ -9,6 +10,9 @@ all_objects = []
 
 Config = classes.Config
 Config.init()
+Lib = classes.Library
+proc = Process(target=Lib.update)
+proc.start()
 
 
 def update():
@@ -23,6 +27,7 @@ def update():
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
         ):
+            print(Lib.update_progress, '/', Lib.update_total)
             for obj in all_objects:
                 if current_time < obj.appear_time:
                     break
@@ -80,6 +85,11 @@ def run():
 
     queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y)
     all_objects.extend(queue)
+    # from pprint import pprint
+    # from time import time
+    # s = time()
+    # pprint(Lib.search('clover'))
+    # print(time() - s)
 
     dt = 1 / fps
     while True:

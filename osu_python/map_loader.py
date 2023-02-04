@@ -17,7 +17,7 @@ def unpack(path: os.PathLike):
     """
     f = zipfile.ZipFile(path, "r")
 
-    path = "{}/songs/{}".format(Config.base_path, Path(path).name)
+    path = "{}/songs/{}".format(Config.base_path, Path(path).name[:-4])
     os.mkdir(path)
 
     f.extractall(path)

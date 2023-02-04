@@ -2,7 +2,7 @@ import typing as t
 import os
 
 
-def calculate_fade_in(ar: float) -> t.Tuple[float, float]:
+def calculate_fade_in(ar: float) -> float:
     """Calculates fade_in time from AR"""
     if ar < 5:
         return 800 + 400 * (5 - ar) / 5
