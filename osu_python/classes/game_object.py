@@ -1,11 +1,11 @@
 import pygame as pg
 import typing as t
+from screeninfo import get_monitors
 
 score_300_img = pg.image.load("./skin/300score.png")
 score_100_img = pg.image.load("./skin/100score.png")
 score_50_img = pg.image.load("./skin/50score.png")
 miss_img = pg.image.load("./skin/miss_score.png")
-
 
 class Spinner:
     ...
@@ -219,14 +219,53 @@ class Slider(Circle):
             appr_size,
             hit_windows,
         )
-
+        
         self.body = body
+        self.edges = self.calc_slider_edges(self.body)
+        self.surface = self.create_slider_surface()
+
+    def calc_slider_edges(self, slider: list):
+        """Calculates list of slider edges"""
+        _min = [10000, 10000]
+        _max = [0, 0]
+        for point in slider:
+            if point[0] < _min[0]:
+                _min[0] = int(point[0])
+            if point[1] < _min[1]:
+                _min[1] = int(point[1])
+            if point[0] > _max[0]:
+                _max[0] = int(point[0])
+            if point[1] > _max[1]:
+                _max[1] = int(point[1])
+        
+        radius = round(self.hit_size // 2)
+        _min[0] -= radius
+        _min[1] -= radius
+        _max[0] += radius
+        _max[1] += radius
+        
+        return _min + _max
+
+    def create_slider_surface(self):
+        """Creates slider surfaces"""
+        for m in get_monitors():
+            if m.is_primary:
+                width, height = m.width, m.height
+        surface = pg.Surface([width, height], pg.SRCALPHA, 32)
+        precision = 50
+        for iter in range(precision):
+            _color = ([255 - iter * (255 / precision)]*3)
+            _width = (precision - iter) * self.hit_size / precision
+            for point in self.body:
+                pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 3))
+        return surface
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
-        pg.draw.lines(screen, "blue", False, self.body)
+        screen.blit(self.surface, [self.hit_size / 2, self.hit_size / 2])
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
         self.draw_body(screen, time)
-        # self.draw_appr_circle(screen, time)
+        self.draw_appr_circle(screen, time)
+        self.draw_hit_circle(screen, time)
