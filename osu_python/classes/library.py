@@ -13,7 +13,7 @@ class Library:
     Class for interacting with local songs library
     """
 
-    db = TinyDB('{}/db/lib.json'.format(Config.base_path))
+    db = TinyDB("{}/db/lib.json".format(Config.base_path))
     update_progress = 0
     update_total = 0
 
@@ -27,23 +27,21 @@ class Library:
         """
 
         def broken_bms(bid):
-            cls.db.insert({'id': bid, 'broken': 1})
+            cls.db.insert({"id": bid, "broken": 1})
 
-        existing_ids = [
-            b['id'] for b in cls.db
-        ]
+        existing_ids = [b["id"] for b in cls.db]
         Config.load()
-        for folder in Config.cfg['songs-folders']:
-            bms_paths = glob(folder + '/*')
+        for folder in Config.cfg["songs-folders"]:
+            bms_paths = glob(folder + "/*")
             cls.update_total += len(bms_paths)
             for bms_path in bms_paths:
                 cls.update_progress += 1
                 # Skipping files
                 if not os.path.isdir(bms_path):
                     continue
-                
+
                 # Beatmap set id verification
-                bms_id = bms_path.replace('\\', '/').split('/')[-1].split()[0]
+                bms_id = bms_path.replace("\\", "/").split("/")[-1].split()[0]
 
                 try:
                     bms_id = int(bms_id)
@@ -56,7 +54,11 @@ class Library:
                 # Saving beatmapset info
                 diffs = []
 
-                bm_paths = [bms_path + '/' + x for x in os.listdir(bms_path) if x.endswith('.osu')]
+                bm_paths = [
+                    bms_path + "/" + x
+                    for x in os.listdir(bms_path)
+                    if x.endswith(".osu")
+                ]
                 if bm_paths == []:
                     broken_bms(bms_id)
                     continue
@@ -66,32 +68,44 @@ class Library:
                     try:
                         bm = slider.Beatmap.from_path(bm_path)
                     except Exception as e:
-                        print('Unexpected error ocurred: {}. Skipping beatmap set'.format(e))
+                        print(
+                            "Unexpected error ocurred: {}. Skipping beatmap set".format(
+                                e
+                            )
+                        )
                         broken_bms(bms_id)
                         skip = True
                         break
                     try:
-                        diffs.append({
-                            'id': bm.beatmap_id,
-                            'stars': bm.stars(),
-                            'version': bm.version,
-                            'artist': bm.artist
-                        })
+                        diffs.append(
+                            {
+                                "id": bm.beatmap_id,
+                                "stars": bm.stars(),
+                                "version": bm.version,
+                                "artist": bm.artist,
+                            }
+                        )
                     except Exception as e:
-                        print('Unexpected error ocurred: {}. Skipping beatmap set'.format(e))
+                        print(
+                            "Unexpected error ocurred: {}. Skipping beatmap set".format(
+                                e
+                            )
+                        )
                         broken_bms(bms_id)
                         skip = True
                 if skip:
                     continue
-                
+
                 bm = slider.Beatmap.from_path(last)
-                cls.db.insert({
-                    'id': bm.beatmap_set_id,
-                    'title': bm.title,
-                    'creator': bm.creator,
-                    "diffs": diffs
-                })
-    
+                cls.db.insert(
+                    {
+                        "id": bm.beatmap_set_id,
+                        "title": bm.title,
+                        "creator": bm.creator,
+                        "diffs": diffs,
+                    }
+                )
+
     @classmethod
     def search(cls, query: str) -> list:
         """
@@ -105,27 +119,26 @@ class Library:
         ----------
         query : str
             Search query
-        
+
         Returns
         -------
         List of beatmap sets data from db
         """
         result = []
         for s in cls.db:
-            if 'broken' not in s and (
+            if "broken" not in s and (
                 # Check beatmaps set's title and creator
-                query in s['title'].lower()
-                or
-                query in s['creator'].lower()
+                query in s["title"].lower()
+                or query in s["creator"].lower()
                 or
                 # Check all of difficulties
-                any([(
-                        query in d['version'].lower()
-                        or
-                        query in d['artist'].lower()
-                    ) for d in s['diffs']
-                ])
+                any(
+                    [
+                        (query in d["version"].lower() or query in d["artist"].lower())
+                        for d in s["diffs"]
+                    ]
+                )
             ):
                 result.append(s)
-        
+
         return result

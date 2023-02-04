@@ -7,6 +7,7 @@ score_100_img = pg.image.load("./skin/100score.png")
 score_50_img = pg.image.load("./skin/50score.png")
 miss_img = pg.image.load("./skin/miss_score.png")
 
+
 class Spinner:
     ...
 
@@ -219,7 +220,7 @@ class Slider(Circle):
             appr_size,
             hit_windows,
         )
-        
+
         self.body = body
         self.edges = self.calc_slider_edges(self.body)
         self.surface = self.create_slider_surface()
@@ -237,13 +238,13 @@ class Slider(Circle):
                 _max[0] = int(point[0])
             if point[1] > _max[1]:
                 _max[1] = int(point[1])
-        
+
         radius = round(self.hit_size // 2)
         _min[0] -= radius
         _min[1] -= radius
         _max[0] += radius
         _max[1] += radius
-        
+
         return _min + _max
 
     def create_slider_surface(self):
@@ -254,7 +255,7 @@ class Slider(Circle):
         surface = pg.Surface([width, height], pg.SRCALPHA, 32)
         precision = 50
         for iter in range(precision):
-            _color = ([255 - iter * (255 / precision)]*3)
+            _color = [255 - iter * (255 / precision)] * 3
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
                 pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 3))

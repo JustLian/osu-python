@@ -26,7 +26,7 @@ def update():
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
         ):
-            print(Lib.update_progress, '/', Lib.update_total)
+            print(Lib.update_progress, "/", Lib.update_total)
             for obj in all_objects:
                 if current_time < obj.appear_time:
                     break
