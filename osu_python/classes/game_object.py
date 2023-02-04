@@ -269,7 +269,7 @@ class Slider(Circle):
             if m.is_primary:
                 width, height = m.width, m.height
 
-        surface = pg.Surface([width, height])
+        surface = pg.Surface([width, height], pg.SRCALPHA, 32)
         for x in range(edges[0], slider_width + edges[0]):
             for y in range(edges[1], slider_height + edges[1]):
                 dist = min(
