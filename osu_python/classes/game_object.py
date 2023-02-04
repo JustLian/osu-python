@@ -248,8 +248,8 @@ class Slider(Circle):
         
         return _min + _max
 
-
     def create_slider_surface(self):
+        """Creates slider surfaces"""
         for m in get_monitors():
             if m.is_primary:
                 width, height = m.width, m.height
