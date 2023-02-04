@@ -29,6 +29,8 @@ class Config:
 
         if not os.path.isdir("{}/songs".format(Config.base_path)):
             os.mkdir("{}/songs".format(Config.base_path))
+        if not os.path.isdir("{}/db".format(Config.base_path)):
+            os.mkdir("{}/db".format(Config.base_path))
 
     @classmethod
     def check_cfg(cls):

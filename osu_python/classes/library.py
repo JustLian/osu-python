@@ -5,6 +5,9 @@ from tinydb import TinyDB
 from glob import glob
 
 
+Config.init()
+
+
 class Library:
     """
     Class for interacting with local songs library

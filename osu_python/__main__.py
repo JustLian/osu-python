@@ -9,7 +9,6 @@ all_objects = []
 
 
 Config = classes.Config
-Config.init()
 Lib = classes.Library
 proc = Process(target=Lib.update)
 proc.start()
