@@ -78,8 +78,8 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
             time = obj.time.total_seconds() * 1000
 
             body = []
-            for n in range(10):
-                c = obj.curve(n / 10)
+            for n in range(100):
+                c = obj.curve(n / 100)
                 body.append((round(add_x + c.x * scale), round(add_y + c.y * scale)))
 
             queue.append(

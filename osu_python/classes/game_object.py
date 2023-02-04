@@ -221,19 +221,10 @@ class Slider(Circle):
             hit_windows,
         )
 
+        self.location = body[0]
         self.body = body
+        self.edges = self.calc_slider_edges(self.body)
         self.surface = self.create_slider_surface()
-        global num
-        print(f'slider #{num}')
-        num += 1
-    
-    def distance_to_point(self, point: tuple, point_2: tuple):
-        """Calculates distance between two points""" 
-        x1, y1 = point
-        x2, y2 = point_2
-        dist = ((x1 - x2)**2 + (y1 - y2)**2)**0.5
-        return dist
-
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -259,34 +250,29 @@ class Slider(Circle):
 
 
     def create_slider_surface(self):
-        edges = self.calc_slider_edges(self.body)
-        slider_width = edges[2] - edges[0]
-        slider_height = edges[3] - edges[1]
-        print(edges, slider_width, slider_height)
-
-        # TODO: бро умри и оптимизуй
         for m in get_monitors():
             if m.is_primary:
                 width, height = m.width, m.height
-
         surface = pg.Surface([width, height], pg.SRCALPHA, 32)
-        for x in range(edges[0], slider_width + edges[0]):
-            for y in range(edges[1], slider_height + edges[1]):
-                dist = min(
-                    [self.distance_to_point((x, y), d) for d in self.body]
-                    ) / self.hit_size * 145
-                if dist > 255:
-                    continue
-                surface.set_at((x, y), (dist, dist, dist))
+        precision = 50
+        for iter in range(precision):
+            _color = ([((
+                (255 - iter * (255 / precision)) / 255
+                )**1)*255
+                ]*3)
+            _width = (precision - iter) * self.hit_size / precision
+            for point in self.body:
+                pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 3))
         return surface
 
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
-        screen.blit(self.surface, [0, 0])
+        screen.blit(self.surface, [self.hit_size / 2, self.hit_size / 2])
 
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
         self.draw_body(screen, time)
-        # self.draw_appr_circle(screen, time)
+        self.draw_appr_circle(screen, time)
+        self.draw_hit_circle(screen, time)
