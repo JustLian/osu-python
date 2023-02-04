@@ -256,10 +256,7 @@ class Slider(Circle):
         surface = pg.Surface([width, height], pg.SRCALPHA, 32)
         precision = 50
         for iter in range(precision):
-            _color = ([((
-                (255 - iter * (255 / precision)) / 255
-                )**1)*255
-                ]*3)
+            _color = ([255 - iter * (255 / precision)]*3)
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
                 pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 3))
