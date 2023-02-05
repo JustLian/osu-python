@@ -48,10 +48,14 @@ def update():
                         obj, classes.game_object.Circle
                     ):
                         obj_pos = obj.rect
-                        obj_center = (obj_pos[0] + obj_pos[2] / 2, obj_pos[1] + obj_pos[3] / 2)
+                        obj_center = (
+                            obj_pos[0] + obj_pos[2] / 2,
+                            obj_pos[1] + obj_pos[3] / 2,
+                        )
                         if (
-                            (mouse_pos[0] - obj_center[0])**2 + (mouse_pos[1] - obj_center[1])**2
-                           )**0.5 <= (obj_pos[2] / 2) * 0.757:
+                            (mouse_pos[0] - obj_center[0]) ** 2
+                            + (mouse_pos[1] - obj_center[1]) ** 2
+                        ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
                             obj.hit(current_time)
                             break
 
@@ -72,7 +76,7 @@ def draw(screen: pg.Surface, cursor):
 
         elif obj.appear_time < current_time:
             obj.draw(screen, current_time)
-    
+
     cursor.draw(screen, pg.mouse.get_pos())
 
     # removing objects

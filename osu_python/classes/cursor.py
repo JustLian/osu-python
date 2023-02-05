@@ -4,10 +4,12 @@ import typing as t
 cursor_img = pg.image.load("./skin/cursor.png")
 trail_img = pg.image.load("./skin/cursortrail.png")
 
+
 class Cursor:
     """
     osu!python cursor class
     """
+
     def __init__(self) -> None:
         self.sizes = cursor_img.get_rect()[2:]
 
@@ -23,7 +25,7 @@ class Cursor:
 
     def draw(self, screen, pos):
         """Draws cursor and cursor trail on screen
-        
+
         Parameters
         ----------
         screen : pygame.Surface
@@ -33,7 +35,9 @@ class Cursor:
         """
         self.trail_tick()
         if len(self.trail) > 0:
-            dist = ((pos[0] - self.trail[-1][0])**2 + (pos[1] - self.trail[-1][1])**2)**0.5
+            dist = (
+                (pos[0] - self.trail[-1][0]) ** 2 + (pos[1] - self.trail[-1][1]) ** 2
+            ) ** 0.5
             if dist > 10:
                 self.trail.append([*pos, 25])
         else:
