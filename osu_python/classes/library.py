@@ -45,7 +45,7 @@ class Library:
 
                 try:
                     bms_id = int(bms_id)
-                except:
+                except ValueError:
                     continue
 
                 if bms_id in existing_ids:

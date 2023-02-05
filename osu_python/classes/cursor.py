@@ -15,12 +15,22 @@ class Cursor:
         self.trail = []
 
     def trail_tick(self):
+        """Updates cursor trail"""
         for i, v in enumerate(self.trail):
             v[2] -= 1
             if v[2] <= 0:
                 self.trail.pop(i)
 
     def draw(self, screen, pos):
+        """Draws cursor and cursor trail on screen
+        
+        Parameters
+        ----------
+        screen : pygame.Surface
+            The surface on which the cursor and cursor trail is getting drawn
+        pos : Tuple[int, int]
+            Position where cursor is drawn
+        """
         self.trail_tick()
         if len(self.trail) > 0:
             dist = ((pos[0] - self.trail[-1][0])**2 + (pos[1] - self.trail[-1][1])**2)**0.5
