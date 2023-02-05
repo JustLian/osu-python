@@ -15,11 +15,20 @@ proc.start()
 
 
 def update():
-    global c
+    global c, focused
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
             sys.exit()
+
+        _focus = pg.mouse.get_focused()
+        if not focused and _focus:
+            focused = True
+            pg.mouse.set_visible(False)
+
+        if focused and not _focus:
+            focused = False
+            pg.mouse.set_visible(True)
 
         if event.type == pg.MOUSEBUTTONDOWN or (
             event.type == pg.KEYDOWN
@@ -46,7 +55,8 @@ def update():
                             break
 
 
-def draw(screen: pg.Surface):
+def draw(screen: pg.Surface, cursor):
+    global focused
     screen.fill((0, 0, 0))
 
     pg.draw.rect(screen, "red", ((add_x, add_y), (m, n)), width=2)
@@ -61,6 +71,8 @@ def draw(screen: pg.Surface):
 
         elif obj.appear_time < current_time:
             obj.draw(screen, current_time)
+    
+    cursor.draw(screen, pg.mouse.get_pos())
 
     # removing objects
     [all_objects.remove(obj) for obj in tmp]
@@ -69,12 +81,13 @@ def draw(screen: pg.Surface):
 
 
 def run():
-    global current_time, circle, scores, add_x, add_y, m, n
+    global current_time, circle, scores, add_x, add_y, m, n, focused
     pg.init()
 
     current_time = 0
     fps = 60.0
     fps_clock = pg.time.Clock()
+    focused = False
 
     for m in get_monitors():
         if m.is_primary:
@@ -91,6 +104,8 @@ def run():
 
     queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y)
     all_objects.extend(queue)
+
+    cursor = classes.Cursor()
     # from pprint import pprint
     # from time import time
     # s = time()
@@ -101,7 +116,7 @@ def run():
     while True:
         current_time += dt
         update()
-        draw(screen)
+        draw(screen, cursor)
 
         dt = fps_clock.tick(fps)
 
