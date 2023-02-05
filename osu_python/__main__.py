@@ -88,7 +88,9 @@ def draw(screen: pg.Surface, cursor):
 def run():
     global current_time, circle, scores, add_x, add_y, m, n, focused
     pg.init()
+    pg.mixer.init()
 
+    music_offset = 0
     current_time = 0
     fps = 60.0
     fps_clock = pg.time.Clock()
@@ -110,11 +112,19 @@ def run():
     queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y)
     all_objects.extend(queue)
 
+    music = pg.mixer.music
+    music.load(audio)
+    music.play()
+
     cursor = classes.Cursor()
 
     dt = 1 / fps
     while True:
         current_time += dt
+        if abs(music.get_pos() - current_time - music_offset) > 500:
+            music.rewind()
+            music.set_pos(current_time / 1000)
+            music_offset = music.get_pos() - current_time
         focus_check()
         update()
         draw(screen, cursor)
