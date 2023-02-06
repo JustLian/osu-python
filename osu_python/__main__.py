@@ -2,16 +2,36 @@ import pygame as pg
 import sys
 from osu_python import classes, utils, map_loader
 from screeninfo import get_monitors
-from multiprocessing import Process
+import logging
+from datetime import datetime
+
+
+Config = classes.Config
+
+# Settings up logger
+formatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s] [%(name)s]  %(message)s")
+root = logging.getLogger()
+
+log_path = '{}/logs/{}.log'.format(
+    Config.base_path,
+    datetime.now().strftime('%Y-%m-%d %H.%M.%S')
+)
+open(log_path, 'w').close()
+file_handler = logging.FileHandler(log_path)
+file_handler.setFormatter(formatter)
+root.addHandler(file_handler)
+
+terminal_handler = logging.StreamHandler()
+terminal_handler.setFormatter(formatter)
+root.addHandler(terminal_handler)
+
+root.setLevel(logging.DEBUG)
 
 # Data from osu-map parser goes here
 all_objects = []
 
-
-Config = classes.Config
 Lib = classes.Library
-proc = Process(target=Lib.update)
-proc.start()
+Lib.update()
 
 
 def focus_check():
