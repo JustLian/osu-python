@@ -282,7 +282,9 @@ class Slider(Circle):
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
-        screen.blit(self.surface, [self.hit_size / 2, self.hit_size / 2])
+        body = self.surface.copy()
+        body.set_alpha((time - self.appear_time) * self.fade_pms)
+        screen.blit(body, [self.hit_size / 2, self.hit_size / 2])
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""

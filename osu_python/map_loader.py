@@ -4,9 +4,13 @@ from osu_python.classes import game_object, Config
 from osu_python import utils
 from pathlib import Path
 import zipfile
+import logging
 
 
-def unpack(path: os.PathLike):
+log = logging.getLogger('map_loader')
+
+
+def unpack(path: os.PathLike) -> bool:
     """
     Function for unpacking .osz file
 
@@ -14,13 +18,23 @@ def unpack(path: os.PathLike):
     ----------
     path : os.PathLike
         Path to .osz file
+    
+    Returns
+    -------
+    Functions returns if map was successfully unpacked or not
     """
-    f = zipfile.ZipFile(path, "r")
+    logging.debug('unpacking beatmap from {}'.format(path))
+    try:
+        f = zipfile.ZipFile(path, "r")
 
-    path = "{}/songs/{}".format(Config.base_path, Path(path).name[:-4])
-    os.mkdir(path)
+        path = "{}/songs/{}".format(Config.base_path, Path(path).name[:-4])
+        os.mkdir(path)
 
-    f.extractall(path)
+        f.extractall(path)
+        return True
+    except Exception as e:
+        logging.error('error occurred when unpacking beatmap from {}: {}'.format(path, e)) 
+        return False
 
 
 def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
@@ -48,6 +62,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
         background_path (Not implemented)
     )
     """
+    log.debug('loading beatmap from {}'.format(path))
     mp = slider.Beatmap.from_path(path)
     parent = Path(path).parent
     preempt = utils.calculate_preemt(mp.ar())
@@ -57,7 +72,9 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
     hit_windows = utils.calculate_hit_windows(mp.od())
 
     queue = []
-    for obj in mp.hit_objects():
+    objs = mp.hit_objects()
+    log.debug('fetching objects ({})'.format(len(objs)))
+    for obj in objs:
         if isinstance(obj, slider.beatmap.Circle):
             time = obj.time.total_seconds() * 1000
             queue.append(
