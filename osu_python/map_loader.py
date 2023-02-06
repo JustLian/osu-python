@@ -76,6 +76,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
 
         if isinstance(obj, slider.beatmap.Slider):
             time = obj.time.total_seconds() * 1000
+            endtime = obj.end_time.total_seconds() * 1000
 
             body = []
             for n in range(100):
@@ -84,9 +85,9 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
 
             queue.append(
                 game_object.Slider(
+                    time + preempt,
                     time,
-                    time - preempt,
-                    time - preempt + fade_in,
+                    time + fade_in,
                     (add_x + obj.position.x * scale, add_y + obj.position.y * scale),
                     False,
                     (),
@@ -94,6 +95,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
                     appr_size,
                     hit_windows,
                     body,
+                    endtime
                 )
             )
     return (queue, parent.joinpath(mp.audio_filename).absolute(), None)
