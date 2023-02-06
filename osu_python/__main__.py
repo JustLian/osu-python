@@ -1,9 +1,10 @@
 import pygame as pg
 import sys
-from osu_python import classes, utils, map_loader
+from osu_python import classes, utils, map_loader, ui
 from screeninfo import get_monitors
 import logging
 from datetime import datetime
+from threading import Thread
 
 
 Config = classes.Config
@@ -31,7 +32,6 @@ root.setLevel(logging.DEBUG)
 all_objects = []
 
 Lib = classes.Library
-Lib.update()
 
 
 def focus_check():
@@ -114,6 +114,7 @@ def run():
     current_time = 0
     fps = 60.0
     fps_clock = pg.time.Clock()
+    dt = 1 / fps
     focused = False
 
     for m in get_monitors():
@@ -123,12 +124,21 @@ def run():
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("osu!python")
 
+    Thread(target=Lib.update).start()
+    loading_screen = ui.Startup()
+    while Lib.update_progress != Lib.update_total:
+        loading_screen.draw(screen)
+        pg.display.flip()
+
+        dt = fps_clock.tick(fps)
+
     m, n = utils.playfield_size(height)
     add_x = (width - m) / 2
     add_y = height * 0.02
 
     scale = utils.osu_scale(n)
 
+    result = Lib.search('can you')[0]
     queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y)
     all_objects.extend(queue)
 
@@ -138,7 +148,6 @@ def run():
 
     cursor = classes.Cursor()
 
-    dt = 1 / fps
     while True:
         current_time += dt
         if abs(music.get_pos() - current_time - music_offset) > 500:

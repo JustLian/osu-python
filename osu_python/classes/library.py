@@ -17,7 +17,7 @@ class Library:
 
     db = TinyDB("{}/db/lib.json".format(Config.base_path))
     update_progress = 0
-    update_total = 0
+    update_total = -1
 
     @classmethod
     def update(cls):
@@ -29,23 +29,16 @@ class Library:
         """
         log.info('updating library')
 
-        def extract_id(path):
-            n = path.split('/')[-1].split()[0]
-            try:
-                return int(n)
-            except:
-                return -1
-
         def broken_bms(bid):
             cls.db.insert({"id": bid, "broken": 1})
 
-        existing_ids = [b["id"] for b in cls.db]
+        existing_bms = [b["path"] for b in cls.db]
         Config.load()
         bms_paths = []
         for folder in Config.cfg["songs-folders"]:
             bms_paths.extend(glob(folder + "/*"))
 
-        bms_paths = set([extract_id(p) for p in bms_paths]).difference(existing_ids)
+        bms_paths = set(bms_paths).difference(set(existing_bms))
         cls.update_total = len(bms_paths)
         log.info('found {} new beatmap sets'.format(cls.update_total))
         for bms_path in bms_paths:
@@ -54,15 +47,15 @@ class Library:
             if not os.path.isdir(bms_path):
                 continue
 
+            if bms_path in existing_bms:
+                continue
+
             # Beatmap set id verification
             bms_id = bms_path.replace("\\", "/").split("/")[-1].split()[0]
 
             try:
                 bms_id = int(bms_id)
             except ValueError:
-                continue
-
-            if bms_id in existing_ids:
                 continue
 
             # Saving beatmapset info
@@ -117,6 +110,7 @@ class Library:
                     "title": bm.title,
                     "creator": bm.creator,
                     "diffs": diffs,
+                    "path": bms_path
                 }
             )
         log.info('library updated')
