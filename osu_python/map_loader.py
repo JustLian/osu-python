@@ -104,7 +104,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
                 game_object.Slider(
                     time,
                     time - preempt,
-                    time - preempt - fade_in,
+                    time - preempt + fade_in,
                     (add_x + obj.position.x * scale, add_y + obj.position.y * scale),
                     False,
                     (),
