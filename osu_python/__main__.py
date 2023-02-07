@@ -135,7 +135,7 @@ def run():
 
     scale = utils.osu_scale(n)
 
-    queue, audio, bg = map_loader.load_map(
+    queue, audio, bg, map = map_loader.load_map(
         "./osu_python/map.osu", scale, add_x, add_y, miss_callback
     )
     all_objects.extend(queue)
@@ -145,7 +145,10 @@ def run():
     music.play()
 
     cursor = classes.Cursor()
-    ui = classes.InGameUI()
+    drain_time = (all_objects[-1].appear_time - all_objects[0].appear_time) / 1000
+    # TODO: break time should not be in drain_time
+    diff_multiplier = round((map.hp() + map.cs() + map.od() + min(max(len(all_objects) / drain_time * 8,0),16)) / 38 * 5)
+    ui = classes.InGameUI(diff_multiplier, 1)
 
     dt = 1 / fps
     while True:
