@@ -29,8 +29,8 @@ class Library:
         """
         log.info('updating library')
 
-        def broken_bms(bid):
-            cls.db.insert({"id": bid, "broken": 1})
+        def broken_bms(bid, p):
+            cls.db.insert({"id": bid, "broken": 1, "path": p})
 
         existing_bms = [b["path"] for b in cls.db]
         Config.load()
@@ -67,7 +67,7 @@ class Library:
                 if x.endswith(".osu")
             ]
             if bm_paths == []:
-                broken_bms(bms_id)
+                broken_bms(bms_id, bms_path)
                 continue
             last = bm_paths[-1]
             skip = False
@@ -80,7 +80,7 @@ class Library:
                             e
                         )
                     )
-                    broken_bms(bms_id)
+                    broken_bms(bms_id, bms_path)
                     skip = True
                     break
                 try:
@@ -98,7 +98,7 @@ class Library:
                             e
                         )
                     )
-                    broken_bms(bms_id)
+                    broken_bms(bms_id, bms_path)
                     skip = True
             if skip:
                 continue

@@ -16,14 +16,16 @@ class Startup:
         rect = img.get_rect()
         size = screen.get_size()
 
-        screen.blit(img, (size[0] // 2, size[1] // 2))
+        pos = size[0] // 2 - rect.w // 2, size[1] // 2 - rect.h // 2
+        screen.blit(img, (pos))
         pg.draw.rect(
             screen, (255, 116, 159),
             (
-                rect.x - 20, rect.y - 20,
-                rect.w + 20, rect.h + 20
+                pos[0] - 20, pos[1] - 20,
+                rect.w + 40, rect.h + 40
             ), width=5, border_radius=20
         )
     
     def draw(self, screen: pg.Surface):
+        screen.fill((0, 0, 0))
         self.drawn_lib_update(screen)
