@@ -93,7 +93,11 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
 
         if isinstance(obj, slider.beatmap.Slider):
             time = obj.time.total_seconds() * 1000
-            endtime = obj.end_time.total_seconds() * 1000
+            # endtime = obj.end_time.total_seconds() * 1000
+            px_per_beat = mp.slider_multiplier * obj.ms_per_beat
+            slider_len_ms = px_per_beat * obj.num_beats
+            log.debug((px_per_beat, obj.num_beats, slider_len_ms))
+            endtime = time + slider_len_ms
 
             body = []
             for n in range(100):

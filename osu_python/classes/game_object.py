@@ -241,8 +241,6 @@ class Slider(Circle):
         self.current_point_index = 0
         self.endtime = endtime
         self.velocity = round(len(self.body) // (self.endtime - self.hit_time))
- 
-        print(self.hit_time, self.appear_time)
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
