@@ -1,6 +1,7 @@
 import pygame as pg
 import typing as t
 from screeninfo import get_monitors
+import math
 
 score_300_img = pg.image.load("./skin/300score.png")
 score_100_img = pg.image.load("./skin/100score.png")
@@ -127,7 +128,6 @@ class Circle(pg.sprite.Sprite):
             elif self.hit_windows[2] >= abs(self.hit_time - time) > self.hit_windows[1]:
                 self.score = score_50_img
                 return 50
-            # not vibration working properly
             elif self.hit_time - time > 0:
                 self.count_vibr = 20
 
@@ -247,7 +247,8 @@ class Slider(Circle):
         self.begin_touch = False
         self.current_point_index = 0
         self.endtime = endtime
-        self.velocity = round(len(self.body) // (self.endtime - self.hit_time))
+        self.velocity = len(self.body) / (self.endtime - self.hit_time)
+        self.touching = False
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -296,6 +297,8 @@ class Slider(Circle):
         self.draw_body(screen, time)
         if time > self.hit_time or self.begin_touch:
             self.draw_hit_circle(screen, time)
+            if self.touching:
+                self.draw_appr_circle(screen, time)
         else:
             self.draw_appr_begin_circle(screen, time)
             self.draw_hit_begin_circle(screen, time)
@@ -322,10 +325,32 @@ class Slider(Circle):
 
     def hit(self, time: int):
         """Controls hit events"""
-        if self.hit_time - time <= self.hit_windows[2]:
-            self.begin_touch = True
+        if time > self.hit_time:
+            self.touching = True
+        else:
+            if self.hit_time - time <= self.hit_windows[2]:
+                self.begin_touch = True
+
 
     def draw_hit_circle(self, screen: pg.Surface, time: int):
-        x, y = self.body[self.current_point_index]
-        screen.blit(self.hit_circle, (x, y))
-        self.current_point_index += self.velocity
+        """Draws hit circle on slider"""
+        if round(self.velocity * (time - self.hit_time)) >= 1:
+            self.current_point_index = round(self.velocity * (time - self.hit_time)) - 1
+            x, y = self.body[self.current_point_index]
+            self.rect.left, self.rect.top = x, y
+            screen.blit(self.hit_circle, (x, y))
+
+    def draw_appr_circle(self, screen: pg.Surface, time: int):
+        """Draws approach circle on slider, not working properly"""
+        x1, y1 = self.body[self.current_point_index]
+        x2, y2 = pg.mouse.get_pos()
+        coeff = round((((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5) / self.hit_size)
+
+        new_size = self.appr_size * coeff
+        size_diff = (new_size - self.hit_size) / 2
+        screen.blit(
+            pg.transform.scale(self.appr_circle, (new_size, new_size)),
+            (self.rect.x - size_diff, self.rect.y - size_diff),
+        )
+        
+        self.touching = False

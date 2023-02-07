@@ -101,7 +101,7 @@ def load_map(
 
         if isinstance(obj, slider.beatmap.Slider):
             time = obj.time.total_seconds() * 1000
-            endtime = time + obj.ms_per_beat * obj.num_beats
+            endtime = obj.end_time.total_seconds() * 1000
 
             body = []
             for n in range(100):
