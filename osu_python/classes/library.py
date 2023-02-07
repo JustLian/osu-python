@@ -6,7 +6,7 @@ from glob import glob
 import logging
 
 
-log = logging.getLogger('library')
+log = logging.getLogger("library")
 Config.init()
 
 
@@ -27,10 +27,10 @@ class Library:
         Should be called after new maps installation
         and game start
         """
-        log.info('updating library')
+        log.info("updating library")
 
         def extract_id(path):
-            n = path.split('/')[-1].split()[0]
+            n = path.split("/")[-1].split()[0]
             try:
                 return int(n)
             except:
@@ -47,7 +47,7 @@ class Library:
 
         bms_paths = set([extract_id(p) for p in bms_paths]).difference(existing_ids)
         cls.update_total = len(bms_paths)
-        log.info('found {} new beatmap sets'.format(cls.update_total))
+        log.info("found {} new beatmap sets".format(cls.update_total))
         for bms_path in bms_paths:
             cls.update_progress += 1
             # Skipping files
@@ -69,9 +69,7 @@ class Library:
             diffs = []
 
             bm_paths = [
-                bms_path + "/" + x
-                for x in os.listdir(bms_path)
-                if x.endswith(".osu")
+                bms_path + "/" + x for x in os.listdir(bms_path) if x.endswith(".osu")
             ]
             if bm_paths == []:
                 broken_bms(bms_id)
@@ -83,9 +81,7 @@ class Library:
                     bm = slider.Beatmap.from_path(bm_path)
                 except Exception as e:
                     log.error(
-                        "Unexpected error ocurred: {}. Skipping beatmap set".format(
-                            e
-                        )
+                        "Unexpected error ocurred: {}. Skipping beatmap set".format(e)
                     )
                     broken_bms(bms_id)
                     skip = True
@@ -101,9 +97,7 @@ class Library:
                     )
                 except Exception as e:
                     log.error(
-                        "Unexpected error ocurred: {}. Skipping beatmap set".format(
-                            e
-                        )
+                        "Unexpected error ocurred: {}. Skipping beatmap set".format(e)
                     )
                     broken_bms(bms_id)
                     skip = True
@@ -119,7 +113,7 @@ class Library:
                     "diffs": diffs,
                 }
             )
-        log.info('library updated')
+        log.info("library updated")
 
     @classmethod
     def search(cls, query: str) -> list:

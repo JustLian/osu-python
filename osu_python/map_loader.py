@@ -8,7 +8,7 @@ import logging
 import typing as t
 
 
-log = logging.getLogger('map_loader')
+log = logging.getLogger("map_loader")
 
 
 def unpack(path: os.PathLike) -> bool:
@@ -19,12 +19,12 @@ def unpack(path: os.PathLike) -> bool:
     ----------
     path : os.PathLike
         Path to .osz file
-    
+
     Returns
     -------
     Functions returns if map was successfully unpacked or not
     """
-    logging.debug('unpacking beatmap from {}'.format(path))
+    logging.debug("unpacking beatmap from {}".format(path))
     try:
         f = zipfile.ZipFile(path, "r")
 
@@ -34,11 +34,15 @@ def unpack(path: os.PathLike) -> bool:
         f.extractall(path)
         return True
     except Exception as e:
-        logging.error('error occurred when unpacking beatmap from {}: {}'.format(path, e)) 
+        logging.error(
+            "error occurred when unpacking beatmap from {}: {}".format(path, e)
+        )
         return False
 
 
-def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int, miss_callback: t.Callable):
+def load_map(
+    path: os.PathLike, scale: float, add_x: int, add_y: int, miss_callback: t.Callable
+):
     """
     Function for loading difficulty of beatmap
 
@@ -65,7 +69,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int, miss_callb
         background_path (Not implemented)
     )
     """
-    log.debug('loading beatmap from {}'.format(path))
+    log.debug("loading beatmap from {}".format(path))
     mp = slider.Beatmap.from_path(path)
     parent = Path(path).parent
     preempt = utils.calculate_preemt(mp.ar())
@@ -76,7 +80,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int, miss_callb
 
     queue = []
     objs = mp.hit_objects()
-    log.debug('fetching objects ({})'.format(len(objs)))
+    log.debug("fetching objects ({})".format(len(objs)))
     for obj in objs:
         if isinstance(obj, slider.beatmap.Circle):
             time = obj.time.total_seconds() * 1000
@@ -117,7 +121,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int, miss_callb
                     hit_windows,
                     miss_callback,
                     body,
-                    endtime
+                    endtime,
                 )
             )
     return (queue, parent.joinpath(mp.audio_filename).absolute(), None)

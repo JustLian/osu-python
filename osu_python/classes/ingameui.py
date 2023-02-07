@@ -13,34 +13,40 @@ score_imgs = {
     "8": pg.image.load("./skin/score-8.png"),
     "9": pg.image.load("./skin/score-9.png"),
     ".": pg.image.load("./skin/score-dot.png"),
-    "%": pg.image.load("./skin/score-percent.png")
+    "%": pg.image.load("./skin/score-percent.png"),
 }
 
 
-class InGameUI():
+class InGameUI:
     """Class of in game UI"""
-    def __init__(self, difficulty_multiplier = 1, mod_multiplier = 1) -> None:
+
+    def __init__(self, difficulty_multiplier=1, mod_multiplier=1) -> None:
         self.score = 0
         self.combo = 1524
         self.accuracy = ""
-        self.scores = {
-            "300": 0,
-            "100": 0,
-            "50": 0,
-            "0": 0
-        }
+        self.scores = {"300": 0, "100": 0, "50": 0, "0": 0}
         self.difficulty_multiplier = difficulty_multiplier
         self.mod_multiplier = mod_multiplier
-        
+
     def hit(self, score):
         self.scores[str(score)] += 1
         if score != 0:
-            self.score += score * (1 + (max(self.combo - 1, 0) * self.difficulty_multiplier * self.mod_multiplier / 25))
+            self.score += score * (
+                1
+                + (
+                    max(self.combo - 1, 0)
+                    * self.difficulty_multiplier
+                    * self.mod_multiplier
+                    / 25
+                )
+            )
             self.combo += 1
         else:
             self.combo = 0
-        self.accuracy = str(round(utils.calculate_accuracy(self.scores.values()) * 100, 1)) + "%"
-    
+        self.accuracy = (
+            str(round(utils.calculate_accuracy(self.scores.values()) * 100, 1)) + "%"
+        )
+
     def draw_score(self, screen: pg.Surface):
         score = round(self.score)
         score_length = len(str(score))
@@ -54,4 +60,3 @@ class InGameUI():
         draw_point = screen_width - len(self.accuracy) * 25 + 10
         for i, v in enumerate(self.accuracy):
             screen.blit(score_imgs[v], (draw_point + i * 20, 50))
-

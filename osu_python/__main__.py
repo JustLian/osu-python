@@ -12,11 +12,10 @@ Config = classes.Config
 formatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s] [%(name)s]  %(message)s")
 root = logging.getLogger()
 
-log_path = '{}/logs/{}.log'.format(
-    Config.base_path,
-    datetime.now().strftime('%Y-%m-%d %H.%M.%S')
+log_path = "{}/logs/{}.log".format(
+    Config.base_path, datetime.now().strftime("%Y-%m-%d %H.%M.%S")
 )
-open(log_path, 'w').close()
+open(log_path, "w").close()
 file_handler = logging.FileHandler(log_path)
 file_handler.setFormatter(formatter)
 root.addHandler(file_handler)
@@ -105,7 +104,7 @@ def draw(screen: pg.Surface, cursor):
 
     # removing objects
     [all_objects.remove(obj) for obj in tmp]
-    
+
     ui.draw_score(screen)
     cursor.draw(screen, pg.mouse.get_pos())
 
@@ -136,7 +135,9 @@ def run():
 
     scale = utils.osu_scale(n)
 
-    queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y, miss_callback)
+    queue, audio, bg = map_loader.load_map(
+        "./osu_python/map.osu", scale, add_x, add_y, miss_callback
+    )
     all_objects.extend(queue)
 
     music = pg.mixer.music
@@ -155,7 +156,10 @@ def run():
             music_offset = music.get_pos() - current_time
         focus_check()
         update()
-        draw(screen, cursor, )
+        draw(
+            screen,
+            cursor,
+        )
 
         dt = fps_clock.tick(fps)
 

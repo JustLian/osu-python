@@ -121,21 +121,13 @@ class Circle(pg.sprite.Sprite):
             if abs(self.hit_time - time) <= self.hit_windows[0]:
                 self.score = score_300_img
                 return 300
-            elif (
-                self.hit_windows[1]
-                >= abs(self.hit_time - time)
-                > self.hit_windows[0]
-            ):
+            elif self.hit_windows[1] >= abs(self.hit_time - time) > self.hit_windows[0]:
                 self.score = score_100_img
                 return 100
-            elif (
-                self.hit_windows[2]
-                >= abs(self.hit_time - time)
-                > self.hit_windows[1]
-            ):
+            elif self.hit_windows[2] >= abs(self.hit_time - time) > self.hit_windows[1]:
                 self.score = score_50_img
                 return 50
-        # not vibration working properly
+            # not vibration working properly
             elif self.hit_time - time > 0:
                 self.count_vibr = 20
 
@@ -201,7 +193,7 @@ class Slider(Circle):
         hit_windows: t.Tuple[int, int, int],
         miss_callback: t.Callable,
         body: t.Tuple[t.Tuple[int, int]],
-        endtime : int,
+        endtime: int,
         *group
     ):
         """Slider object
@@ -307,7 +299,7 @@ class Slider(Circle):
         else:
             self.draw_appr_begin_circle(screen, time)
             self.draw_hit_begin_circle(screen, time)
-    
+
     def draw_appr_begin_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
         if time <= self.hit_time:
@@ -327,12 +319,12 @@ class Slider(Circle):
             circle = self.hit_circle
 
         screen.blit(circle, self.rect)
-    
+
     def hit(self, time: int):
         """Controls hit events"""
         if self.hit_time - time <= self.hit_windows[2]:
             self.begin_touch = True
-        
+
     def draw_hit_circle(self, screen: pg.Surface, time: int):
         x, y = self.body[self.current_point_index]
         screen.blit(self.hit_circle, (x, y))
