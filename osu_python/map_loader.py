@@ -124,4 +124,4 @@ def load_map(
                     endtime,
                 )
             )
-    return (queue, parent.joinpath(mp.audio_filename).absolute(), None)
+    return (queue, parent.joinpath(mp.audio_filename).absolute(), None, mp)

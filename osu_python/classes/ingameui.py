@@ -18,18 +18,32 @@ score_imgs = {
 
 
 class InGameUI:
-    """Class of in game UI"""
+    def __init__(
+        self,
+        difficulty_multiplier : int,
+        mod_multiplier : float,
+    ) -> None:
+        """Class of in game UI
+        
+        Parameters
+        ----------
+        difficulty_multiplier : int
+            Map's difficulty multiplier
+        mod_multiplier : float
+            Map's mods score multiplier
+        """
 
-    def __init__(self, difficulty_multiplier=1, mod_multiplier=1) -> None:
         self.score = 0
         self.display_score = 0
-        self.combo = 1524
+        self.combo = 0
         self.accuracy = ""
+
         self.scores = {"300": 0, "100": 0, "50": 0, "0": 0}
+
         self.difficulty_multiplier = difficulty_multiplier
         self.mod_multiplier = mod_multiplier
 
-    def hit(self, score):
+    def hit(self, score: float):
         self.scores[str(score)] += 1
         if score != 0:
             self.score += score * (
