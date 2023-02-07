@@ -34,6 +34,10 @@ Lib = classes.Library
 Lib.update()
 
 
+def miss_callback():
+    ui.hit(0)
+
+
 def focus_check():
     global focused
     _focus = pg.mouse.get_focused()
@@ -47,7 +51,7 @@ def focus_check():
 
 
 def update():
-    global c
+    global c, ui
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
@@ -76,12 +80,14 @@ def update():
                             (mouse_pos[0] - obj_center[0]) ** 2
                             + (mouse_pos[1] - obj_center[1]) ** 2
                         ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
-                            obj.hit(current_time)
+                            score = obj.hit(current_time)
+                            if score:
+                                ui.hit(score)
                             break
 
 
 def draw(screen: pg.Surface, cursor):
-    global focused
+    global focused, ui
     screen.fill((0, 0, 0))
 
     pg.draw.rect(screen, "red", ((add_x, add_y), (m, n)), width=2)
@@ -97,16 +103,17 @@ def draw(screen: pg.Surface, cursor):
         elif obj.appear_time < current_time:
             obj.draw(screen, current_time)
 
-    cursor.draw(screen, pg.mouse.get_pos())
-
     # removing objects
     [all_objects.remove(obj) for obj in tmp]
+    
+    ui.draw_score(screen)
+    cursor.draw(screen, pg.mouse.get_pos())
 
     pg.display.flip()
 
 
 def run():
-    global current_time, circle, scores, add_x, add_y, m, n, focused
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui
     pg.init()
     pg.mixer.init()
 
@@ -129,7 +136,7 @@ def run():
 
     scale = utils.osu_scale(n)
 
-    queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y)
+    queue, audio, bg = map_loader.load_map("./osu_python/map.osu", scale, add_x, add_y, miss_callback)
     all_objects.extend(queue)
 
     music = pg.mixer.music
@@ -137,6 +144,7 @@ def run():
     music.play()
 
     cursor = classes.Cursor()
+    ui = classes.InGameUI()
 
     dt = 1 / fps
     while True:
@@ -147,7 +155,7 @@ def run():
             music_offset = music.get_pos() - current_time
         focus_check()
         update()
-        draw(screen, cursor)
+        draw(screen, cursor, )
 
         dt = fps_clock.tick(fps)
 

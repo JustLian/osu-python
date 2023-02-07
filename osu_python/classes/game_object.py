@@ -27,6 +27,7 @@ class Circle(pg.sprite.Sprite):
         hit_size: int,
         appr_size: int,
         hit_windows: t.Tuple[int, int, int],
+        miss_callback: t.Callable,
         *group
     ):
         """Circle object
@@ -53,6 +54,8 @@ class Circle(pg.sprite.Sprite):
             Radius of approach circle (in px, not osu!pixels!)
         hit_windows : Tuple[int, int, int]
             Hit windows for 300, 100 and 50
+        miss_callback : t.Callable
+            Miss callback function
         """
 
         super().__init__(*group)
@@ -90,11 +93,15 @@ class Circle(pg.sprite.Sprite):
 
         self.shortening = False
 
+        self.miss_callback = miss_callback
+
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         if self.score is None and time > self.endtime - 400:
             self.shortening = True
-            self.score = miss_img
+            if self.score != miss_img:
+                self.score = miss_img
+                self.miss_callback()
             self.draw_score(screen, time)
 
         elif self.score is None:
@@ -112,12 +119,14 @@ class Circle(pg.sprite.Sprite):
         if time <= self.endtime - 400:
             if abs(self.hit_time - time) <= round(self.hit_windows[0] / 2):
                 self.score = score_300_img
+                return 300
             elif (
                 round(self.hit_windows[0] / 2) + self.hit_windows[1]
                 >= abs(self.hit_time - time)
                 > round(self.hit_windows[0] / 2)
             ):
                 self.score = score_100_img
+                return 100
             elif (
                 round(self.hit_windows[0] / 2)
                 + self.hit_windows[1]
@@ -126,6 +135,7 @@ class Circle(pg.sprite.Sprite):
                 > round(self.hit_windows[0] / 2) + self.hit_windows[1]
             ):
                 self.score = score_50_img
+                return 50
 
         # not vibration working properly
 
@@ -178,6 +188,7 @@ class Slider(Circle):
         hit_size: int,
         appr_size: int,
         hit_windows: t.Tuple[int, int, int],
+        miss_callback: t.Callable,
         body: t.Tuple[t.Tuple[int, int]],
         *group
     ):
@@ -205,6 +216,8 @@ class Slider(Circle):
             Radius of approach circle (in px, not osu!pixels!)
         hit_windows : Tuple[int, int, int]
             Hit windows for 300, 100 and 50
+        miss_callback : t.Callable
+            Miss callback function
         body : Tuple[Tuple[int, int]]:
             Coordinates of points in slider's body
         """
@@ -219,6 +232,7 @@ class Slider(Circle):
             hit_size,
             appr_size,
             hit_windows,
+            miss_callback,
         )
 
         self.body = body

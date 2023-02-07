@@ -5,6 +5,7 @@ from osu_python import utils
 from pathlib import Path
 import zipfile
 import logging
+import typing as t
 
 
 log = logging.getLogger('map_loader')
@@ -37,7 +38,7 @@ def unpack(path: os.PathLike) -> bool:
         return False
 
 
-def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
+def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int, miss_callback: t.Callable):
     """
     Function for loading difficulty of beatmap
 
@@ -52,6 +53,8 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
         Horizontal playfield offset
     add_y : int:
         Vertical playfield offset
+    callback : t.Callable
+        Miss callback function
 
     Returns
     -------
@@ -88,6 +91,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
                     hit_size,
                     appr_size,
                     hit_windows,
+                    miss_callback,
                 )
             )
 
@@ -110,6 +114,7 @@ def load_map(path: os.PathLike, scale: float, add_x: int, add_y: int):
                     hit_size,
                     appr_size,
                     hit_windows,
+                    miss_callback,
                     body,
                 )
             )

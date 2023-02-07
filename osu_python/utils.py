@@ -72,3 +72,40 @@ def calculate_hit_windows(od: float) -> t.Tuple[int, int, int]:
     of 300, 100 and 50 hit results
     """
     return (80 - 6 * od, 140 - 8 * od, 200 - 10 * od)
+
+
+def calculate_accuracy(scores: t.Tuple[int, int, int, int]) -> float:
+    """
+    Calculates accuracy from hit scores
+    
+    Returns value between 0 and 1
+
+    Parameters
+    ----------
+    scores: t.Tuple[int, int, int, int]
+        All of the hit scores in descending order: 300, 100, 50, 0"""
+    s300, s100, s50, _ = scores
+    try:
+        accuracy = (s300 * 300 + s100 * 100 + s50 * 50) / (300 * sum(scores))
+    except ZeroDivisionError:
+        accuracy = 1
+    return accuracy
+
+
+def calculate_difficulty_multiplier(HP: float, CS: float, OD: float, hit_objects_count: int, drain_time: float):
+    """
+    Calculates map's difficulty multiplier
+    
+    Parameters
+    ----------
+    HP: float
+        HP Drain of the map
+    CS: float
+        Circle Size of the map
+    OD: float
+        Overall Difficulty of the map
+    hit_objects_count: int
+        Amount of hit objects in the map
+    drain_time: float
+        Time period from first and last hit object in the map, not including breaks, in seconds"""
+    return round(HP + CS + OD + max(min(hit_objects_count / drain_time * 8, 16), 0) / 38 * 5)
