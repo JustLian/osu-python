@@ -22,6 +22,7 @@ class InGameUI:
 
     def __init__(self, difficulty_multiplier=1, mod_multiplier=1) -> None:
         self.score = 0
+        self.display_score = 0
         self.combo = 1524
         self.accuracy = ""
         self.scores = {"300": 0, "100": 0, "50": 0, "0": 0}
@@ -48,7 +49,12 @@ class InGameUI:
         )
 
     def draw_score(self, screen: pg.Surface):
-        score = round(self.score)
+        add_value = round((self.score - self.display_score) * 0.2)
+        if add_value > 1:
+            self.display_score += add_value
+        else:
+            self.display_score = self.score
+        score = round(self.display_score)
         score_length = len(str(score))
         numbers = ["0"] * max(score_length, 8)
         for i, v in enumerate(str(score)):
