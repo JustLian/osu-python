@@ -92,6 +92,7 @@ class Circle(pg.sprite.Sprite):
         self.rect.x, self.rect.y = location[0], location[1]
 
         self.shortening = False
+        self.count_vibr = 0
 
         self.miss_callback = miss_callback
 
@@ -117,27 +118,26 @@ class Circle(pg.sprite.Sprite):
     def hit(self, time: int):
         """Controls hit events"""
         if time <= self.endtime - 400:
-            if abs(self.hit_time - time) <= round(self.hit_windows[0] / 2):
+            if abs(self.hit_time - time) <= self.hit_windows[0]:
                 self.score = score_300_img
                 return 300
             elif (
-                round(self.hit_windows[0] / 2) + self.hit_windows[1]
+                self.hit_windows[1]
                 >= abs(self.hit_time - time)
-                > round(self.hit_windows[0] / 2)
+                > self.hit_windows[0]
             ):
                 self.score = score_100_img
                 return 100
             elif (
-                round(self.hit_windows[0] / 2)
-                + self.hit_windows[1]
-                + self.hit_windows[2]
+                self.hit_windows[2]
                 >= abs(self.hit_time - time)
-                > round(self.hit_windows[0] / 2) + self.hit_windows[1]
+                > self.hit_windows[1]
             ):
                 self.score = score_50_img
                 return 50
-
         # not vibration working properly
+            elif self.hit_time - time > 0:
+                self.count_vibr = 20
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
@@ -154,9 +154,17 @@ class Circle(pg.sprite.Sprite):
         if self.fade_in_time > time >= self.appear_time:
             circle = self.hit_circle.copy()
             circle.set_alpha((time - self.appear_time) * self.fade_pms)
-            screen.blit(circle, self.rect)
         else:
-            screen.blit(self.hit_circle, self.rect)
+            circle = self.hit_circle
+
+        if self.count_vibr != 0:
+            if self.count_vibr % 2 == 0:
+                self.rect = self.rect.move(-3, 0)
+            else:
+                self.rect = self.rect.move(3, 0)
+            self.count_vibr -= 1
+
+        screen.blit(circle, self.rect)
 
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score from current time"""
@@ -177,6 +185,9 @@ class Circle(pg.sprite.Sprite):
 
 
 class Slider(Circle):
+    hit_circle_img = pg.image.load("./skin/hitcircle.png")
+    appr_circle_img = pg.image.load("./skin/approachcircle.png")
+
     def __init__(
         self,
         hit_time: int,
@@ -190,6 +201,7 @@ class Slider(Circle):
         hit_windows: t.Tuple[int, int, int],
         miss_callback: t.Callable,
         body: t.Tuple[t.Tuple[int, int]],
+        endtime : int,
         *group
     ):
         """Slider object
@@ -220,6 +232,8 @@ class Slider(Circle):
             Miss callback function
         body : Tuple[Tuple[int, int]]:
             Coordinates of points in slider's body
+        endtime : int
+            Endtime of slider
         """
 
         super().__init__(
@@ -238,6 +252,10 @@ class Slider(Circle):
         self.body = body
         self.edges = self.calc_slider_edges(self.body)
         self.surface = self.create_slider_surface()
+        self.begin_touch = False
+        self.current_point_index = 0
+        self.endtime = endtime
+        self.velocity = round(len(self.body) // (self.endtime - self.hit_time))
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -284,5 +302,38 @@ class Slider(Circle):
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
         self.draw_body(screen, time)
-        self.draw_appr_circle(screen, time)
-        self.draw_hit_circle(screen, time)
+        if time > self.hit_time or self.begin_touch:
+            self.draw_hit_circle(screen, time)
+        else:
+            self.draw_appr_begin_circle(screen, time)
+            self.draw_hit_begin_circle(screen, time)
+    
+    def draw_appr_begin_circle(self, screen: pg.Surface, time: int):
+        """Draws approach circle from current time"""
+        if time <= self.hit_time:
+            new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
+            size_diff = (new_size - self.hit_size) / 2
+            screen.blit(
+                pg.transform.scale(self.appr_circle, (new_size, new_size)),
+                (self.rect.x - size_diff, self.rect.y - size_diff),
+            )
+
+    def draw_hit_begin_circle(self, screen: pg.Surface, time: int):
+        """Draws hit circle from current time"""
+        if self.fade_in_time > time >= self.appear_time:
+            circle = self.hit_circle.copy()
+            circle.set_alpha((time - self.appear_time) * self.fade_pms)
+        else:
+            circle = self.hit_circle
+
+        screen.blit(circle, self.rect)
+    
+    def hit(self, time: int):
+        """Controls hit events"""
+        if self.hit_time - time <= self.hit_windows[2]:
+            self.begin_touch = True
+        
+    def draw_hit_circle(self, screen: pg.Surface, time: int):
+        x, y = self.body[self.current_point_index]
+        screen.blit(self.hit_circle, (x, y))
+        self.current_point_index += self.velocity
