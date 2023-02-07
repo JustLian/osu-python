@@ -33,7 +33,7 @@ class Library:
             n = path.split("/")[-1].split()[0]
             try:
                 return int(n)
-            except:
+            except ValueError:
                 return -1
 
         def broken_bms(bid):
