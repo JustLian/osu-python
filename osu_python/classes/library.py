@@ -4,6 +4,7 @@ from osu_python.classes import Config
 from tinydb import TinyDB
 from glob import glob
 import logging
+from pathvalidate import sanitize_filepath
 
 
 log = logging.getLogger("library")
@@ -151,3 +152,22 @@ class Library:
                 result.append(s)
 
         return result
+
+    @classmethod
+    def path_for_diff(cls, mp: dict, diff_index: int) -> str:
+        """
+        Generates path to .osu file from library entry
+        and difficulty's index
+
+        Parameters
+        ----------
+        mp : dict
+            Entry from Library
+        diff_index : int
+            Index of difficulty in mp['diffs']
+        """
+        diff = mp["diffs"][diff_index]
+        diff_path = "{}\\{} - {} ({}) [{}].osu".format(
+            mp["path"], diff["artist"], mp["title"], mp["creator"], diff["version"]
+        )
+        return sanitize_filepath(diff_path, platform="auto")

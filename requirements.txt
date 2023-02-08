@@ -2,3 +2,4 @@ pygame
 slider
 screeninfo
 tinydb
+pathvalidate

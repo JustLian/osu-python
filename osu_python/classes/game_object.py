@@ -3,10 +3,10 @@ import typing as t
 from screeninfo import get_monitors
 import math
 
-score_300_img = pg.image.load("./skin/300score.png")
-score_100_img = pg.image.load("./skin/100score.png")
-score_50_img = pg.image.load("./skin/50score.png")
-miss_img = pg.image.load("./skin/miss_score.png")
+score_300_img = pg.image.load("./skin/300score.png").convert_alpha()
+score_100_img = pg.image.load("./skin/100score.png").convert_alpha()
+score_50_img = pg.image.load("./skin/50score.png").convert_alpha()
+miss_img = pg.image.load("./skin/miss_score.png").convert_alpha()
 
 
 class Spinner:
@@ -14,8 +14,8 @@ class Spinner:
 
 
 class Circle(pg.sprite.Sprite):
-    hit_circle_img = pg.image.load("./skin/hitcircle.png")
-    appr_circle_img = pg.image.load("./skin/approachcircle.png")
+    hit_circle_img = pg.image.load("./skin/hitcircle.png").convert_alpha()
+    appr_circle_img = pg.image.load("./skin/approachcircle.png").convert_alpha()
 
     def __init__(
         self,
@@ -68,11 +68,11 @@ class Circle(pg.sprite.Sprite):
 
         self.hit_circle = pg.transform.scale(
             Circle.hit_circle_img, (self.hit_size, self.hit_size)
-        )
+        ).convert_alpha()
 
         self.appr_circle = pg.transform.scale(
             Circle.appr_circle_img, (self.appr_size, self.appr_size)
-        )
+        ).convert_alpha()
 
         self.score = None
 
@@ -177,8 +177,8 @@ class Circle(pg.sprite.Sprite):
 
 
 class Slider(Circle):
-    hit_circle_img = pg.image.load("./skin/hitcircle.png")
-    appr_circle_img = pg.image.load("./skin/approachcircle.png")
+    hit_circle_img = pg.image.load("./skin/hitcircle.png").convert_alpha()
+    appr_circle_img = pg.image.load("./skin/approachcircle.png").convert_alpha()
 
     def __init__(
         self,
@@ -243,7 +243,11 @@ class Slider(Circle):
 
         self.body = body
         self.edges = self.calc_slider_edges(self.body)
-        self.surface = self.create_slider_surface()
+
+        self.surface = self.create_slider_surface().convert_alpha()
+        self.begin_touch = False
+        self.current_point_index = 0
+
         self.endtime = endtime
 
         self.begin_touch = False
@@ -366,7 +370,7 @@ class Slider(Circle):
         new_size = self.appr_size * coeff
         size_diff = (new_size - self.hit_size) / 2
         screen.blit(
-            pg.transform.scale(self.appr_circle, (new_size, new_size)),
+            pg.transform.scale(self.appr_circle, (new_size, new_size)).convert_alpha(),
             (self.rect.x - size_diff, self.rect.y - size_diff),
         )
 
