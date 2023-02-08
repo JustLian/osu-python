@@ -330,6 +330,7 @@ class Slider(Circle):
         else:
             if self.hit_time - time <= self.hit_windows[2]:
                 self.begin_touch = True
+                self.touching = True
 
     def draw_hit_circle(self, screen: pg.Surface, time: int):
         """Draws hit circle on slider"""
@@ -341,9 +342,11 @@ class Slider(Circle):
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle on slider, not working properly"""
-        x1, y1 = self.body[self.current_point_index]
-        x2, y2 = pg.mouse.get_pos()
-        coeff = round((((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5) / self.hit_size)
+        if (time - self.hit_time) // 250 % 2 == 0:
+            coeff = 0.9
+        else:
+            coeff = 1
+        print('coeff ', coeff)
 
         new_size = self.appr_size * coeff
         size_diff = (new_size - self.hit_size) / 2
@@ -352,4 +355,3 @@ class Slider(Circle):
             (self.rect.x - size_diff, self.rect.y - size_diff),
         )
 
-        self.touching = False
