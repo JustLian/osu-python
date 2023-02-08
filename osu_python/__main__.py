@@ -86,7 +86,7 @@ def update():
 
 
 def draw(screen: pg.Surface, cursor):
-    global focused, ui
+    global focused, ui, fps_clock, font
     screen.fill((0, 0, 0))
 
     ui.draw_background(screen)
@@ -109,11 +109,15 @@ def draw(screen: pg.Surface, cursor):
     ui.draw_score(screen)
     cursor.draw(screen, pg.mouse.get_pos())
 
+    fps = font.render(str(round(fps_clock.get_fps())), False, (255, 255, 255))
+    screen_size = screen.get_size()
+    screen.blit(fps, (screen_size[0] - 40, screen_size[1] - 20))
+
     pg.display.flip()
 
 
 def run():
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, font
     pg.init()
     pg.mixer.init()
 
@@ -129,6 +133,7 @@ def run():
 
     screen = pg.display.set_mode((width, height))
     pg.display.set_caption("osu!python")
+    font = pg.font.SysFont(None, 28)
 
     m, n = utils.playfield_size(height)
     add_x = (width - m) / 2
