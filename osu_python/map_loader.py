@@ -125,6 +125,14 @@ def load_map(
                     endtime,
                 )
             )
+        
+        if isinstance(obj, slider.beatmap.Spinner):
+            time = obj.time.total_seconds() * 1000
+            endtime = obj.end_time.total_seconds() * 1000
+            hitsound = obj.hitsound
+
+            # TODO: Add Spinner class
+
     f = open(path, encoding="utf-8-sig")
     all_lines = f.readlines()
     for i, line in enumerate(all_lines):
