@@ -1,9 +1,19 @@
 import pygame as pg
 import sys
-from osu_python import classes, utils, map_loader
 from screeninfo import get_monitors
 import logging
 from datetime import datetime
+
+
+# Initializing display before loading game objects
+for m in get_monitors():
+    if m.is_primary:
+        width, height = m.width, m.height
+pg.display.init()
+screen = pg.display.set_mode((width, height), flags=pg.FULLSCREEN | pg.DOUBLEBUF)
+
+
+from osu_python import classes, utils, map_loader
 
 
 Config = classes.Config
@@ -143,7 +153,7 @@ def draw(screen: pg.Surface, cursor):
 
 
 def run():
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, font
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, font, screen
     pg.init()
     pg.mixer.init()
 
@@ -153,11 +163,6 @@ def run():
     fps_clock = pg.time.Clock()
     focused = False
 
-    for m in get_monitors():
-        if m.is_primary:
-            width, height = m.width, m.height
-
-    screen = pg.display.set_mode((width, height))
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
 
@@ -167,8 +172,9 @@ def run():
 
     scale = utils.osu_scale(n)
 
+    diff_path = "./osu_python/map.osu"
     queue, audio, bg, map = map_loader.load_map(
-        "./osu_python/map.osu", scale, add_x, add_y, miss_callback
+        diff_path, scale, add_x, add_y, miss_callback
     )
     all_objects.extend(queue)
 

@@ -1,8 +1,8 @@
 import pygame as pg
 import typing as t
 
-cursor_img = pg.image.load("./skin/cursor.png")
-trail_img = pg.image.load("./skin/cursortrail.png")
+cursor_img = pg.image.load("./skin/cursor.png").convert_alpha()
+trail_img = pg.image.load("./skin/cursortrail.png").convert_alpha()
 
 
 class Cursor:

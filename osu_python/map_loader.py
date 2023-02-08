@@ -141,4 +141,6 @@ def load_map(
             bg = pg.image.load(bg_path)
         except FileNotFoundError:
             log.warning("Map background was not found in map's directory")
+            bg = pg.Surface((640, 480))
+            bg.fill((0, 0, 0))
     return (queue, parent.joinpath(mp.audio_filename).absolute(), bg, mp)

@@ -3,18 +3,18 @@ from osu_python import utils
 import typing as t
 
 score_imgs = {
-    "0": pg.image.load("./skin/score-0.png"),
-    "1": pg.image.load("./skin/score-1.png"),
-    "2": pg.image.load("./skin/score-2.png"),
-    "3": pg.image.load("./skin/score-3.png"),
-    "4": pg.image.load("./skin/score-4.png"),
-    "5": pg.image.load("./skin/score-5.png"),
-    "6": pg.image.load("./skin/score-6.png"),
-    "7": pg.image.load("./skin/score-7.png"),
-    "8": pg.image.load("./skin/score-8.png"),
-    "9": pg.image.load("./skin/score-9.png"),
-    ".": pg.image.load("./skin/score-dot.png"),
-    "%": pg.image.load("./skin/score-percent.png"),
+    "0": pg.image.load("./skin/score-0.png").convert_alpha(),
+    "1": pg.image.load("./skin/score-1.png").convert_alpha(),
+    "2": pg.image.load("./skin/score-2.png").convert_alpha(),
+    "3": pg.image.load("./skin/score-3.png").convert_alpha(),
+    "4": pg.image.load("./skin/score-4.png").convert_alpha(),
+    "5": pg.image.load("./skin/score-5.png").convert_alpha(),
+    "6": pg.image.load("./skin/score-6.png").convert_alpha(),
+    "7": pg.image.load("./skin/score-7.png").convert_alpha(),
+    "8": pg.image.load("./skin/score-8.png").convert_alpha(),
+    "9": pg.image.load("./skin/score-9.png").convert_alpha(),
+    ".": pg.image.load("./skin/score-dot.png").convert_alpha(),
+    "%": pg.image.load("./skin/score-percent.png").convert_alpha(),
 }
 
 
@@ -55,7 +55,7 @@ class InGameUI:
 
         self.raw_background = self.background_resize(background, monitor_size)
         self.bg_dim = background_dim
-        self.background = self.get_dimmed_bg()
+        self.background = self.get_dimmed_bg().convert()
 
     def hit(self, score: int):
         """Updates score with hit score"""
