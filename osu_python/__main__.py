@@ -122,7 +122,7 @@ def draw(screen: pg.Surface, cursor):
     for obj in all_objects:
         if current_time < obj.appear_time:
             break
-
+            
         elif current_time > obj.endtime:
             tmp.append(obj)
 
