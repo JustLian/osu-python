@@ -331,7 +331,6 @@ class Slider(Circle):
             if self.hit_time - time <= self.hit_windows[2]:
                 self.begin_touch = True
 
-
     def draw_hit_circle(self, screen: pg.Surface, time: int):
         """Draws hit circle on slider"""
         if round(self.velocity * (time - self.hit_time)) >= 1:
@@ -352,5 +351,5 @@ class Slider(Circle):
             pg.transform.scale(self.appr_circle, (new_size, new_size)),
             (self.rect.x - size_diff, self.rect.y - size_diff),
         )
-        
+
         self.touching = False

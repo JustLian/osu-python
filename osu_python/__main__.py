@@ -89,6 +89,7 @@ def draw(screen: pg.Surface, cursor):
     global focused, ui
     screen.fill((0, 0, 0))
 
+    ui.draw_background(screen)
     pg.draw.rect(screen, "red", ((add_x, add_y), (m, n)), width=2)
 
     tmp = []
@@ -140,15 +141,24 @@ def run():
     )
     all_objects.extend(queue)
 
-    music = pg.mixer.music
-    music.load(audio)
-    music.play()
-
     cursor = classes.Cursor()
     drain_time = (all_objects[-1].appear_time - all_objects[0].appear_time) / 1000
     # TODO: break time should not be in drain_time
-    diff_multiplier = round((map.hp() + map.cs() + map.od() + min(max(len(all_objects) / drain_time * 8,0),16)) / 38 * 5)
-    ui = classes.InGameUI(diff_multiplier, 1)
+    diff_multiplier = round(
+        (
+            map.hp()
+            + map.cs()
+            + map.od()
+            + min(max(len(all_objects) / drain_time * 8, 0), 16)
+        )
+        / 38
+        * 5
+    )
+    ui = classes.InGameUI(diff_multiplier, 1, bg, 0.7, (width, height))
+
+    music = pg.mixer.music
+    music.load(audio)
+    music.play()
 
     dt = 1 / fps
     while True:

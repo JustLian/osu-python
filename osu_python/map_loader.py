@@ -6,6 +6,7 @@ from pathlib import Path
 import zipfile
 import logging
 import typing as t
+import pygame as pg
 
 
 log = logging.getLogger("map_loader")
@@ -124,4 +125,20 @@ def load_map(
                     endtime,
                 )
             )
-    return (queue, parent.joinpath(mp.audio_filename).absolute(), None, mp)
+    f = open(path, encoding="utf-8-sig")
+    all_lines = f.readlines()
+    for i, line in enumerate(all_lines):
+        if "[Events]" in line:
+            str_path = str(path)
+            bg_path = (
+                path[: len(str_path) - len(str_path.split("/")[-1])]
+                + all_lines[i + 2].split('"')[1]
+            )
+            break
+    bg = None
+    if bg_path:
+        try:
+            bg = pg.image.load(bg_path)
+        except FileNotFoundError:
+            log.warning("Map background was not found in map's directory")
+    return (queue, parent.joinpath(mp.audio_filename).absolute(), bg, mp)
