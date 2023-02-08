@@ -243,12 +243,23 @@ class Slider(Circle):
 
         self.body = body
         self.edges = self.calc_slider_edges(self.body)
+
         self.surface = self.create_slider_surface().convert_alpha()
         self.begin_touch = False
         self.current_point_index = 0
+
         self.endtime = endtime
-        self.velocity = len(self.body) / (self.endtime - self.hit_time)
+
+        self.begin_touch = False
         self.touching = False
+
+        self.current_point_index = 0
+        self.velocity = len(self.body) / (self.endtime - self.hit_time)
+        self.count_passed_points = 0
+
+        self.drawing_score = False
+
+        print(len(self.body))
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -295,10 +306,13 @@ class Slider(Circle):
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
         self.draw_body(screen, time)
-        if time > self.hit_time or self.begin_touch:
+        if self.drawing_score == True:
+            self.draw_score(screen, time)
+        elif time > self.hit_time or self.begin_touch:
             self.draw_hit_circle(screen, time)
             if self.touching:
                 self.draw_appr_circle(screen, time)
+                self.count_passed_points += 1
         else:
             self.draw_appr_begin_circle(screen, time)
             self.draw_hit_begin_circle(screen, time)
@@ -336,9 +350,15 @@ class Slider(Circle):
         """Draws hit circle on slider"""
         if round(self.velocity * (time - self.hit_time)) >= 1:
             self.current_point_index = round(self.velocity * (time - self.hit_time)) - 1
+            print(self.current_point_index)
             x, y = self.body[self.current_point_index]
             self.rect.left, self.rect.top = x, y
             screen.blit(self.hit_circle, (x, y))
+
+            if self.current_point_index == 99:
+                self.get_score()
+                self.drawing_score = True
+                self.endtime += 400
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle on slider, not working properly"""
@@ -346,7 +366,6 @@ class Slider(Circle):
             coeff = 0.9
         else:
             coeff = 1
-        print("coeff ", coeff)
 
         new_size = self.appr_size * coeff
         size_diff = (new_size - self.hit_size) / 2
@@ -354,3 +373,32 @@ class Slider(Circle):
             pg.transform.scale(self.appr_circle, (new_size, new_size)).convert_alpha(),
             (self.rect.x - size_diff, self.rect.y - size_diff),
         )
+
+    def draw_score(self, screen: pg.Surface, time: int):
+        """Draws score from current time"""
+        need = (time - self.hit_time + 400) // 100
+        score = self.score.copy()
+        w, h = score.get_size()
+
+        score.set_alpha(255 - (255 / 400) * (time - self.endtime + 400))
+        score = pg.transform.scale(score, (w + need, h + need))
+
+        screen.blit(
+            score,
+            (
+                self.rect.left + round((self.rect.width / 2) - (w / 2)),
+                self.rect.top + round((self.rect.height / 2) - (h / 2)),
+            ),
+        )
+
+    def get_score(self):
+        """Gets score (used in drawing score)"""
+        n = self.count_passed_points / len(self.body)
+        if n == 1.0:
+            self.score = score_300_img
+        elif n >= 0.5:
+            self.score = score_100_img
+        elif n >= 0.25:
+            self.score = score_50_img
+        else:
+            self.score = miss_img
