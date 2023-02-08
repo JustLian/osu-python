@@ -159,7 +159,7 @@ def run():
         / 38
         * 5
     )
-    ui = classes.InGameUI(diff_multiplier, 1, bg, 0.7, (width, height))
+    ui = classes.InGameUI(diff_multiplier, 1, bg, 0.8, (width, height))
 
     music = pg.mixer.music
     music.load(audio)

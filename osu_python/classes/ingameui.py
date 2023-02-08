@@ -99,13 +99,14 @@ class InGameUI:
 
     def draw_background(self, screen: pg.Surface):
         """Draws background"""
-        screen.blit(self.background, (0, 0))
+        if self.bg_dim < 1:
+            screen.blit(self.background, (0, 0))
 
     def get_dimmed_bg(self):
         """Returns dimmed background, uses self.raw_background and self.bg_dim"""
         bg = self.raw_background.copy()
-        bg.set_alpha(self.bg_dim * 255)
-        return bg
+        bg.set_alpha(255 - self.bg_dim * 255)
+        return bg.convert_alpha()
 
     def set_background_dim(self, dim: float):
         """Sets background dim"""
