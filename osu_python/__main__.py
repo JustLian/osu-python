@@ -3,6 +3,7 @@ import sys
 from screeninfo import get_monitors
 import logging
 from datetime import datetime
+import typing as t
 
 
 # Initializing display before loading game objects
@@ -47,6 +48,41 @@ def miss_callback():
     ui.hit(0)
 
 
+def click(mouse_pos: t.Tuple[int, int]):
+    active_object = None
+    for obj in all_objects:
+        if current_time < obj.appear_time:
+            break
+
+        elif current_time > obj.endtime:
+            continue
+
+        elif obj.appear_time < current_time and obj.score == None:
+            if active_object == None:
+                active_object = obj
+
+            mouse_pos = pg.mouse.get_pos()
+            if obj.rect.collidepoint(mouse_pos) and isinstance(
+                obj, classes.game_object.Circle
+            ):
+                obj_pos = obj.rect
+                obj_center = (
+                    obj_pos[0] + obj_pos[2] / 2,
+                    obj_pos[1] + obj_pos[3] / 2,
+                )
+                if (
+                    (mouse_pos[0] - obj_center[0]) ** 2
+                    + (mouse_pos[1] - obj_center[1]) ** 2
+                ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
+                    if obj == active_object:
+                        score = obj.hit(current_time)
+                        if score:
+                            ui.hit(score)
+                    else:
+                        obj.count_vibr = 20
+                    break
+
+
 def focus_check():
     global focused
     _focus = pg.mouse.get_focused()
@@ -71,28 +107,29 @@ def update():
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
         ):
-            for obj in all_objects:
-                if current_time < obj.appear_time:
-                    break
+            click(pg.mouse.get_pos())
+            # for obj in all_objects:
+            #     if current_time < obj.appear_time:
+            #         break
 
-                elif obj.appear_time < current_time:
-                    mouse_pos = pg.mouse.get_pos()
-                    if obj.rect.collidepoint(mouse_pos) and isinstance(
-                        obj, classes.game_object.Circle
-                    ):
-                        obj_pos = obj.rect
-                        obj_center = (
-                            obj_pos[0] + obj_pos[2] / 2,
-                            obj_pos[1] + obj_pos[3] / 2,
-                        )
-                        if (
-                            (mouse_pos[0] - obj_center[0]) ** 2
-                            + (mouse_pos[1] - obj_center[1]) ** 2
-                        ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
-                            score = obj.hit(current_time)
-                            if score:
-                                ui.hit(score)
-                            break
+            #     elif obj.appear_time < current_time:
+            #         mouse_pos = pg.mouse.get_pos()
+            #         if obj.rect.collidepoint(mouse_pos) and isinstance(
+            #             obj, classes.game_object.Circle
+            #         ):
+            #             obj_pos = obj.rect
+            #             obj_center = (
+            #                 obj_pos[0] + obj_pos[2] / 2,
+            #                 obj_pos[1] + obj_pos[3] / 2,
+            #             )
+            #             if (
+            #                 (mouse_pos[0] - obj_center[0]) ** 2
+            #                 + (mouse_pos[1] - obj_center[1]) ** 2
+            #             ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
+            #                 score = obj.hit(current_time)
+            #                 if score:
+            #                     ui.hit(score)
+            #                 break
 
         if event.type == pg.MOUSEBUTTONUP or (
             event.type == pg.KEYUP
@@ -129,12 +166,13 @@ def draw(screen: pg.Surface, cursor):
     pg.draw.rect(screen, "red", ((add_x, add_y), (m, n)), width=2)
 
     tmp = []
-    for obj in all_objects:
+    for obj in reversed(all_objects):
         if current_time < obj.appear_time:
-            break
-            
+            continue
+
         elif current_time > obj.endtime:
             tmp.append(obj)
+            break
 
         elif obj.appear_time < current_time:
             obj.draw(screen, current_time)

@@ -125,7 +125,7 @@ def load_map(
                     endtime,
                 )
             )
-        
+
         if isinstance(obj, slider.beatmap.Spinner):
             time = obj.time.total_seconds() * 1000
             endtime = obj.end_time.total_seconds() * 1000

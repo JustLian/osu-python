@@ -149,14 +149,15 @@ class Circle(pg.sprite.Sprite):
         else:
             circle = self.hit_circle
 
+        offset = 0
         if self.count_vibr != 0:
             if self.count_vibr % 2 == 0:
-                self.rect = self.rect.move(-3, 0)
+                offset = -3
             else:
-                self.rect = self.rect.move(3, 0)
+                offset = 3
             self.count_vibr -= 1
 
-        screen.blit(circle, self.rect)
+        screen.blit(circle, (self.rect[0] + offset, self.rect[1]))
 
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score from current time"""
