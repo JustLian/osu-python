@@ -259,8 +259,6 @@ class Slider(Circle):
 
         self.drawing_score = False
 
-        print(len(self.body))
-
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
         _min = [10000, 10000]
@@ -350,7 +348,6 @@ class Slider(Circle):
         """Draws hit circle on slider"""
         if round(self.velocity * (time - self.hit_time)) >= 1:
             self.current_point_index = round(self.velocity * (time - self.hit_time)) - 1
-            print(self.current_point_index)
             x, y = self.body[self.current_point_index]
             self.rect.left, self.rect.top = x, y
             screen.blit(self.hit_circle, (x, y))

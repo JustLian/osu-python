@@ -55,7 +55,7 @@ class InGameUI:
 
         self.raw_background = self.background_resize(background, monitor_size)
         self.bg_dim = background_dim
-        self.background = self.get_dimmed_bg().convert()
+        self.background = self.get_dimmed_bg().convert_alpha()
 
     def hit(self, score: int):
         """Updates score with hit score"""
