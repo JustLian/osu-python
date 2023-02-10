@@ -1,5 +1,6 @@
 import typing as t
 import os
+from time import time as now
 
 
 def calculate_fade_in(ar: float) -> float:
@@ -156,4 +157,23 @@ def parse_ini(path: os.PathLike):
             output[category][key] = convert_type(value)
         else:
             output["No category"].append(line)
+    return output
+
+
+def parse_object_types(path: os.PathLike):
+    f = open(path, encoding="utf-8-sig")
+    all_lines = f.readlines()
+    needed_category = False
+    output = []
+    for line in all_lines:
+        if line.strip() == "[HitObjects]":
+            needed_category = True
+            continue
+        elif needed_category:
+            if line.startswith("["):
+                break
+            obj_type = line.split(",")[3]
+            output.append(int(obj_type))
+        else:
+            continue
     return output

@@ -11,10 +11,11 @@ score_300_img = None
 score_100_img = None
 score_50_img = None
 miss_img = None
+combo_numbers = None
 
 
 def load_skin():
-    global score_300_img, score_100_img, score_50_img, miss_img, Circle, Slider
+    global score_300_img, score_100_img, score_50_img, miss_img, combo_numbers, Circle, Slider
 
     log.info("Reloading skin")
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
@@ -24,6 +25,18 @@ def load_skin():
     score_100_img = pg.image.load(path + "/hit100.png").convert_alpha()
     score_50_img = pg.image.load(path + "/hit50.png").convert_alpha()
     miss_img = pg.image.load(path + "/hit0.png").convert_alpha()
+    combo_numbers = {
+        "0": pg.image.load("./skin/default-0.png").convert_alpha(),
+        "1": pg.image.load("./skin/default-1.png").convert_alpha(),
+        "2": pg.image.load("./skin/default-2.png").convert_alpha(),
+        "3": pg.image.load("./skin/default-3.png").convert_alpha(),
+        "4": pg.image.load("./skin/default-4.png").convert_alpha(),
+        "5": pg.image.load("./skin/default-5.png").convert_alpha(),
+        "6": pg.image.load("./skin/default-6.png").convert_alpha(),
+        "7": pg.image.load("./skin/default-7.png").convert_alpha(),
+        "8": pg.image.load("./skin/default-8.png").convert_alpha(),
+        "9": pg.image.load("./skin/default-9.png").convert_alpha(),
+    }
 
     # circle images
     Circle.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
@@ -50,7 +63,7 @@ class Circle(pg.sprite.Sprite):
         appear_time: int,
         fade_in_time: int,
         location: tuple,
-        new_combo: bool,
+        combo_value: bool,
         sound_types: tuple,
         hit_size: int,
         appr_size: int,
@@ -110,7 +123,7 @@ class Circle(pg.sprite.Sprite):
             hit_time + hit_windows[0] / 2 + hit_windows[1] + hit_windows[2] + 400
         )
 
-        self.new_combo = new_combo
+        self.combo_value = combo_value
         self.sound_types = sound_types
 
         self.shrink_pms = (appr_size - hit_size) / (self.hit_time - fade_in_time)
@@ -136,6 +149,7 @@ class Circle(pg.sprite.Sprite):
         elif self.score is None:
             self.draw_appr_circle(screen, time)
             self.draw_hit_circle(screen, time)
+            self.draw_combo_value(screen, time)
 
         else:
             if not self.shortening:
@@ -208,6 +222,30 @@ class Circle(pg.sprite.Sprite):
             ),
         )
 
+    def draw_combo_value(self, screen: pg.Surface, time: int):
+        center = (self.rect[0] + self.rect[2] / 2, self.rect[1] + self.rect[3] / 2)
+        full_width = 0
+        for v in str(self.combo_value):
+            full_width += combo_numbers[v].get_width()
+        x = center[0] - full_width / 2
+        y = center[1] - (combo_numbers["0"].get_height() / 2) + 1
+
+        offset = 0
+        if self.count_vibr != 0:
+            if self.count_vibr % 2 == 0:
+                offset = -3
+            else:
+                offset = 3
+
+        for v in str(self.combo_value):
+            img = combo_numbers[v].copy()
+            img.set_alpha((time - self.appear_time) * self.fade_pms)
+            screen.blit(
+                img,
+                (x - offset, y),
+            )
+            x += img.get_width()
+
 
 class Slider(Circle):
     hit_circle_img = None
@@ -219,7 +257,7 @@ class Slider(Circle):
         appear_time: int,
         fade_in_time: int,
         location: tuple,
-        new_combo: bool,
+        combo_value: bool,
         sound_types: tuple,
         hit_size: int,
         appr_size: int,
@@ -266,7 +304,7 @@ class Slider(Circle):
             appear_time,
             fade_in_time,
             location,
-            new_combo,
+            combo_value,
             sound_types,
             hit_size,
             appr_size,
@@ -291,6 +329,8 @@ class Slider(Circle):
         self.count_passed_points = 0
 
         self.drawing_score = False
+
+        self.combo_value = combo_value
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -347,6 +387,7 @@ class Slider(Circle):
         else:
             self.draw_appr_circle(screen, time)
             self.draw_hit_begin_circle(screen, time)
+            self.draw_combo_value(screen, time)
 
     def draw_hit_begin_circle(self, screen: pg.Surface, time: int):
         """Draws hit circle from current time"""
