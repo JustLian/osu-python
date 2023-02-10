@@ -114,3 +114,48 @@ def calculate_difficulty_multiplier(
     return round(
         HP + CS + OD + max(min(hit_objects_count / drain_time * 8, 16), 0) / 38 * 5
     )
+
+
+def convert_type(value: str):
+    try:
+        return int(value)
+    except ValueError:
+        pass
+
+    l_values = value.split(",")
+    length = len(l_values)
+    if length != 1:
+        return [convert_type(v) for v in l_values]
+
+    return value.strip()
+
+
+def parse_ini(path: os.PathLike):
+    f = open(path, encoding="utf-8-sig")
+    all_lines = f.readlines()
+    category = None
+    output = {
+        "No category": []
+    }
+    for line in all_lines:
+        if len(line) < 2:
+            continue
+        if line[0] == "[":
+            category = line.strip()
+            output[category] = {}
+            continue
+        if line[:2] == "//":
+            continue
+        try:
+            key, value = line.split(":")
+        except ValueError:
+            if category == None:
+                output['No category'].append(line.strip())
+            continue
+        key = key.strip()
+        value = value.strip()
+        if category != None:
+            output[category][key] = convert_type(value)
+        else:
+            output['No category'].append(line)
+    return output

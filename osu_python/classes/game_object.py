@@ -1,7 +1,6 @@
 import pygame as pg
 import typing as t
 from screeninfo import get_monitors
-import math
 
 score_300_img = pg.image.load("./skin/hit300.png").convert_alpha()
 score_100_img = pg.image.load("./skin/hit100.png").convert_alpha()
