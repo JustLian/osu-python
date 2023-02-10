@@ -26,24 +26,26 @@ def load_skin():
     score_50_img = pg.image.load(path + "/hit50.png").convert_alpha()
     miss_img = pg.image.load(path + "/hit0.png").convert_alpha()
     combo_numbers = {
-        "0": pg.image.load("./skin/default-0.png").convert_alpha(),
-        "1": pg.image.load("./skin/default-1.png").convert_alpha(),
-        "2": pg.image.load("./skin/default-2.png").convert_alpha(),
-        "3": pg.image.load("./skin/default-3.png").convert_alpha(),
-        "4": pg.image.load("./skin/default-4.png").convert_alpha(),
-        "5": pg.image.load("./skin/default-5.png").convert_alpha(),
-        "6": pg.image.load("./skin/default-6.png").convert_alpha(),
-        "7": pg.image.load("./skin/default-7.png").convert_alpha(),
-        "8": pg.image.load("./skin/default-8.png").convert_alpha(),
-        "9": pg.image.load("./skin/default-9.png").convert_alpha(),
+        "0": pg.image.load(path + "/default-0.png").convert_alpha(),
+        "1": pg.image.load(path + "/default-1.png").convert_alpha(),
+        "2": pg.image.load(path + "/default-2.png").convert_alpha(),
+        "3": pg.image.load(path + "/default-3.png").convert_alpha(),
+        "4": pg.image.load(path + "/default-4.png").convert_alpha(),
+        "5": pg.image.load(path + "/default-5.png").convert_alpha(),
+        "6": pg.image.load(path + "/default-6.png").convert_alpha(),
+        "7": pg.image.load(path + "/default-7.png").convert_alpha(),
+        "8": pg.image.load(path + "/default-8.png").convert_alpha(),
+        "9": pg.image.load(path + "/default-9.png").convert_alpha(),
     }
 
     # circle images
     Circle.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
+    Circle.hit_circle_overlay_img = pg.image.load(path + "/hitcircleoverlay.png").convert_alpha()
     Circle.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
 
     # slider images
     Slider.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
+    Slider.hit_circle_overlay_img = pg.image.load(path + "/hitcircleoverlay.png").convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
 
     log.info("Skin reloaded")
@@ -55,6 +57,7 @@ class Spinner:
 
 class Circle(pg.sprite.Sprite):
     hit_circle_img = None
+    hit_circle_overlay_img = None
     appr_circle_img = None
 
     def __init__(
@@ -108,6 +111,10 @@ class Circle(pg.sprite.Sprite):
 
         self.hit_circle = pg.transform.scale(
             Circle.hit_circle_img, (self.hit_size, self.hit_size)
+        ).convert_alpha()
+
+        self.hit_circle_overlay = pg.transform.scale(
+            Circle.hit_circle_overlay_img, (self.hit_size, self.hit_size)
         ).convert_alpha()
 
         self.appr_circle = pg.transform.scale(
@@ -191,9 +198,11 @@ class Circle(pg.sprite.Sprite):
         """Draws hit circle from current time"""
         if self.fade_in_time > time >= self.appear_time:
             circle = self.hit_circle.copy()
+            circle.blit(self.hit_circle_overlay, (0, 0))
             circle.set_alpha((time - self.appear_time) * self.fade_pms)
         else:
-            circle = self.hit_circle
+            circle = self.hit_circle.copy()
+            circle.blit(self.hit_circle_overlay, (0, 0))
 
         offset = 0
         if self.count_vibr != 0:
@@ -249,6 +258,7 @@ class Circle(pg.sprite.Sprite):
 
 class Slider(Circle):
     hit_circle_img = None
+    hit_circle_overlay_img = None
     appr_circle_img = None
 
     def __init__(
@@ -365,7 +375,7 @@ class Slider(Circle):
             _color = [255 - iter * (255 / precision)] * 3
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
-                pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 3))
+                pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 2.5))
         return surface
 
     def draw_body(self, screen: pg.Surface, time: int):
@@ -380,24 +390,14 @@ class Slider(Circle):
         if self.drawing_score == True:
             self.draw_score(screen, time)
         elif time > self.hit_time or self.begin_touch:
-            self.draw_hit_circle(screen, time)
+            self.draw_slider_circle(screen, time)
             if self.touching:
                 self.draw_body_appr_circle(screen, time)
                 self.count_passed_points += 1
         else:
             self.draw_appr_circle(screen, time)
-            self.draw_hit_begin_circle(screen, time)
+            self.draw_hit_circle(screen, time)
             self.draw_combo_value(screen, time)
-
-    def draw_hit_begin_circle(self, screen: pg.Surface, time: int):
-        """Draws hit circle from current time"""
-        if self.fade_in_time > time >= self.appear_time:
-            circle = self.hit_circle.copy()
-            circle.set_alpha((time - self.appear_time) * self.fade_pms)
-        else:
-            circle = self.hit_circle
-
-        screen.blit(circle, self.rect)
 
     def hit(self, time: int):
         """Controls hit events"""
@@ -408,7 +408,7 @@ class Slider(Circle):
                 self.begin_touch = True
                 self.touching = True
 
-    def draw_hit_circle(self, screen: pg.Surface, time: int):
+    def draw_slider_circle(self, screen: pg.Surface, time: int):
         """Draws hit circle on slider"""
         if round(self.velocity * (time - self.hit_time)) >= 1:
             self.current_point_index = round(self.velocity * (time - self.hit_time)) - 1

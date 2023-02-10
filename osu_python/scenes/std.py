@@ -40,7 +40,7 @@ def click(mouse_pos: t.Tuple[int, int]):
                 if (
                     (mouse_pos[0] - obj_center[0]) ** 2
                     + (mouse_pos[1] - obj_center[1]) ** 2
-                ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
+                ) ** 0.5 <= (obj_pos[2] / 2):
                     if obj == active_object:
                         score = obj.hit(current_time)
                         if score:
