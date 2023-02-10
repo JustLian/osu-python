@@ -33,6 +33,8 @@ class Config:
             os.mkdir("{}/db".format(Config.base_path))
         if not os.path.isdir("{}/logs".format(Config.base_path)):
             os.mkdir("{}/logs".format(Config.base_path))
+        if not os.path.isdir("{}/skins".format(Config.base_path)):
+            os.mkdir("{}/skins".format(Config.base_path))
 
     @classmethod
     def check_cfg(cls):
@@ -49,6 +51,7 @@ class Config:
                             os.path.abspath("{}/songs".format(cls.base_path))
                         ],
                         "keys": {"key1": 120, "key2": 122},
+                        "skin": "default",
                     },
                     f,
                 )
