@@ -3,10 +3,10 @@ import typing as t
 from screeninfo import get_monitors
 import math
 
-score_300_img = pg.image.load("./skin/300score.png").convert_alpha()
-score_100_img = pg.image.load("./skin/100score.png").convert_alpha()
-score_50_img = pg.image.load("./skin/50score.png").convert_alpha()
-miss_img = pg.image.load("./skin/miss_score.png").convert_alpha()
+score_300_img = pg.image.load("./skin/hit300.png").convert_alpha()
+score_100_img = pg.image.load("./skin/hit100.png").convert_alpha()
+score_50_img = pg.image.load("./skin/hit50.png").convert_alpha()
+miss_img = pg.image.load("./skin/hit0.png").convert_alpha()
 
 
 class Spinner:
@@ -133,11 +133,16 @@ class Circle(pg.sprite.Sprite):
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
+        if self.fade_in_time > time >= self.appear_time:
+            appr_circle = self.appr_circle.copy()
+            appr_circle.set_alpha((time - self.appear_time) * self.fade_pms / 2)
+        else:
+            appr_circle = self.appr_circle
         if time <= self.hit_time:
             new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
             size_diff = (new_size - self.hit_size) / 2
             screen.blit(
-                pg.transform.scale(self.appr_circle, (new_size, new_size)),
+                pg.transform.scale(appr_circle, (new_size, new_size)),
                 (self.rect.x - size_diff, self.rect.y - size_diff),
             )
 
@@ -310,21 +315,11 @@ class Slider(Circle):
         elif time > self.hit_time or self.begin_touch:
             self.draw_hit_circle(screen, time)
             if self.touching:
-                self.draw_appr_circle(screen, time)
+                self.draw_body_appr_circle(screen, time)
                 self.count_passed_points += 1
         else:
-            self.draw_appr_begin_circle(screen, time)
+            self.draw_appr_circle(screen, time)
             self.draw_hit_begin_circle(screen, time)
-
-    def draw_appr_begin_circle(self, screen: pg.Surface, time: int):
-        """Draws approach circle from current time"""
-        if time <= self.hit_time:
-            new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
-            size_diff = (new_size - self.hit_size) / 2
-            screen.blit(
-                pg.transform.scale(self.appr_circle, (new_size, new_size)),
-                (self.rect.x - size_diff, self.rect.y - size_diff),
-            )
 
     def draw_hit_begin_circle(self, screen: pg.Surface, time: int):
         """Draws hit circle from current time"""
@@ -358,7 +353,7 @@ class Slider(Circle):
                 self.drawing_score = True
                 self.endtime += 400
 
-    def draw_appr_circle(self, screen: pg.Surface, time: int):
+    def draw_body_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle on slider, not working properly"""
         if (time - self.hit_time) // 250 % 2 == 0:
             coeff = 0.9

@@ -194,7 +194,7 @@ def run():
     )
     all_objects.extend(queue)
 
-    cursor = classes.Cursor()
+    cursor = classes.Cursor(1.5)
     drain_time = (all_objects[-1].appear_time - all_objects[0].appear_time) / 1000
     # TODO: break time should not be in drain_time
     diff_multiplier = round(

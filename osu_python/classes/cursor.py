@@ -10,10 +10,18 @@ class Cursor:
     osu!python cursor class
     """
 
-    def __init__(self) -> None:
-        self.sizes = cursor_img.get_rect()[2:]
+    def __init__(self, scale) -> None:
+        self.sizes = (
+            cursor_img.get_width() * scale,
+            cursor_img.get_height() * scale,
+        )
+        self.cursor_img = pg.transform.scale(cursor_img, self.sizes)
 
-        self.trail_sizes = trail_img.get_rect()[2:]
+        self.trail_sizes = (
+            trail_img.get_width() * scale,
+            trail_img.get_height() * scale,
+        )
+        self.trail_img = pg.transform.scale(trail_img, self.trail_sizes)
         self.trail = []
 
     def trail_tick(self):
@@ -43,11 +51,14 @@ class Cursor:
         else:
             self.trail.append([*pos, 25])
         for t in self.trail:
-            trail = trail_img.copy()
+            trail = self.trail_img.copy()
             trail.set_alpha(t[2] * 6)
             screen.blit(
                 trail, (t[0] - self.trail_sizes[0] / 2, t[1] - self.trail_sizes[1] / 2)
             )
         screen.blit(
-            cursor_img, (pos[0] - self.sizes[0] / 2, pos[1] - self.sizes[1] / 2)
+            self.cursor_img, (pos[0] - self.sizes[0] / 2, pos[1] - self.sizes[1] / 2)
         )
+
+    def set_cursor_scale(self, float):
+        pass
