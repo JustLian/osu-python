@@ -134,9 +134,7 @@ def parse_ini(path: os.PathLike):
     f = open(path, encoding="utf-8-sig")
     all_lines = f.readlines()
     category = None
-    output = {
-        "No category": []
-    }
+    output = {"No category": []}
     for line in all_lines:
         if len(line) < 2:
             continue
@@ -150,12 +148,12 @@ def parse_ini(path: os.PathLike):
             key, value = line.split(":")
         except ValueError:
             if category == None:
-                output['No category'].append(line.strip())
+                output["No category"].append(line.strip())
             continue
         key = key.strip()
         value = value.strip()
         if category != None:
             output[category][key] = convert_type(value)
         else:
-            output['No category'].append(line)
+            output["No category"].append(line)
     return output

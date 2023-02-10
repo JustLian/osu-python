@@ -38,19 +38,19 @@ root.addHandler(terminal_handler)
 root.setLevel(logging.DEBUG)
 
 Lib = classes.Library
-Lib.update()
 
 scene = None
 
 
-def change_scene(new_scene, *args, **kwargs):
+def change_scene(new_scene, *args):
     """Changes current scene"""
     global scene
-    
+
     root.info("Switching scene {} to {}".format(scene, new_scene))
 
     scene = new_scene
-    scene.setup(height, width, screen, *args, **kwargs)
+    print(scene.setup)
+    scene.setup(height, width, screen, *args)
 
     root.info("Switched scenes.")
 
@@ -95,10 +95,11 @@ def run():
 
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
-    
     cursor = classes.Cursor(1.5)
 
-    change_scene(scenes.std, "./osu_python/map.osu")
+    change_scene(
+        scenes.loading, lambda: change_scene(scenes.std, "./osu_python/map.osu")
+    )
 
     dt = 1 / fps
     while True:

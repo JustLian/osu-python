@@ -1,11 +1,39 @@
 import pygame as pg
 import typing as t
 from screeninfo import get_monitors
+from osu_python.classes import Config
+from logging import getLogger
 
-score_300_img = pg.image.load("./skin/hit300.png").convert_alpha()
-score_100_img = pg.image.load("./skin/hit100.png").convert_alpha()
-score_50_img = pg.image.load("./skin/hit50.png").convert_alpha()
-miss_img = pg.image.load("./skin/hit0.png").convert_alpha()
+
+log = getLogger("game_object")
+
+score_300_img = None
+score_100_img = None
+score_50_img = None
+miss_img = None
+
+
+def load_skin():
+    global score_300_img, score_100_img, score_50_img, miss_img, Circle, Slider
+
+    log.info("Reloading skin")
+    path = Config.base_path + "/skins/" + Config.cfg["skin"]
+
+    # global images
+    score_300_img = pg.image.load(path + "/hit300.png").convert_alpha()
+    score_100_img = pg.image.load(path + "/hit100.png").convert_alpha()
+    score_50_img = pg.image.load(path + "/hit50.png").convert_alpha()
+    miss_img = pg.image.load(path + "/hit0.png").convert_alpha()
+
+    # circle images
+    Circle.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
+    Circle.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
+
+    # slider images
+    Slider.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
+    Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
+
+    log.info("Skin reloaded")
 
 
 class Spinner:
@@ -13,8 +41,8 @@ class Spinner:
 
 
 class Circle(pg.sprite.Sprite):
-    hit_circle_img = pg.image.load("./skin/hitcircle.png").convert_alpha()
-    appr_circle_img = pg.image.load("./skin/approachcircle.png").convert_alpha()
+    hit_circle_img = None
+    appr_circle_img = None
 
     def __init__(
         self,
@@ -182,8 +210,8 @@ class Circle(pg.sprite.Sprite):
 
 
 class Slider(Circle):
-    hit_circle_img = pg.image.load("./skin/hitcircle.png").convert_alpha()
-    appr_circle_img = pg.image.load("./skin/approachcircle.png").convert_alpha()
+    hit_circle_img = None
+    appr_circle_img = None
 
     def __init__(
         self,

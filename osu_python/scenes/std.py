@@ -158,7 +158,7 @@ def setup(_height, _width, _screen, diff_path):
 
 def tick(dt, events):
     global music_offset, current_time
-    
+
     current_time += dt
     if abs(music.get_pos() - current_time - music_offset) > 500:
         music.rewind()
