@@ -46,7 +46,7 @@ scene = None
 def change_scene(new_scene, *args, **kwargs):
     """Changes current scene"""
     global scene
-    
+
     root.info("Switching scene {} to {}".format(scene, new_scene))
 
     scene = new_scene
@@ -95,7 +95,7 @@ def run():
 
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
-    
+
     cursor = classes.Cursor(1.5)
 
     change_scene(scenes.std, "./osu_python/map.osu")
