@@ -108,28 +108,6 @@ def update():
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
         ):
             click(pg.mouse.get_pos())
-            # for obj in all_objects:
-            #     if current_time < obj.appear_time:
-            #         break
-
-            #     elif obj.appear_time < current_time:
-            #         mouse_pos = pg.mouse.get_pos()
-            #         if obj.rect.collidepoint(mouse_pos) and isinstance(
-            #             obj, classes.game_object.Circle
-            #         ):
-            #             obj_pos = obj.rect
-            #             obj_center = (
-            #                 obj_pos[0] + obj_pos[2] / 2,
-            #                 obj_pos[1] + obj_pos[3] / 2,
-            #             )
-            #             if (
-            #                 (mouse_pos[0] - obj_center[0]) ** 2
-            #                 + (mouse_pos[1] - obj_center[1]) ** 2
-            #             ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
-            #                 score = obj.hit(current_time)
-            #                 if score:
-            #                     ui.hit(score)
-            #                 break
 
         if event.type == pg.MOUSEBUTTONUP or (
             event.type == pg.KEYUP
@@ -180,7 +158,7 @@ def draw(screen: pg.Surface, cursor):
     # removing objects
     [all_objects.remove(obj) for obj in tmp]
 
-    ui.draw_score(screen)
+    ui.draw(screen)
     cursor.draw(screen, pg.mouse.get_pos())
 
     fps = font.render(str(round(fps_clock.get_fps())), False, (255, 255, 255))
@@ -229,7 +207,7 @@ def run():
         / 38
         * 5
     )
-    ui = classes.InGameUI(diff_multiplier, 1, bg, 0.8, (width, height))
+    ui = classes.InGameUI(diff_multiplier, 1, bg, 1, (width, height))
 
     music = pg.mixer.music
     music.load(audio)

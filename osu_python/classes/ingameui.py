@@ -15,6 +15,7 @@ score_imgs = {
     "9": pg.image.load("./skin/score-9.png").convert_alpha(),
     ".": pg.image.load("./skin/score-dot.png").convert_alpha(),
     "%": pg.image.load("./skin/score-percent.png").convert_alpha(),
+    "x": pg.image.load("./skin/score-x.png").convert_alpha(),
 }
 
 
@@ -46,7 +47,7 @@ class InGameUI:
         self.score = 0
         self.display_score = 0
         self.combo = 0
-        self.accuracy = ""
+        self.accuracy = 1.00
 
         self.scores = {"300": 0, "100": 0, "50": 0, "0": 0}
 
@@ -73,29 +74,47 @@ class InGameUI:
             self.combo += 1
         else:
             self.combo = 0
-        self.accuracy = (
-            str(round(utils.calculate_accuracy(self.scores.values()) * 100, 1)) + "%"
-        )
+        self.accuracy = utils.calculate_accuracy(self.scores.values())
 
-    def draw_score(self, screen: pg.Surface):
+    def draw(self, screen: pg.Surface):
         """Draws score and accuracy on top right side of surface"""
         add_value = round((self.score - self.display_score) * 0.2)
         if add_value > 1:
             self.display_score += add_value
         else:
             self.display_score = self.score
-        score = round(self.display_score)
-        score_length = len(str(score))
-        numbers = ["0"] * max(score_length, 8)
-        for i, v in enumerate(str(score)):
-            numbers[(score_length - i) * (-1)] = v
-        screen_width = screen.get_size()[0]
-        draw_point = screen_width - len(numbers) * 25 - 10
-        for i, v in enumerate(numbers):
-            screen.blit(score_imgs[v], (draw_point + i * 25, 10))
-        draw_point = screen_width - len(self.accuracy) * 25 + 10
-        for i, v in enumerate(self.accuracy):
-            screen.blit(score_imgs[v], (draw_point + i * 20, 50))
+
+        # Score display
+        score = str(round(self.display_score))
+        numbers = "0" * (8 - len(score)) + score
+
+        screen_width, screen_height = screen.get_size()
+        offset_x = screen_width - 20
+        for v in reversed(numbers):
+            offset_x -= 20
+            screen.blit(
+                score_imgs[v], (offset_x + (20 - score_imgs[v].get_width()) / 2, 10)
+            )
+
+        # Accuracy display
+        offset_x = screen_width - 20
+        accuracy = str(round(self.accuracy * 100, 1)) + "%"
+        for v in reversed(accuracy):
+            gap = 20 if v != "." else 5
+            offset_x -= gap
+            screen.blit(
+                score_imgs[v], (offset_x + (gap - score_imgs[v].get_width()) / 2, 50)
+            )
+
+        # Combo display
+        for i, v in enumerate(str(self.combo) + "x"):
+            screen.blit(
+                score_imgs[v],
+                (
+                    i * 20 + (40 - score_imgs[v].get_width()) / 2,
+                    screen_height - score_imgs["1"].get_height() - 5,
+                ),
+            )
 
     def draw_background(self, screen: pg.Surface):
         """Draws background"""

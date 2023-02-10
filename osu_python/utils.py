@@ -88,7 +88,7 @@ def calculate_accuracy(scores: t.Tuple[int, int, int, int]) -> float:
     try:
         accuracy = (s300 * 300 + s100 * 100 + s50 * 50) / (300 * sum(scores))
     except ZeroDivisionError:
-        accuracy = 1
+        accuracy = 1.0
     return accuracy
 
 
