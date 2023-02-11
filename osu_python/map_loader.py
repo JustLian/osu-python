@@ -81,21 +81,17 @@ def load_map(
 
     queue = []
     colours, obj_types = utils.parse_additional_info(path)
-    if colours == []:
-        colours = [colour for name, colour in Config.skin_ini["[Colours]"].items() if name.startswith("Combo")]
     objs = mp.hit_objects()
     log.debug("fetching objects ({})".format(len(objs)))
     color_index = 0
     combo_value = 0
 
     slider_border = Config.skin_ini["[Colours]"]["SliderBorder"]
-    
+
     for i, obj in enumerate(objs):
         if obj_types[i] & 4 or obj_types[i] & 8:
             combo_value = 0
-            color_index += 1
-            if color_index >= len(colours):
-                color_index = 0
+            color_index = (color_index + 1) % len(colours)
         combo_value += 1
         if isinstance(obj, slider.beatmap.Circle):
             time = obj.time.total_seconds() * 1000
@@ -149,7 +145,11 @@ def load_map(
             hitsound = obj.hitsound
 
             # TODO: Add Spinner class
+    bg = get_background(path)
+    return (queue, parent.joinpath(mp.audio_filename).absolute(), bg, mp)
 
+
+def get_background(path: os.PathLike):
     f = open(path, encoding="utf-8-sig")
     all_lines = f.readlines()
     for i, line in enumerate(all_lines):
@@ -168,4 +168,4 @@ def load_map(
             log.warning("Map background was not found in map's directory")
             bg = pg.Surface((640, 480))
             bg.fill((0, 0, 0))
-    return (queue, parent.joinpath(mp.audio_filename).absolute(), bg, mp)
+    return bg

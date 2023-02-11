@@ -13,7 +13,7 @@ def load_skin():
 
     # Fallback skin
     if not isdir(path):
-        path = './skin'
+        path = "./skin"
 
     cursor_img = pg.image.load(path + "/cursor.png").convert_alpha()
     trail_img = pg.image.load(path + "/cursortrail.png").convert_alpha()

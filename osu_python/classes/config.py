@@ -71,7 +71,7 @@ class Config:
         cls.check_cfg()
         with open("{}/config.json".format(Config.base_path), "w", encoding="utf8") as f:
             json.dump(cls.cfg, f)
-    
+
     @classmethod
     def load_skin_ini(cls):
         """Load skin configuration"""

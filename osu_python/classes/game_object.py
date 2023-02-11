@@ -24,9 +24,9 @@ def load_skin():
 
     if not isdir(path):
         log.info("Chosen skin doesn't exists. Switching to default skin.")
-        Config.cfg['skin'] = 'default'
+        Config.cfg["skin"] = "default"
         Config.dump()
-    
+
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
     combo_path = path + "/" + Config.skin_ini["[Fonts]"]["HitCirclePrefix"]
 
@@ -49,12 +49,16 @@ def load_skin():
     }
     # circle images
     Circle.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
-    Circle.hit_circle_overlay_img = pg.image.load(path + "/hitcircleoverlay.png").convert_alpha()
+    Circle.hit_circle_overlay_img = pg.image.load(
+        path + "/hitcircleoverlay.png"
+    ).convert_alpha()
     Circle.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
 
     # slider images
     Slider.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
-    Slider.hit_circle_overlay_img = pg.image.load(path + "/hitcircleoverlay.png").convert_alpha()
+    Slider.hit_circle_overlay_img = pg.image.load(
+        path + "/hitcircleoverlay.png"
+    ).convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
 
     # cursor images
@@ -400,13 +404,20 @@ class Slider(Circle):
                 width, height = m.width, m.height
         surface = pg.Surface([width + 100, height + 100], pg.SRCALPHA, 32)
         for point in self.body:
-            pg.draw.circle(surface, self.slider_border, (point[0] + 25, point[1] + 25), round(self.hit_size / 2.3))
+            pg.draw.circle(
+                surface,
+                self.slider_border,
+                (point[0] + 50, point[1] + 50),
+                round(self.hit_size / 2.3),
+            )
         precision = 25
         for iter in range(precision):
             _color = [iter * (60 / precision)] * 3
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
-                pg.draw.circle(surface, _color, (point[0] + 50, point[1] + 50), round(_width / 2.6))
+                pg.draw.circle(
+                    surface, _color, (point[0] + 50, point[1] + 50), round(_width / 2.6)
+                )
         return surface
 
     def draw_body(self, screen: pg.Surface, time: int):

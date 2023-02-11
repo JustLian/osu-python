@@ -67,7 +67,7 @@ class InGameUI:
         self.raw_background = self.background_resize(background, monitor_size)
         self.bg_dim = background_dim
         self.background = self.get_dimmed_bg().convert_alpha()
-        
+
         full_width = 0
         for n in range(10):
             full_width += score_imgs[str(n)].get_width()
@@ -115,7 +115,11 @@ class InGameUI:
         offset_x = screen_width - 20
         accuracy = str(round(self.accuracy * 100, 1)) + "%"
         for v in reversed(accuracy):
-            gap = self.num_gap if v in [str(n) for n in range(10)] else score_imgs[v].get_width()
+            gap = (
+                self.num_gap
+                if v in [str(n) for n in range(10)]
+                else score_imgs[v].get_width()
+            )
             offset_x -= gap
             screen.blit(
                 score_imgs[v], (offset_x + (gap - score_imgs[v].get_width()) / 2, 80)
