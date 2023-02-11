@@ -86,15 +86,7 @@ def load_map(
     color_index = 0
     combo_value = 0
 
-    try:
-        skin_path = Config.base_path + "/skins/" + Config.cfg["skin"]
-        slider_border = utils.parse_ini(skin_path + "/skin.ini")["[Colours]"]["SliderBorder"]
-    except FileNotFoundError:
-        log.info("Chosen skin doesn't exists")
-        slider_border = (255, 255, 255)
-    except KeyError:
-        log.info("Chosen skin doesn't have SliderBorder parameter")
-        slider_border = (255, 255, 255)
+    slider_border = Config.skin_ini["[Colours]"]["SliderBorder"]
     
     for i, obj in enumerate(objs):
         if obj_types[i] & 4 or obj_types[i] & 8:

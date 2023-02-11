@@ -1,5 +1,6 @@
 import json
 import os
+from osu_python.utils import parse_ini
 
 
 class Config:
@@ -20,6 +21,7 @@ class Config:
 
     base_path = "/osu-python"
     cfg = {}
+    skin_ini = {}
 
     @classmethod
     def init(cls):
@@ -69,3 +71,9 @@ class Config:
         cls.check_cfg()
         with open("{}/config.json".format(Config.base_path), "w", encoding="utf8") as f:
             json.dump(cls.cfg, f)
+    
+    @classmethod
+    def load_skin_ini(cls):
+        """Load skin configuration"""
+        skin_path = Config.base_path + "/skins/" + Config.cfg["skin"]
+        cls.skin_ini = parse_ini(skin_path + "/skin.ini")

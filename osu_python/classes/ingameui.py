@@ -10,21 +10,22 @@ score_imgs = None
 def load_skin():
     global score_imgs
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
+    score_path = path + "/" + Config.skin_ini["[Fonts]"]["ScorePrefix"]
 
     score_imgs = {
-        "0": pg.image.load(path + "/score-0.png").convert_alpha(),
-        "1": pg.image.load(path + "/score-1.png").convert_alpha(),
-        "2": pg.image.load(path + "/score-2.png").convert_alpha(),
-        "3": pg.image.load(path + "/score-3.png").convert_alpha(),
-        "4": pg.image.load(path + "/score-4.png").convert_alpha(),
-        "5": pg.image.load(path + "/score-5.png").convert_alpha(),
-        "6": pg.image.load(path + "/score-6.png").convert_alpha(),
-        "7": pg.image.load(path + "/score-7.png").convert_alpha(),
-        "8": pg.image.load(path + "/score-8.png").convert_alpha(),
-        "9": pg.image.load(path + "/score-9.png").convert_alpha(),
-        ".": pg.image.load(path + "/score-dot.png").convert_alpha(),
-        "%": pg.image.load(path + "/score-percent.png").convert_alpha(),
-        "x": pg.image.load(path + "/score-x.png").convert_alpha(),
+        "0": pg.image.load(score_path + "-0.png").convert_alpha(),
+        "1": pg.image.load(score_path + "-1.png").convert_alpha(),
+        "2": pg.image.load(score_path + "-2.png").convert_alpha(),
+        "3": pg.image.load(score_path + "-3.png").convert_alpha(),
+        "4": pg.image.load(score_path + "-4.png").convert_alpha(),
+        "5": pg.image.load(score_path + "-5.png").convert_alpha(),
+        "6": pg.image.load(score_path + "-6.png").convert_alpha(),
+        "7": pg.image.load(score_path + "-7.png").convert_alpha(),
+        "8": pg.image.load(score_path + "-8.png").convert_alpha(),
+        "9": pg.image.load(score_path + "-9.png").convert_alpha(),
+        ".": pg.image.load(score_path + "-dot.png").convert_alpha(),
+        "%": pg.image.load(score_path + "-percent.png").convert_alpha(),
+        "x": pg.image.load(score_path + "-x.png").convert_alpha(),
     }
 
 

@@ -19,6 +19,7 @@ def load_skin():
     global score_300_img, score_100_img, score_50_img, miss_img, combo_numbers, Circle, Slider
 
     log.info("Reloading skin")
+    Config.load_skin_ini()
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
 
     if not isdir(path):
@@ -27,6 +28,7 @@ def load_skin():
         Config.dump()
     
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
+    combo_path = path + "/" + Config.skin_ini["[Fonts]"]["HitCirclePrefix"]
 
     # global images
     score_300_img = pg.image.load(path + "/hit300.png").convert_alpha()
@@ -34,16 +36,16 @@ def load_skin():
     score_50_img = pg.image.load(path + "/hit50.png").convert_alpha()
     miss_img = pg.image.load(path + "/hit0.png").convert_alpha()
     combo_numbers = {
-        "0": pg.image.load(path + "/default-0.png").convert_alpha(),
-        "1": pg.image.load(path + "/default-1.png").convert_alpha(),
-        "2": pg.image.load(path + "/default-2.png").convert_alpha(),
-        "3": pg.image.load(path + "/default-3.png").convert_alpha(),
-        "4": pg.image.load(path + "/default-4.png").convert_alpha(),
-        "5": pg.image.load(path + "/default-5.png").convert_alpha(),
-        "6": pg.image.load(path + "/default-6.png").convert_alpha(),
-        "7": pg.image.load(path + "/default-7.png").convert_alpha(),
-        "8": pg.image.load(path + "/default-8.png").convert_alpha(),
-        "9": pg.image.load(path + "/default-9.png").convert_alpha(),
+        "0": pg.image.load(combo_path + "-0.png").convert_alpha(),
+        "1": pg.image.load(combo_path + "-1.png").convert_alpha(),
+        "2": pg.image.load(combo_path + "-2.png").convert_alpha(),
+        "3": pg.image.load(combo_path + "-3.png").convert_alpha(),
+        "4": pg.image.load(combo_path + "-4.png").convert_alpha(),
+        "5": pg.image.load(combo_path + "-5.png").convert_alpha(),
+        "6": pg.image.load(combo_path + "-6.png").convert_alpha(),
+        "7": pg.image.load(combo_path + "-7.png").convert_alpha(),
+        "8": pg.image.load(combo_path + "-8.png").convert_alpha(),
+        "9": pg.image.load(combo_path + "-9.png").convert_alpha(),
     }
     # circle images
     Circle.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
@@ -406,14 +408,6 @@ class Slider(Circle):
             for point in self.body:
                 pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 2.6))
         return surface
-        # surface = pg.Surface([width, height], pg.SRCALPHA, 32)
-        # precision = 50
-        # for iter in range(precision):
-        #     _color = [255 - iter * (255 / precision)] * 3
-        #     _width = (precision - iter) * self.hit_size / precision
-        #     for point in self.body:
-        #         pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 2.5))
-        # return surface
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
