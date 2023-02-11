@@ -96,13 +96,14 @@ def run():
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
 
-    cursor = classes.Cursor(1.5)
-
     change_scene(
         scenes.loading, lambda: change_scene(scenes.std, "./osu_python/map.osu")
     )
 
+    cursor = classes.Cursor(1.5)
+
     dt = 1 / fps
+
     while True:
         focus_check()
 

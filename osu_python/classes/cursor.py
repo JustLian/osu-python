@@ -1,8 +1,22 @@
 import pygame as pg
-import typing as t
+from osu_python.classes import Config
+from os.path import isdir
 
-cursor_img = pg.image.load("./skin/cursor.png").convert_alpha()
-trail_img = pg.image.load("./skin/cursortrail.png").convert_alpha()
+
+cursor_img = None
+trail_img = None
+
+
+def load_skin():
+    global cursor_img, trail_img
+    path = Config.base_path + "/skins/" + Config.cfg["skin"]
+
+    # Fallback skin
+    if not isdir(path):
+        path = './skin'
+
+    cursor_img = pg.image.load(path + "/cursor.png").convert_alpha()
+    trail_img = pg.image.load(path + "/cursortrail.png").convert_alpha()
 
 
 class Cursor:
@@ -11,6 +25,8 @@ class Cursor:
     """
 
     def __init__(self, scale) -> None:
+        load_skin()
+
         self.sizes = (
             cursor_img.get_width() * scale,
             cursor_img.get_height() * scale,

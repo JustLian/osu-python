@@ -1,22 +1,31 @@
 import pygame as pg
 from osu_python import utils
 import typing as t
+from osu_python.classes import Config
 
-score_imgs = {
-    "0": pg.image.load("./skin/score-0.png").convert_alpha(),
-    "1": pg.image.load("./skin/score-1.png").convert_alpha(),
-    "2": pg.image.load("./skin/score-2.png").convert_alpha(),
-    "3": pg.image.load("./skin/score-3.png").convert_alpha(),
-    "4": pg.image.load("./skin/score-4.png").convert_alpha(),
-    "5": pg.image.load("./skin/score-5.png").convert_alpha(),
-    "6": pg.image.load("./skin/score-6.png").convert_alpha(),
-    "7": pg.image.load("./skin/score-7.png").convert_alpha(),
-    "8": pg.image.load("./skin/score-8.png").convert_alpha(),
-    "9": pg.image.load("./skin/score-9.png").convert_alpha(),
-    ".": pg.image.load("./skin/score-dot.png").convert_alpha(),
-    "%": pg.image.load("./skin/score-percent.png").convert_alpha(),
-    "x": pg.image.load("./skin/score-x.png").convert_alpha(),
-}
+
+score_imgs = None
+
+
+def load_skin():
+    global score_imgs
+    path = Config.base_path + "/skins/" + Config.cfg["skin"]
+
+    score_imgs = {
+        "0": pg.image.load("./skin/score-0.png").convert_alpha(),
+        "1": pg.image.load("./skin/score-1.png").convert_alpha(),
+        "2": pg.image.load("./skin/score-2.png").convert_alpha(),
+        "3": pg.image.load("./skin/score-3.png").convert_alpha(),
+        "4": pg.image.load("./skin/score-4.png").convert_alpha(),
+        "5": pg.image.load("./skin/score-5.png").convert_alpha(),
+        "6": pg.image.load("./skin/score-6.png").convert_alpha(),
+        "7": pg.image.load("./skin/score-7.png").convert_alpha(),
+        "8": pg.image.load("./skin/score-8.png").convert_alpha(),
+        "9": pg.image.load("./skin/score-9.png").convert_alpha(),
+        ".": pg.image.load("./skin/score-dot.png").convert_alpha(),
+        "%": pg.image.load("./skin/score-percent.png").convert_alpha(),
+        "x": pg.image.load("./skin/score-x.png").convert_alpha(),
+    }
 
 
 class InGameUI:

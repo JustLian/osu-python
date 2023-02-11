@@ -1,8 +1,9 @@
 import pygame as pg
 import typing as t
 from screeninfo import get_monitors
-from osu_python.classes import Config
+from osu_python.classes import Config, cursor, ingameui
 from logging import getLogger
+from os.path import isdir
 
 
 log = getLogger("game_object")
@@ -19,6 +20,13 @@ def load_skin():
 
     log.info("Reloading skin")
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
+
+    if not isdir(path):
+        log.info("Chosen skin doesn't exists. Switching to default skin.")
+        Config.cfg['skin'] = 'default'
+        Config.dump()
+    
+    path = Config.base_path + "/skins/default"
 
     # global images
     score_300_img = pg.image.load(path + "/hit300.png").convert_alpha()
@@ -46,6 +54,12 @@ def load_skin():
     Slider.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
     Slider.hit_circle_overlay_img = pg.image.load(path + "/hitcircleoverlay.png").convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
+
+    # cursor images
+    cursor.load_skin()
+
+    # ingameui images
+    ingameui.load_skin()
 
     log.info("Skin reloaded")
 
