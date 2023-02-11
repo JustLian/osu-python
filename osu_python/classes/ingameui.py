@@ -12,19 +12,19 @@ def load_skin():
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
 
     score_imgs = {
-        "0": pg.image.load("./skin/score-0.png").convert_alpha(),
-        "1": pg.image.load("./skin/score-1.png").convert_alpha(),
-        "2": pg.image.load("./skin/score-2.png").convert_alpha(),
-        "3": pg.image.load("./skin/score-3.png").convert_alpha(),
-        "4": pg.image.load("./skin/score-4.png").convert_alpha(),
-        "5": pg.image.load("./skin/score-5.png").convert_alpha(),
-        "6": pg.image.load("./skin/score-6.png").convert_alpha(),
-        "7": pg.image.load("./skin/score-7.png").convert_alpha(),
-        "8": pg.image.load("./skin/score-8.png").convert_alpha(),
-        "9": pg.image.load("./skin/score-9.png").convert_alpha(),
-        ".": pg.image.load("./skin/score-dot.png").convert_alpha(),
-        "%": pg.image.load("./skin/score-percent.png").convert_alpha(),
-        "x": pg.image.load("./skin/score-x.png").convert_alpha(),
+        "0": pg.image.load(path + "/score-0.png").convert_alpha(),
+        "1": pg.image.load(path + "/score-1.png").convert_alpha(),
+        "2": pg.image.load(path + "/score-2.png").convert_alpha(),
+        "3": pg.image.load(path + "/score-3.png").convert_alpha(),
+        "4": pg.image.load(path + "/score-4.png").convert_alpha(),
+        "5": pg.image.load(path + "/score-5.png").convert_alpha(),
+        "6": pg.image.load(path + "/score-6.png").convert_alpha(),
+        "7": pg.image.load(path + "/score-7.png").convert_alpha(),
+        "8": pg.image.load(path + "/score-8.png").convert_alpha(),
+        "9": pg.image.load(path + "/score-9.png").convert_alpha(),
+        ".": pg.image.load(path + "/score-dot.png").convert_alpha(),
+        "%": pg.image.load(path + "/score-percent.png").convert_alpha(),
+        "x": pg.image.load(path + "/score-x.png").convert_alpha(),
     }
 
 
@@ -66,6 +66,11 @@ class InGameUI:
         self.raw_background = self.background_resize(background, monitor_size)
         self.bg_dim = background_dim
         self.background = self.get_dimmed_bg().convert_alpha()
+        
+        full_width = 0
+        for n in range(10):
+            full_width += score_imgs[str(n)].get_width()
+        self.num_gap = full_width / 10 + 2
 
     def hit(self, score: int):
         """Updates score with hit score"""
@@ -100,7 +105,7 @@ class InGameUI:
         screen_width, screen_height = screen.get_size()
         offset_x = screen_width - 20
         for v in reversed(numbers):
-            offset_x -= 20
+            offset_x -= self.num_gap
             screen.blit(
                 score_imgs[v], (offset_x + (20 - score_imgs[v].get_width()) / 2, 10)
             )
@@ -109,10 +114,10 @@ class InGameUI:
         offset_x = screen_width - 20
         accuracy = str(round(self.accuracy * 100, 1)) + "%"
         for v in reversed(accuracy):
-            gap = 20 if v != "." else 5
+            gap = self.num_gap if v in [str(n) for n in range(10)] else score_imgs[v].get_width()
             offset_x -= gap
             screen.blit(
-                score_imgs[v], (offset_x + (gap - score_imgs[v].get_width()) / 2, 50)
+                score_imgs[v], (offset_x + (gap - score_imgs[v].get_width()) / 2, 80)
             )
 
         # Combo display
@@ -120,7 +125,7 @@ class InGameUI:
             screen.blit(
                 score_imgs[v],
                 (
-                    i * 20 + (40 - score_imgs[v].get_width()) / 2,
+                    i * self.num_gap + (40 - score_imgs[v].get_width()) / 2,
                     screen_height - score_imgs["1"].get_height() - 5,
                 ),
             )

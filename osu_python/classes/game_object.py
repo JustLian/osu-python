@@ -26,7 +26,7 @@ def load_skin():
         Config.cfg['skin'] = 'default'
         Config.dump()
     
-    path = Config.base_path + "/skins/default"
+    path = Config.base_path + "/skins/" + Config.cfg["skin"]
 
     # global images
     score_300_img = pg.image.load(path + "/hit300.png").convert_alpha()
@@ -297,6 +297,7 @@ class Slider(Circle):
         miss_callback: t.Callable,
         body: t.Tuple[t.Tuple[int, int]],
         endtime: int,
+        slider_border: t.Tuple[int, int, int],
         *group
     ):
         """Slider object
@@ -328,7 +329,9 @@ class Slider(Circle):
         body : Tuple[Tuple[int, int]]:
             Coordinates of points in slider's body
         endtime : int
-            Endtime of slider
+            Endtime of slider,
+        slider_border : Tuple[int, int, int]
+            Color of slider border
         """
 
         super().__init__(
@@ -348,6 +351,7 @@ class Slider(Circle):
         self.body = body
         self.edges = self.calc_slider_edges(self.body)
 
+        self.slider_border = slider_border
         self.surface = self.create_slider_surface().convert_alpha()
         self.begin_touch = False
         self.current_point_index = 0
@@ -393,13 +397,23 @@ class Slider(Circle):
             if m.is_primary:
                 width, height = m.width, m.height
         surface = pg.Surface([width, height], pg.SRCALPHA, 32)
-        precision = 50
+        for point in self.body:
+            pg.draw.circle(surface, self.slider_border, (point[0], point[1]), round(self.hit_size / 2.3))
+        precision = 25
         for iter in range(precision):
-            _color = [255 - iter * (255 / precision)] * 3
+            _color = [iter * (60 / precision)] * 3
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
-                pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 2.5))
+                pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 2.6))
         return surface
+        # surface = pg.Surface([width, height], pg.SRCALPHA, 32)
+        # precision = 50
+        # for iter in range(precision):
+        #     _color = [255 - iter * (255 / precision)] * 3
+        #     _width = (precision - iter) * self.hit_size / precision
+        #     for point in self.body:
+        #         pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 2.5))
+        # return surface
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""

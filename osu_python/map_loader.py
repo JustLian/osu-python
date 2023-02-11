@@ -85,6 +85,17 @@ def load_map(
     log.debug("fetching objects ({})".format(len(objs)))
     color_index = 0
     combo_value = 0
+
+    try:
+        skin_path = Config.base_path + "/skins/" + Config.cfg["skin"]
+        slider_border = utils.parse_ini(skin_path + "/skin.ini")["[Colours]"]["SliderBorder"]
+    except FileNotFoundError:
+        log.info("Chosen skin doesn't exists")
+        slider_border = (255, 255, 255)
+    except KeyError:
+        log.info("Chosen skin doesn't have SliderBorder parameter")
+        slider_border = (255, 255, 255)
+    
     for i, obj in enumerate(objs):
         if obj_types[i] & 4 or obj_types[i] & 8:
             combo_value = 0
@@ -134,6 +145,7 @@ def load_map(
                     miss_callback,
                     body,
                     endtime,
+                    slider_border,
                 )
             )
 
