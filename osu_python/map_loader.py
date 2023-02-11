@@ -80,13 +80,17 @@ def load_map(
     hit_windows = utils.calculate_hit_windows(mp.od())
 
     queue = []
-    obj_types = utils.parse_object_types(path)
+    colours, obj_types = utils.parse_additional_info(path)
     objs = mp.hit_objects()
     log.debug("fetching objects ({})".format(len(objs)))
+    color_index = 0
     combo_value = 0
     for i, obj in enumerate(objs):
         if obj_types[i] & 4 or obj_types[i] & 8:
             combo_value = 0
+            color_index += 1
+            if color_index >= len(colours):
+                color_index = 0
         combo_value += 1
         if isinstance(obj, slider.beatmap.Circle):
             time = obj.time.total_seconds() * 1000
@@ -97,6 +101,7 @@ def load_map(
                     time - preempt + fade_in,
                     (add_x + obj.position.x * scale, add_y + obj.position.y * scale),
                     combo_value,
+                    colours[color_index],
                     (),
                     hit_size,
                     appr_size,
@@ -121,6 +126,7 @@ def load_map(
                     time - preempt + fade_in,
                     (add_x + obj.position.x * scale, add_y + obj.position.y * scale),
                     combo_value,
+                    colours[color_index],
                     (),
                     hit_size,
                     appr_size,

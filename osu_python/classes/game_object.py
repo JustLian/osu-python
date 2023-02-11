@@ -37,7 +37,6 @@ def load_skin():
         "8": pg.image.load(path + "/default-8.png").convert_alpha(),
         "9": pg.image.load(path + "/default-9.png").convert_alpha(),
     }
-
     # circle images
     Circle.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
     Circle.hit_circle_overlay_img = pg.image.load(path + "/hitcircleoverlay.png").convert_alpha()
@@ -66,7 +65,8 @@ class Circle(pg.sprite.Sprite):
         appear_time: int,
         fade_in_time: int,
         location: tuple,
-        combo_value: bool,
+        combo_value: int,
+        combo_color: t.Tuple[int, int, int],
         sound_types: tuple,
         hit_size: int,
         appr_size: int,
@@ -88,8 +88,10 @@ class Circle(pg.sprite.Sprite):
             Time when hit circle should reach 100% opacity (pre-calculated from AR)
         location : tuple
             Location of circle
-        new_combo : bool
-            Should circle start new combo?
+        combo_value : int
+            Combo value of circle
+        combo_color : Tuple[int, int, int]
+            Color of circle
         sound_types : tuple
             Which sounds should circle emit when clicked
         hit_size : int
@@ -131,6 +133,7 @@ class Circle(pg.sprite.Sprite):
         )
 
         self.combo_value = combo_value
+        self.color = combo_color
         self.sound_types = sound_types
 
         self.shrink_pms = (appr_size - hit_size) / (self.hit_time - fade_in_time)
@@ -183,9 +186,11 @@ class Circle(pg.sprite.Sprite):
         """Draws approach circle from current time"""
         if self.fade_in_time > time >= self.appear_time:
             appr_circle = self.appr_circle.copy()
+            appr_circle.fill(self.color, special_flags=3)
             appr_circle.set_alpha((time - self.appear_time) * self.fade_pms / 2)
         else:
-            appr_circle = self.appr_circle
+            appr_circle = self.appr_circle.copy()
+            appr_circle.fill(self.color, special_flags=3)
         if time <= self.hit_time:
             new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
             size_diff = (new_size - self.hit_size) / 2
@@ -198,10 +203,12 @@ class Circle(pg.sprite.Sprite):
         """Draws hit circle from current time"""
         if self.fade_in_time > time >= self.appear_time:
             circle = self.hit_circle.copy()
+            circle.fill(self.color, special_flags=3)
             circle.blit(self.hit_circle_overlay, (0, 0))
             circle.set_alpha((time - self.appear_time) * self.fade_pms)
         else:
             circle = self.hit_circle.copy()
+            circle.fill(self.color, special_flags=3)
             circle.blit(self.hit_circle_overlay, (0, 0))
 
         offset = 0
@@ -267,7 +274,8 @@ class Slider(Circle):
         appear_time: int,
         fade_in_time: int,
         location: tuple,
-        combo_value: bool,
+        combo_value: int,
+        combo_color: t.Tuple[int, int, int],
         sound_types: tuple,
         hit_size: int,
         appr_size: int,
@@ -291,8 +299,8 @@ class Slider(Circle):
             Time when hit circle should reach 100% opacity (pre-calculated from AR)
         location : tuple
             Location of circle
-        new_combo : bool
-            Should circle start new combo?
+        combo_value : int
+            Combo value of circle
         sound_types : tuple
             Which sounds should circle emit when clicked
         hit_size : int
@@ -315,6 +323,7 @@ class Slider(Circle):
             fade_in_time,
             location,
             combo_value,
+            combo_color,
             sound_types,
             hit_size,
             appr_size,

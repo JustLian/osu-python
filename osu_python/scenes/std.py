@@ -1,8 +1,4 @@
 import pygame as pg
-import sys
-from screeninfo import get_monitors
-import logging
-from datetime import datetime
 import typing as t
 from osu_python import classes, utils, map_loader
 from osu_python.classes import Config
@@ -82,7 +78,7 @@ def update(events):
                         if (
                             (mouse_pos[0] - obj_center[0]) ** 2
                             + (mouse_pos[1] - obj_center[1]) ** 2
-                        ) ** 0.5 <= (obj_pos[2] / 2) * 0.757:
+                        ) ** 0.5 <= (obj_pos[2] / 2):
                             obj.touching = False
                             break
 
@@ -92,7 +88,6 @@ def draw(screen: pg.Surface):
     screen.fill((0, 0, 0))
 
     ui.draw_background(screen)
-    pg.draw.rect(screen, "red", ((add_x, add_y), (m, n)), width=2)
 
     tmp = []
     for obj in reversed(all_objects):

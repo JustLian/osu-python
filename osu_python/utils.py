@@ -160,20 +160,28 @@ def parse_ini(path: os.PathLike):
     return output
 
 
-def parse_object_types(path: os.PathLike):
+def parse_additional_info(path: os.PathLike):
     f = open(path, encoding="utf-8-sig")
     all_lines = f.readlines()
-    needed_category = False
-    output = []
+    category = None
+    colours = []
+    obj_types = []
     for line in all_lines:
-        if line.strip() == "[HitObjects]":
-            needed_category = True
+        if line.strip() == "[Colours]":
+            category = "[Colours]"
             continue
-        elif needed_category:
+        if line.strip() == "[HitObjects]":
+            category = "[HitObjects]"
+            continue
+        if category == "[Colours]":
+            try:
+                colour = line.split(":")[1]
+                colours.append(convert_type(colour))
+            except IndexError:
+                continue
+        if category == "[HitObjects]":
             if line.startswith("["):
                 break
             obj_type = line.split(",")[3]
-            output.append(int(obj_type))
-        else:
-            continue
-    return output
+            obj_types.append(int(obj_type))
+    return colours, obj_types
