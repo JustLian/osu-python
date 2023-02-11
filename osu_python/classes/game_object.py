@@ -398,22 +398,22 @@ class Slider(Circle):
         for m in get_monitors():
             if m.is_primary:
                 width, height = m.width, m.height
-        surface = pg.Surface([width, height], pg.SRCALPHA, 32)
+        surface = pg.Surface([width + 100, height + 100], pg.SRCALPHA, 32)
         for point in self.body:
-            pg.draw.circle(surface, self.slider_border, (point[0], point[1]), round(self.hit_size / 2.3))
+            pg.draw.circle(surface, self.slider_border, (point[0] + 25, point[1] + 25), round(self.hit_size / 2.3))
         precision = 25
         for iter in range(precision):
             _color = [iter * (60 / precision)] * 3
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
-                pg.draw.circle(surface, _color, (point[0], point[1]), round(_width / 2.6))
+                pg.draw.circle(surface, _color, (point[0] + 50, point[1] + 50), round(_width / 2.6))
         return surface
 
     def draw_body(self, screen: pg.Surface, time: int):
         """Draws slider's body for passed time"""
         body = self.surface.copy()
         body.set_alpha((time - self.appear_time) * self.fade_pms)
-        screen.blit(body, [self.hit_size / 2, self.hit_size / 2])
+        screen.blit(body, [self.hit_size / 2 - 50, self.hit_size / 2 - 50])
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""

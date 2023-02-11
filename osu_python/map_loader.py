@@ -81,6 +81,8 @@ def load_map(
 
     queue = []
     colours, obj_types = utils.parse_additional_info(path)
+    if colours == []:
+        colours = [colour for name, colour in Config.skin_ini["[Colours]"].items() if name.startswith("Combo")]
     objs = mp.hit_objects()
     log.debug("fetching objects ({})".format(len(objs)))
     color_index = 0
