@@ -547,7 +547,8 @@ class Slider(Circle):
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
-        self.draw_body(screen, time)
+        if not self.drawing_score:
+            self.draw_body(screen, time)
         if self.drawing_score == True:
             self.draw_score(screen, time)
         elif time > self.hit_time or self.begin_touch:
@@ -583,7 +584,7 @@ class Slider(Circle):
                 self.endtime += 400
 
     def draw_body_appr_circle(self, screen: pg.Surface, time: int):
-        """Draws approach circle on slider, not working properly"""
+        """Draws approach circle on slider"""
         if (time - self.hit_time) // 250 % 2 == 0:
             coeff = 0.9
         else:

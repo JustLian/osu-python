@@ -1,7 +1,7 @@
 import pygame as pg
 import typing as t
 from osu_python import classes, utils, map_loader
-from osu_python.classes import Config
+from osu_python.classes import Config, game_object
 
 
 all_objects = []
@@ -92,6 +92,12 @@ def draw(screen: pg.Surface):
 
     tmp = []
     for obj in reversed(all_objects):
+        if type(obj) == game_object.Slider:
+            if current_time > obj.endtime and not obj.drawing_score:
+                obj.get_score()
+                obj.drawing_score = True
+                obj.endtime += 400
+        
         if current_time < obj.appear_time:
             continue
 
