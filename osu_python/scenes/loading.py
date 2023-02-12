@@ -3,6 +3,7 @@ from threading import Thread
 import os
 from logging import getLogger
 import requests, zipfile, io
+from osu_python import map_loader
 
 
 log = getLogger("scenes/loading")
