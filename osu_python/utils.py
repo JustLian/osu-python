@@ -185,3 +185,8 @@ def parse_additional_info(path: os.PathLike):
             obj_type = line.split(",")[3]
             obj_types.append(int(obj_type))
     return colours, obj_types
+
+
+def chunks(lst, n):
+    """Return continuous n-sized chunks from lst."""
+    return [lst[i::n] for i in range(n)]

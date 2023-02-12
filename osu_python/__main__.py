@@ -97,7 +97,7 @@ def run():
     font = pg.font.SysFont(None, 28)
 
     change_scene(
-        scenes.loading, lambda: change_scene(scenes.std, "./osu_python/map.osu")
+        scenes.loading, lambda p: change_scene(scenes.std, p)
     )
 
     cursor = classes.Cursor(1.5)

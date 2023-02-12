@@ -1,6 +1,4 @@
-import pygame as pg
 from osu_python.classes import Library, Config, game_object
-from osu_python import map_loader
 from threading import Thread
 import os
 from logging import getLogger
@@ -80,4 +78,6 @@ def tick(dt: float, events):
         success_screen += dt
         screen.fill((221, 133, 230))
         if success_screen > 1000:
-            next_scene()
+            # r = Library.search('can you understand me')
+            # diff_p = Library.path_for_diff(r[0], 2)
+            next_scene("./osu_python/map.osu")
