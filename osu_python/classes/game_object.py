@@ -28,7 +28,9 @@ def load_skin():
         Config.dump()
 
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
-    combo_path = path + "/" + Config.skin_ini["[Fonts]"]["HitCirclePrefix"]
+    combo_path = (
+        path + "/" + Config.skin_ini["[Fonts]"]["HitCirclePrefix"].replace("\\", "/")
+    )
 
     # global images
     score_300_img = pg.image.load(path + "/hit300.png").convert_alpha()

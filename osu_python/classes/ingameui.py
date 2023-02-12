@@ -5,12 +5,17 @@ from osu_python.classes import Config
 
 
 score_imgs = None
+hp_bar_bg_img = None
+hp_bar_colour_img = None
+hp_bar_marker_img = None
 
 
 def load_skin():
-    global score_imgs
+    global score_imgs, hp_bar_colour_img, hp_bar_bg_img, hp_bar_marker_img
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
-    score_path = path + "/" + Config.skin_ini["[Fonts]"]["ScorePrefix"]
+    score_path = (
+        path + "/" + Config.skin_ini["[Fonts]"]["ScorePrefix"].replace("\\", "/")
+    )
 
     score_imgs = {
         "0": pg.image.load(score_path + "-0.png").convert_alpha(),
@@ -28,6 +33,14 @@ def load_skin():
         "x": pg.image.load(score_path + "-x.png").convert_alpha(),
     }
 
+    # HP bar
+    hp_bar_bg_img = pg.image.load(path + "/scorebar-bg.png").convert_alpha()
+    hp_bar_colour_img = pg.image.load(path + "/scorebar-colour.png").convert_alpha()
+    try:
+        hp_bar_marker_img = pg.image.load(path + "/scorebar-marker.png").convert_alpha()
+    except FileNotFoundError:
+        pass
+
 
 class InGameUI:
     def __init__(
@@ -37,6 +50,7 @@ class InGameUI:
         background: pg.Surface,
         background_dim: float,
         monitor_size: t.Tuple[int, int],
+        HP: float,
     ) -> None:
         """Class of in game UI
 
@@ -58,6 +72,8 @@ class InGameUI:
         self.display_score = 0
         self.combo = 0
         self.accuracy = 1.00
+        self.hp = 1
+        self.map_hp = HP
 
         self.scores = {"300": 0, "100": 0, "50": 0, "0": 0}
 
@@ -71,7 +87,7 @@ class InGameUI:
         full_width = 0
         for n in range(10):
             full_width += score_imgs[str(n)].get_width()
-        self.num_gap = full_width / 10 + 2
+        self.num_gap = full_width / 10 + 1
 
     def hit(self, score: int):
         """Updates score with hit score"""
@@ -87,8 +103,10 @@ class InGameUI:
                 )
             )
             self.combo += 1
+            self.hp = min(self.hp + (0.02 * self.map_hp * (score / 100)), 1)
         else:
             self.combo = 0
+            self.hp -= 0.05 * self.map_hp
         self.accuracy = utils.calculate_accuracy(self.scores.values())
 
     def draw(self, screen: pg.Surface):
@@ -135,6 +153,38 @@ class InGameUI:
                 ),
             )
 
+        # HP bar
+        screen.blit(hp_bar_bg_img, (0, 0))
+        # TODO: make some tests to figure out how does offseting hp bar colour actually works in original osu!
+        offset = (0, 0)
+        if hp_bar_bg_img.get_rect() != hp_bar_colour_img.get_rect():
+            offset = (12, 13)
+
+        colour = hp_bar_colour_img.copy()
+        screen.blit(
+            colour,
+            offset,
+            (
+                0,
+                0,
+                hp_bar_colour_img.get_width() * self.hp,
+                hp_bar_colour_img.get_height(),
+            ),
+        )
+        if hp_bar_marker_img and self.hp > 0:
+            width = hp_bar_colour_img.get_width()
+            marker_offset = (
+                hp_bar_marker_img.get_height() - hp_bar_colour_img.get_height()
+            ) / 2
+            marker_offset = (
+                offset[0] - marker_offset - hp_bar_marker_img.get_width() / 4,
+                offset[1] - marker_offset,
+            )
+            screen.blit(
+                hp_bar_marker_img,
+                (marker_offset[0] + self.hp * width, marker_offset[1]),
+            )
+
     def draw_background(self, screen: pg.Surface):
         """Draws background"""
         if self.bg_dim < 1:
@@ -159,3 +209,6 @@ class InGameUI:
         smaller_side = WIDTH if bg[WIDTH] < bg[HEIGHT] else HEIGHT
         scale = size[smaller_side] / bg[smaller_side]
         return pg.transform.scale(background, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
+
+    def drain_hp(self):
+        self.hp -= 0.00025 * self.map_hp
