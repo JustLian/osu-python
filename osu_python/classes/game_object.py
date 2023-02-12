@@ -63,6 +63,13 @@ def load_skin():
     ).convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
 
+    # spinner images
+    Spinner.appr_circle_img = pg.image.load(path + '/spinner-approachcircle.png').convert_alpha()
+    Spinner.bottom_img = pg.image.load(path + '/spinner-bottom.png').convert_alpha()
+    Spinner.glow_img = pg.image.load(path + '/spinner-glow.png').convert_alpha()
+    Spinner.middle_img = pg.image.load(path + '/spinner-middle.png').convert_alpha()
+    Spinner.middle2_img = pg.image.load(path + '/spinner-middle2.png').convert_alpha()
+
     # cursor images
     cursor.load_skin()
 
@@ -72,8 +79,116 @@ def load_skin():
     log.info("Skin reloaded")
 
 
-class Spinner:
-    ...
+class Spinner(pg.sprite.Sprite):
+    appr_circle_img = None
+    bottom_img = None
+    glow_img = None
+    middle_img = None
+    middle2_img = None
+
+    def __init__(
+        self,
+        hit_time: int,
+        appear_time: int,
+        fade_in_time: int,
+        location: tuple,
+        combo_value: int,
+        combo_color: t.Tuple[int, int, int],
+        sound_types: tuple,
+        hit_size: int,
+        appr_size: int,
+        hit_windows: t.Tuple[int, int, int],
+        miss_callback: t.Callable,
+        end_time : int,
+        *group
+    ):
+        """Spinner object
+
+        Draws spinner within approach circle, handles spin events
+
+        Parameters
+        ----------
+        hit_time : int
+            Hit time of circle
+        appear_time : int
+            Time when circle will start fade_in phase (pre-calculated from AR)
+        fade_in_time : int
+            Time when hit circle should reach 100% opacity (pre-calculated from AR)
+        location : tuple
+            Location of circle
+        combo_value : int
+            Combo value of circle
+        combo_color : Tuple[int, int, int]
+            Color of circle
+        sound_types : tuple
+            Which sounds should circle emit when clicked
+        hit_size : int
+            Radius of hit circle (in px, not osu!pixels!)
+        appr_size : int
+            Radius of approach circle (in px, not osu!pixels!)
+        hit_windows : Tuple[int, int, int]
+            Hit windows for 300, 100 and 50
+        miss_callback : t.Callable
+            Miss callback function
+        end_time : int
+            Endtime of spinner
+        """
+
+        super().__init__(*group)
+
+        self.hit_size = hit_size
+        self.appr_size = appr_size
+
+        self.hit_windows = hit_windows
+        self.circles_adding()
+
+        self.score = None
+
+        self.hit_time = hit_time
+        self.appear_time = appear_time
+        self.fade_in_time = fade_in_time
+        self.endtime = end_time
+
+        self.combo_value = combo_value
+        self.color = combo_color
+        self.sound_types = sound_types
+
+        self.shrink_pms = (appr_size - hit_size) / (self.hit_time - fade_in_time)
+        self.fade_pms = 255 / (self.hit_time - fade_in_time)
+
+        self.rect = self.bottom.get_rect()
+        self.rect.x, self.rect.y = location[0], location[1]
+
+        self.shortening = False
+        self.count_vibr = 0
+
+    def circles_adding(self):
+        coeff = self.hit_size / (Spinner.bottom_img.get_size()[0])
+
+        bottom_size = self.hit_size
+        glow_size = Spinner.glow_img.get_size()[0] * coeff
+        middle_size = Spinner.middle_img.get_size()[0] * coeff
+        middle2_size = Spinner.middle2_img.get_size()[0] * coeff
+
+        self.bottom = pg.transform.scale(
+            Spinner.bottom_img, (bottom_size, bottom_size)
+        ).convert_alpha()
+
+        self.glow = pg.transform.scale(
+            Spinner.glow_img, (glow_size, glow_size)
+        ).convert_alpha()
+
+        self.middle = pg.transform.scale(
+            Spinner.middle_img, (middle_size, middle_size)
+        ).convert_alpha()
+
+        self.middle2 = pg.transform.scale(
+            Spinner.middle2_img, (middle2_size, middle2_size)
+        ).convert_alpha()
+
+        self.appr_circle = pg.transform.scale(
+            Spinner.appr_circle_img, (self.appr_size, self.appr_size)
+        ).convert_alpha()
 
 
 class Circle(pg.sprite.Sprite):
@@ -124,6 +239,8 @@ class Circle(pg.sprite.Sprite):
             Hit windows for 300, 100 and 50
         miss_callback : t.Callable
             Miss callback function
+        end_time : int
+            Endtime of circle
         """
 
         super().__init__(*group)

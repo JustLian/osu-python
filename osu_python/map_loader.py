@@ -144,7 +144,25 @@ def load_map(
             endtime = obj.end_time.total_seconds() * 1000
             hitsound = obj.hitsound
 
-            # TODO: Add Spinner class
+            queue.append(
+                game_object.Spinner(
+                    time,
+                    time - preempt,
+                    time - preempt + fade_in,
+                    (add_x + obj.position.x * scale, add_y + obj.position.y * scale),
+                    combo_value,
+                    colours[color_index],
+                    (),
+                    hit_size,
+                    appr_size,
+                    hit_windows,
+                    miss_callback,
+                    endtime,
+                )
+            )
+
+            # TODO: calc sizes of spinner circles
+
     bg = get_background(path)
     return (queue, parent.joinpath(mp.audio_filename).absolute(), bg, mp)
 
