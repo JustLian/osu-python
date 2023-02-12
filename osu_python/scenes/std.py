@@ -48,6 +48,7 @@ def click(mouse_pos: t.Tuple[int, int]):
 
 def update(events):
     global c, ui
+    ui.drain_hp()
     for event in events:
         if event.type == pg.MOUSEBUTTONDOWN or (
             event.type == pg.KEYDOWN
@@ -142,7 +143,7 @@ def setup(_height, _width, _screen, diff_path):
         / 38
         * 5
     )
-    ui = classes.InGameUI(diff_multiplier, 1, bg, 1, (width, height))
+    ui = classes.InGameUI(diff_multiplier, 1, bg, 1, (width, height), map.hp())
 
     music = pg.mixer.music
     music.load(audio)
