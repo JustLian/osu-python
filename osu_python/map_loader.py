@@ -154,7 +154,7 @@ def load_map(
                     (int(width / 2), int(height / 2)),
                     (),
                     667,
-                    800,
+                    1000,
                     hit_callback,
                     endtime,
                 )
