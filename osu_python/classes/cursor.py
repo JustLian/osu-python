@@ -9,10 +9,12 @@ trail_img = None
 
 def load_skin():
     global cursor_img, trail_img
-    path = Config.base_path + "/skins/" + Config.cfg["skin"]
-
-    # Fallback skin
-    if not isdir(path):
+    try:
+        path = Config.base_path + "/skins/" + Config.cfg["skin"]
+        # Fallback skin
+        if not isdir(path):
+            path = "./skin"
+    except KeyError:
         path = "./skin"
 
     cursor_img = pg.image.load(path + "/cursor.png").convert_alpha()

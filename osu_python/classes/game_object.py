@@ -64,12 +64,14 @@ def load_skin():
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
 
     # spinner images
-    Spinner.appr_circle_img = pg.image.load(path + '/spinner-approachcircle.png').convert_alpha()
-    Spinner.bottom_img = pg.image.load(path + '/spinner-bottom.png').convert_alpha()
-    Spinner.top_img = pg.image.load(path + '/spinner-top.png').convert_alpha()
-    Spinner.glow_img = pg.image.load(path + '/spinner-glow.png').convert_alpha()
-    Spinner.middle_img = pg.image.load(path + '/spinner-middle.png').convert_alpha()
-    Spinner.middle2_img = pg.image.load(path + '/spinner-middle2.png').convert_alpha()
+    Spinner.appr_circle_img = pg.image.load(
+        path + "/spinner-approachcircle.png"
+    ).convert_alpha()
+    Spinner.bottom_img = pg.image.load(path + "/spinner-bottom.png").convert_alpha()
+    Spinner.top_img = pg.image.load(path + "/spinner-top.png").convert_alpha()
+    Spinner.glow_img = pg.image.load(path + "/spinner-glow.png").convert_alpha()
+    Spinner.middle_img = pg.image.load(path + "/spinner-middle.png").convert_alpha()
+    Spinner.middle2_img = pg.image.load(path + "/spinner-middle2.png").convert_alpha()
 
     # cursor images
     cursor.load_skin()
@@ -101,7 +103,7 @@ class Spinner(pg.sprite.Sprite):
         appr_size: int,
         hit_windows: t.Tuple[int, int, int],
         miss_callback: t.Callable,
-        end_time : int,
+        end_time: int,
         *group
     ):
         """Spinner object
@@ -196,7 +198,7 @@ class Spinner(pg.sprite.Sprite):
         self.appr_circle = pg.transform.scale(
             Spinner.appr_circle_img, (self.appr_size, self.appr_size)
         ).convert_alpha()
-    
+
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         self.draw_glow(screen, time)
@@ -210,33 +212,29 @@ class Spinner(pg.sprite.Sprite):
         im_size = self.glow.get_size()[0]
         diff = (self.hit_size - im_size) / 2
 
-        screen.blit(self.glow, 
-            (self.rect.x - diff, self.rect.y - diff))
-    
+        screen.blit(self.glow, (self.rect.x - diff, self.rect.y - diff))
+
     def draw_bottom(self, screen: pg.Surface, time: int):
         screen.blit(self.bottom, self.rect)
-    
+
     def draw_top(self, screen: pg.Surface, time: int):
         im_size = self.top.get_size()[0]
         diff = (self.hit_size - im_size) / 2
 
-        screen.blit(self.top, 
-            (self.rect.x - diff, self.rect.y - diff))
-    
+        screen.blit(self.top, (self.rect.x - diff, self.rect.y - diff))
+
     def draw_middle2(self, screen: pg.Surface, time: int):
         im_size = self.middle2.get_size()[0]
         diff = (self.hit_size - im_size) / 2
 
-        screen.blit(self.middle2, 
-            (self.rect.x - diff, self.rect.y - diff))
+        screen.blit(self.middle2, (self.rect.x - diff, self.rect.y - diff))
 
     def draw_middle(self, screen: pg.Surface, time: int):
         im_size = self.middle.get_size()[0]
         diff = (self.hit_size - im_size) / 2
 
-        screen.blit(self.middle, 
-            (self.rect.x - diff, self.rect.y - diff))
-    
+        screen.blit(self.middle, (self.rect.x - diff, self.rect.y - diff))
+
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
         if self.fade_in_time > time >= self.appear_time:
@@ -270,7 +268,7 @@ class Circle(pg.sprite.Sprite):
         hit_size: int,
         appr_size: int,
         hit_windows: t.Tuple[int, int, int],
-        miss_callback: t.Callable,
+        hit_callback: t.Callable,
         *group
     ):
         """Circle object
@@ -346,7 +344,7 @@ class Circle(pg.sprite.Sprite):
         self.shortening = False
         self.count_vibr = 0
 
-        self.miss_callback = miss_callback
+        self.hit_callback = hit_callback
 
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
@@ -354,7 +352,7 @@ class Circle(pg.sprite.Sprite):
             self.shortening = True
             if self.score != miss_img:
                 self.score = miss_img
-                self.miss_callback()
+                self.hit_callback(0)
             self.draw_score(screen, time)
 
         elif self.score is None:
@@ -481,7 +479,7 @@ class Slider(Circle):
         hit_size: int,
         appr_size: int,
         hit_windows: t.Tuple[int, int, int],
-        miss_callback: t.Callable,
+        hit_callback: t.Callable,
         body: t.Tuple[t.Tuple[int, int]],
         endtime: int,
         slider_border: t.Tuple[int, int, int],
@@ -532,7 +530,7 @@ class Slider(Circle):
             hit_size,
             appr_size,
             hit_windows,
-            miss_callback,
+            hit_callback,
         )
 
         self.body = body
@@ -553,6 +551,7 @@ class Slider(Circle):
         self.count_passed_points = 0
 
         self.drawing_score = False
+        self.hit_callback = hit_callback
 
         self.combo_value = combo_value
 
@@ -681,9 +680,13 @@ class Slider(Circle):
         n = self.count_passed_points / len(self.body)
         if n == 1.0:
             self.score = score_300_img
+            self.hit_callback(300)
         elif n >= 0.5:
             self.score = score_100_img
+            self.hit_callback(100)
         elif n >= 0.25:
             self.score = score_50_img
+            self.hit_callback(50)
         else:
             self.score = miss_img
+            self.hit_callback(0)

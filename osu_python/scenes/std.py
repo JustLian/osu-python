@@ -7,10 +7,6 @@ from osu_python.classes import Config, game_object
 all_objects = []
 
 
-def miss_callback():
-    ui.hit(0)
-
-
 def click(mouse_pos: t.Tuple[int, int]):
     active_object = None
     for obj in all_objects:
@@ -97,7 +93,7 @@ def draw(screen: pg.Surface):
                 obj.get_score()
                 obj.drawing_score = True
                 obj.endtime += 400
-        
+
         if current_time < obj.appear_time:
             continue
 
@@ -131,13 +127,16 @@ def setup(_height, _width, _screen, diff_path):
     add_y = height * 0.02
 
     scale = utils.osu_scale(n)
+    
+    def hit_callback(score: int):
+        ui.hit(score)
 
     queue, audio, bg, map = map_loader.load_map(
-        diff_path, scale, add_x, add_y, miss_callback
+        diff_path, scale, add_x, add_y, hit_callback
     )
     all_objects.extend(queue)
 
-    drain_time = (all_objects[-1].appear_time - all_objects[0].appear_time) / 1000
+    drain_time = (all_objects[-1].endtime - all_objects[0].appear_time) / 1000
     # TODO: break time should not be in drain_time
     diff_multiplier = round(
         (

@@ -42,7 +42,7 @@ def unpack(path: os.PathLike) -> bool:
 
 
 def load_map(
-    path: os.PathLike, scale: float, add_x: int, add_y: int, miss_callback: t.Callable
+    path: os.PathLike, scale: float, add_x: int, add_y: int, hit_callback: t.Callable
 ):
     """
     Function for loading difficulty of beatmap
@@ -86,6 +86,7 @@ def load_map(
     color_index = 0
     combo_value = 0
 
+    colours = check_colours(colours)
     slider_border = Config.skin_ini["[Colours]"]["SliderBorder"]
 
     for i, obj in enumerate(objs):
@@ -107,7 +108,7 @@ def load_map(
                     hit_size,
                     appr_size,
                     hit_windows,
-                    miss_callback,
+                    hit_callback,
                 )
             )
 
@@ -132,7 +133,7 @@ def load_map(
                     hit_size,
                     appr_size,
                     hit_windows,
-                    miss_callback,
+                    hit_callback,
                     body,
                     endtime,
                     slider_border,
@@ -156,7 +157,7 @@ def load_map(
                     667,
                     800,
                     hit_windows,
-                    miss_callback,
+                    hit_callback,
                     endtime,
                 )
             )
@@ -187,3 +188,12 @@ def get_background(path: os.PathLike):
             bg = pg.Surface((640, 480))
             bg.fill((0, 0, 0))
     return bg
+
+
+def check_colours(colours: t.List) -> t.List:
+    if colours == []:
+        skin_colours = Config.skin_ini["[Colours]"]
+        return [
+            color for name, color in skin_colours.items() if name.startswith("Combo")
+        ]
+    return colours

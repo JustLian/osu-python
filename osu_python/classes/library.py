@@ -48,8 +48,9 @@ class Library:
         log.info("found {} new beatmap sets".format(cls.update_total))
 
         results = []
+
         def update_thread(chunk: list, results: list, nthread: int) -> None:
-            log.info('Library update Thread #{} started'.format(nthread))
+            log.info("Library update Thread #{} started".format(nthread))
             for bms_path in chunk:
                 cls.update_progress += 1
                 # Skipping files
@@ -69,7 +70,9 @@ class Library:
                 diffs = []
 
                 bm_paths = [
-                    bms_path + "/" + x for x in os.listdir(bms_path) if x.endswith(".osu")
+                    bms_path + "/" + x
+                    for x in os.listdir(bms_path)
+                    if x.endswith(".osu")
                 ]
                 if bm_paths == []:
                     broken_bms(bms_id, bms_path, results)
@@ -81,7 +84,9 @@ class Library:
                         bm = slider.Beatmap.from_path(bm_path)
                     except Exception as e:
                         log.error(
-                            "Unexpected error ocurred: {}. Skipping beatmap set".format(e)
+                            "Unexpected error ocurred: {}. Skipping beatmap set".format(
+                                e
+                            )
                         )
                         broken_bms(bms_id, bms_path, results)
                         skip = True
@@ -97,7 +102,9 @@ class Library:
                         )
                     except Exception as e:
                         log.error(
-                            "Unexpected error ocurred: {}. Skipping beatmap set".format(e)
+                            "Unexpected error ocurred: {}. Skipping beatmap set".format(
+                                e
+                            )
                         )
                         broken_bms(bms_id, bms_path, results)
                         skip = True
@@ -111,26 +118,25 @@ class Library:
                         "title": bm.title,
                         "creator": bm.creator,
                         "diffs": diffs,
-                        "path": bms_path
+                        "path": bms_path,
                     }
                 )
-            log.info('Library update Thread #{} exited'.format(nthread))
-        
-        if len(bms_paths) != 0:
+            log.info("Library update Thread #{} exited".format(nthread))
 
+        if len(bms_paths) != 0:
             threads = []
             for nthread, paths_chunk in enumerate(utils.chunks(list(bms_paths), 3)):
                 th = Thread(target=update_thread, args=(paths_chunk, results, nthread))
                 threads.append(th)
                 th.start()
-            
+
             while any([th.is_alive() for th in threads]):
                 sleep(1)
-            
-            log.info('All threads exited. Updating DB')
+
+            log.info("All threads exited. Updating DB")
 
             cls.db.insert_multiple(results)
-        
+
         log.info("library updated")
 
     @classmethod
@@ -154,8 +160,8 @@ class Library:
         result = []
 
         def contains(q, s) -> bool:
-            ss = ''.join([x for x in s if x.isalnum()]).lower().split()
-            sq = ''.join([x for x in q if x.isalnum()]).lower().split()
+            ss = "".join([x for x in s if x.isalnum()]).lower().split()
+            sq = "".join([x for x in q if x.isalnum()]).lower().split()
             for p in sq:
                 if p not in ss:
                     return False

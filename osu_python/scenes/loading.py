@@ -24,7 +24,11 @@ def init_thread():
 
         os.mkdir(Config.base_path + "/skins/default")
 
-        r = requests.get("https://files.catbox.moe/jnqebl.zip")
+        try:
+            r = requests.get("https://files.catbox.moe/jnqebl.zip")
+        except requests.exceptions.ConnectionError:
+            log.warn("Internet connection error. Check your internet connection")
+            return init_thread()
         z = zipfile.ZipFile(io.BytesIO(r.content))
         log.info("Extracting default skin")
         z.extractall(Config.base_path + "/skins/default")

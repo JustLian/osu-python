@@ -49,7 +49,6 @@ def change_scene(new_scene, *args):
     root.info("Switching scene {} to {}".format(scene, new_scene))
 
     scene = new_scene
-    print(scene.setup)
     scene.setup(height, width, screen, *args)
 
     root.info("Switched scenes.")
@@ -96,9 +95,7 @@ def run():
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
 
-    change_scene(
-        scenes.loading, lambda p: change_scene(scenes.std, p)
-    )
+    change_scene(scenes.loading, lambda p: change_scene(scenes.std, p))
 
     cursor = classes.Cursor(1.5)
 
