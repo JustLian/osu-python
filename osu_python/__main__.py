@@ -88,7 +88,7 @@ def run():
     global focused, fps_clock, screen, scene, width, height, font
     pg.init()
 
-    fps = 60.0
+    fps = Config.cfg['fps']
     fps_clock = pg.time.Clock()
     focused = False
 

@@ -46,14 +46,14 @@ def update(events):
     global c, ui
     ui.drain_hp()
     for event in events:
-        if event.type == pg.MOUSEBUTTONDOWN or (
+        if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN) or (
             event.type == pg.KEYDOWN
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
         ):
             click(pg.mouse.get_pos())
 
-        if event.type == pg.MOUSEBUTTONUP or (
+        if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONUP) or (
             event.type == pg.KEYUP
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
