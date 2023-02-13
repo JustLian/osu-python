@@ -156,8 +156,8 @@ class InGameUI:
         # HP bar
         screen.blit(hp_bar_bg_img, (0, 0))
         # TODO: make some tests to figure out how does offseting hp bar colour actually works in original osu!
-        offset = (0, 0)
-        if hp_bar_bg_img.get_rect() != hp_bar_colour_img.get_rect():
+        offset = (5, 17)
+        if hp_bar_marker_img:
             offset = (12, 13)
 
         colour = hp_bar_colour_img.copy()
