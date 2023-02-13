@@ -4,6 +4,7 @@ from screeninfo import get_monitors
 from osu_python.classes import Config, cursor, ingameui
 from logging import getLogger
 from os.path import isdir
+from math import degrees, atan2
 
 
 log = getLogger("game_object")
@@ -62,6 +63,14 @@ def load_skin():
         path + "/hitcircleoverlay.png"
     ).convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
+    frames_amount = Config.skin_ini["[General]"]["SliderBallFrames"]
+    frames = []
+    for i in range(frames_amount):
+        try:
+            frames.append(pg.image.load(path + f"/sliderb{i}.png").convert_alpha())
+        except FileNotFoundError:
+            break
+    Slider.slider_ball_frames_img = frames
 
     # spinner images
     Spinner.appr_circle_img = pg.image.load(
@@ -104,7 +113,7 @@ class Spinner(pg.sprite.Sprite):
         hit_windows: t.Tuple[int, int, int],
         miss_callback: t.Callable,
         end_time: int,
-        *group
+        *group,
     ):
         """Spinner object
 
@@ -269,7 +278,7 @@ class Circle(pg.sprite.Sprite):
         appr_size: int,
         hit_windows: t.Tuple[int, int, int],
         hit_callback: t.Callable,
-        *group
+        *group,
     ):
         """Circle object
 
@@ -466,6 +475,7 @@ class Slider(Circle):
     hit_circle_img = None
     hit_circle_overlay_img = None
     appr_circle_img = None
+    slider_ball_frames_img = None
 
     def __init__(
         self,
@@ -483,7 +493,7 @@ class Slider(Circle):
         body: t.Tuple[t.Tuple[int, int]],
         endtime: int,
         slider_border: t.Tuple[int, int, int],
-        *group
+        *group,
     ):
         """Slider object
 
@@ -541,8 +551,17 @@ class Slider(Circle):
         self.surface = self.create_slider_surface().convert_alpha()
         self.begin_touch = False
         self.current_point_index = 0
+        self.slider_ball_frame = 0
 
         self.endtime = endtime
+
+        self.slider_ball_frames = []
+        for frame in self.slider_ball_frames_img:
+            self.slider_ball_frames.append(
+                pg.transform.scale(
+                    frame, (self.hit_size / 1.15, self.hit_size / 1.15)
+                ).convert_alpha()
+            )
 
         self.begin_touch = False
         self.touching = False
@@ -626,7 +645,7 @@ class Slider(Circle):
         if self.drawing_score == True:
             self.draw_score(screen, time)
         elif time > self.hit_time or self.begin_touch:
-            self.draw_slider_circle(screen, time)
+            self.draw_slider_ball(screen, time)
             if self.touching:
                 self.draw_body_appr_circle(screen, time)
                 self.count_passed_points += 1
@@ -644,13 +663,30 @@ class Slider(Circle):
                 self.begin_touch = True
                 self.touching = True
 
-    def draw_slider_circle(self, screen: pg.Surface, time: int):
-        """Draws hit circle on slider"""
+    def draw_slider_ball(self, screen: pg.Surface, time: int):
+        """Draws slider ball on slider"""
         if round(self.velocity * (time - self.hit_time)) >= 1:
-            self.current_point_index = round(self.velocity * (time - self.hit_time)) - 1
-            x, y = self.body[self.current_point_index]
+            ind = round(self.velocity * (time - self.hit_time)) - 1
+            self.current_point_index = ind
+            x, y = self.body[ind]
             self.rect.left, self.rect.top = x, y
-            screen.blit(self.hit_circle, (x, y))
+
+            point_1 = self.body[min(ind, len(self.body) - 11)]
+            point_2 = self.body[min(ind + 10, len(self.body) - 1)]
+            angle = degrees(atan2(point_2[1] - point_1[1], point_2[0] - point_1[0]))
+
+            frame = self.slider_ball_frames[self.slider_ball_frame]
+            rotated_frame = pg.transform.rotate(frame, -angle)
+            offset = (
+                (rotated_frame.get_width() - frame.get_width()) // 2
+                - (self.hit_size - self.hit_size / 1.15) / 2,
+                (rotated_frame.get_height() - frame.get_height()) // 2
+                - (self.hit_size - self.hit_size / 1.15) / 2,
+            )
+            screen.blit(rotated_frame, (x - offset[0], y - offset[1]))
+            self.slider_ball_frame = (self.slider_ball_frame + 1) % len(
+                self.slider_ball_frames
+            )
 
             if self.current_point_index == 99:
                 self.get_score()
