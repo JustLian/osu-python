@@ -568,7 +568,9 @@ class Slider(Circle):
 
         self.current_point_index = 0
         self.velocity = len(self.body) / (self.endtime - self.hit_time)
+
         self.count_passed_points = 0
+        self.count_points = 0
 
         self.drawing_score = False
         self.hit_callback = hit_callback
@@ -646,6 +648,7 @@ class Slider(Circle):
             self.draw_score(screen, time)
         elif time > self.hit_time or self.begin_touch:
             self.draw_slider_ball(screen, time)
+            self.count_points += 1
             if self.touching:
                 self.draw_body_appr_circle(screen, time)
                 self.count_passed_points += 1
@@ -726,7 +729,7 @@ class Slider(Circle):
 
     def get_score(self):
         """Gets score (used in drawing score)"""
-        n = self.count_passed_points / len(self.body)
+        n = self.count_passed_points / self.count_points
         if n == 1.0:
             self.score = score_300_img
             self.hit_callback(300)
