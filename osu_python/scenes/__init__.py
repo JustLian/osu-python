@@ -1,1 +1,1 @@
-from osu_python.scenes import std, loading
+from osu_python.scenes import std, loading, main_menu

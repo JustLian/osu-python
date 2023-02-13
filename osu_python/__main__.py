@@ -95,7 +95,8 @@ def run():
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
 
-    change_scene(scenes.loading, lambda p: change_scene(scenes.std, p))
+    change_scene(scenes.main_menu)
+    # change_scene(scenes.loading, lambda p: change_scene(scenes.std, p))
 
     cursor = classes.Cursor(1.5)
 
