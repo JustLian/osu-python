@@ -127,7 +127,7 @@ def setup(_height, _width, _screen, diff_path):
     add_y = height * 0.02
 
     scale = utils.osu_scale(n)
-    
+
     def hit_callback(score: int):
         ui.hit(score)
 

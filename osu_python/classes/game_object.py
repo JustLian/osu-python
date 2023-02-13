@@ -537,6 +537,7 @@ class Slider(Circle):
         self.edges = self.calc_slider_edges(self.body)
 
         self.slider_border = slider_border
+        self.slider_offset = (hit_size / 2, hit_size / 2)
         self.surface = self.create_slider_surface().convert_alpha()
         self.begin_touch = False
         self.current_point_index = 0
@@ -557,17 +558,16 @@ class Slider(Circle):
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
-        _min = [10000, 10000]
-        _max = [0, 0]
-        for point in slider:
-            if point[0] < _min[0]:
-                _min[0] = int(point[0])
-            if point[1] < _min[1]:
-                _min[1] = int(point[1])
-            if point[0] > _max[0]:
-                _max[0] = int(point[0])
-            if point[1] > _max[1]:
-                _max[1] = int(point[1])
+        x = [p[0] for p in slider]
+        y = [p[1] for p in slider]
+        _min = [
+            min(x),
+            min(y),
+        ]
+        _max = [
+            max(x),
+            max(y),
+        ]
 
         radius = round(self.hit_size // 2)
         _min[0] -= radius
@@ -579,15 +579,22 @@ class Slider(Circle):
 
     def create_slider_surface(self):
         """Creates slider surfaces"""
-        for m in get_monitors():
-            if m.is_primary:
-                width, height = m.width, m.height
-        surface = pg.Surface([width + 100, height + 100], pg.SRCALPHA, 32)
+        x = [v[0] for v in self.body]
+        min_x = min(x)
+        width = max(x) - min_x + self.hit_size
+        y = [v[1] for v in self.body]
+        min_y = min(y)
+        height = max(y) - min_y + self.hit_size
+        self.slider_offset = (min_x, min_y)
+        surface = pg.Surface([width, height], pg.SRCALPHA, 32)
         for point in self.body:
             pg.draw.circle(
                 surface,
                 self.slider_border,
-                (point[0] + 50, point[1] + 50),
+                (
+                    point[0] - min_x + self.hit_size / 2,
+                    point[1] - min_y + self.hit_size / 2,
+                ),
                 round(self.hit_size / 2.3),
             )
         precision = 25
@@ -596,7 +603,13 @@ class Slider(Circle):
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
                 pg.draw.circle(
-                    surface, _color, (point[0] + 50, point[1] + 50), round(_width / 2.6)
+                    surface,
+                    _color,
+                    (
+                        point[0] - min_x + self.hit_size / 2,
+                        point[1] - min_y + self.hit_size / 2,
+                    ),
+                    round(_width / 2.6),
                 )
         return surface
 
@@ -604,7 +617,7 @@ class Slider(Circle):
         """Draws slider's body for passed time"""
         body = self.surface.copy()
         body.set_alpha((time - self.appear_time) * self.fade_pms)
-        screen.blit(body, [self.hit_size / 2 - 50, self.hit_size / 2 - 50])
+        screen.blit(body, self.slider_offset)
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
