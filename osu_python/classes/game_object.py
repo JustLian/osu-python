@@ -105,12 +105,9 @@ class Spinner(pg.sprite.Sprite):
         appear_time: int,
         fade_in_time: int,
         location: tuple,
-        combo_value: int,
-        combo_color: t.Tuple[int, int, int],
         sound_types: tuple,
         hit_size: int,
         appr_size: int,
-        hit_windows: t.Tuple[int, int, int],
         miss_callback: t.Callable,
         end_time: int,
         *group,
@@ -152,7 +149,6 @@ class Spinner(pg.sprite.Sprite):
         self.hit_size = hit_size
         self.appr_size = appr_size
 
-        self.hit_windows = hit_windows
         self.circles_adding()
 
         self.score = None
@@ -162,18 +158,10 @@ class Spinner(pg.sprite.Sprite):
         self.fade_in_time = fade_in_time
         self.endtime = end_time
 
-        self.combo_value = combo_value
-        self.color = combo_color
         self.sound_types = sound_types
-
-        self.shrink_pms = (appr_size - hit_size) / (self.hit_time - fade_in_time)
-        self.fade_pms = 255 / (self.hit_time - fade_in_time)
 
         self.rect = self.bottom.get_rect()
         self.rect.x, self.rect.y = location[0], location[1]
-
-        self.shortening = False
-        self.count_vibr = 0
 
     def circles_adding(self):
         coeff = self.hit_size / (Spinner.bottom_img.get_size()[0])
@@ -207,7 +195,7 @@ class Spinner(pg.sprite.Sprite):
         self.appr_circle = pg.transform.scale(
             Spinner.appr_circle_img, (self.appr_size, self.appr_size)
         ).convert_alpha()
-
+    
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         self.draw_glow(screen, time)
@@ -218,46 +206,38 @@ class Spinner(pg.sprite.Sprite):
         self.draw_appr_circle(screen, time)
 
     def draw_glow(self, screen: pg.Surface, time: int):
-        im_size = self.glow.get_size()[0]
-        diff = (self.hit_size - im_size) / 2
+        """Draws glow"""
+        diff = self.glow.get_size()[0] / 2
 
         screen.blit(self.glow, (self.rect.x - diff, self.rect.y - diff))
 
     def draw_bottom(self, screen: pg.Surface, time: int):
-        screen.blit(self.bottom, self.rect)
+        """Draw bottom"""
+        screen.blit(self.bottom, (self.rect.x, self.rect.y))
 
     def draw_top(self, screen: pg.Surface, time: int):
-        im_size = self.top.get_size()[0]
-        diff = (self.hit_size - im_size) / 2
+        """Draws top"""
+        diff = self.top.get_size()[0] / 2
 
         screen.blit(self.top, (self.rect.x - diff, self.rect.y - diff))
 
     def draw_middle2(self, screen: pg.Surface, time: int):
-        im_size = self.middle2.get_size()[0]
-        diff = (self.hit_size - im_size) / 2
+        """Draws middle2"""
+        diff = self.middle2.get_size()[0] / 2
 
         screen.blit(self.middle2, (self.rect.x - diff, self.rect.y - diff))
 
     def draw_middle(self, screen: pg.Surface, time: int):
-        im_size = self.middle.get_size()[0]
-        diff = (self.hit_size - im_size) / 2
+        """Draws middle"""
+        diff = self.middle.get_size()[0] / 2
 
         screen.blit(self.middle, (self.rect.x - diff, self.rect.y - diff))
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
-        if self.fade_in_time > time >= self.appear_time:
-            appr_circle = self.appr_circle.copy()
-            appr_circle.set_alpha((time - self.appear_time) * self.fade_pms / 2)
-        else:
-            appr_circle = self.appr_circle.copy()
-        if time <= self.hit_time:
-            new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
-            size_diff = (new_size - self.hit_size) / 2
-            screen.blit(
-                pg.transform.scale(appr_circle, (new_size, new_size)),
-                (self.rect.x - size_diff, self.rect.y - size_diff),
-            )
+        diff = self.appr_circle.get_size()[0] / 2
+
+        screen.blit(self.appr_circle, (self.rect.x - diff, self.rect.y - diff))
 
 
 class Circle(pg.sprite.Sprite):
