@@ -63,7 +63,11 @@ def load_skin():
         path + "/hitcircleoverlay.png"
     ).convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
-    frames_amount = Config.skin_ini["[General]"]["SliderBallFrames"]
+
+    try:
+        frames_amount = Config.skin_ini["[General]"]["SliderBallFrames"]
+    except KeyError:
+        frames_amount = 60
     frames = []
     for i in range(frames_amount):
         try:
@@ -71,6 +75,11 @@ def load_skin():
         except FileNotFoundError:
             break
     Slider.slider_ball_frames_img = frames
+    
+    try:
+        Slider.slider_track_override = Config.skin_ini["[Colours]"]["SliderTrackOverride"]
+    except KeyError:
+        pass
 
     # spinner images
     Spinner.appr_circle_img = pg.image.load(
@@ -623,6 +632,9 @@ class Slider(Circle):
             hit_callback,
         )
 
+        self.combo_value = combo_value
+        self.combo_color = combo_color
+
         self.body = body
         self.edges = self.calc_slider_edges(self.body)
 
@@ -654,8 +666,6 @@ class Slider(Circle):
 
         self.drawing_score = False
         self.hit_callback = hit_callback
-
-        self.combo_value = combo_value
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -696,11 +706,21 @@ class Slider(Circle):
                     point[0] - min_x + self.hit_size / 2,
                     point[1] - min_y + self.hit_size / 2,
                 ),
-                round(self.hit_size / 2.1),
+                round(self.hit_size / 2.17),
             )
+        if self.slider_track_override:
+            track_color = self.slider_track_override
+        else:
+            track_color = self.combo_color
         precision = 25
         for iter in range(precision):
-            _color = (*self.slider_border, 80 + iter * (60 / precision))
+            color_addition = min(1.2 * (iter - 25), 255)
+            _color = (
+                min(track_color[0] + color_addition, 255),
+                min(track_color[1] + color_addition, 255),
+                min(track_color[2] + color_addition, 255),
+                190
+            )
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
                 pg.draw.circle(
@@ -710,7 +730,7 @@ class Slider(Circle):
                         point[0] - min_x + self.hit_size / 2,
                         point[1] - min_y + self.hit_size / 2,
                     ),
-                    round(_width / 2.3),
+                    round(_width / 2.45),
                 )
         return surface
 
@@ -758,7 +778,7 @@ class Slider(Circle):
             point_2 = self.body[min(ind + 10, len(self.body) - 1)]
             angle = degrees(atan2(point_2[1] - point_1[1], point_2[0] - point_1[0]))
 
-            frame = self.slider_ball_frames[self.slider_ball_frame]
+            frame = self.slider_ball_frames[self.slider_ball_frame // 2]
             rotated_frame = pg.transform.rotate(frame, -angle)
             offset = (
                 (rotated_frame.get_width() - frame.get_width()) // 2
@@ -767,9 +787,9 @@ class Slider(Circle):
                 - (self.hit_size - self.hit_size / 1.15) / 2,
             )
             screen.blit(rotated_frame, (x - offset[0], y - offset[1]))
-            self.slider_ball_frame = (self.slider_ball_frame + 1) % len(
-                self.slider_ball_frames
-            )
+            self.slider_ball_frame += 1
+            if self.slider_ball_frame >= len(self.slider_ball_frames) * 2:
+                self.slider_ball_frame = 0
 
             if self.current_point_index == 99:
                 self.get_score()
@@ -809,8 +829,11 @@ class Slider(Circle):
 
     def get_score(self):
         """Gets score (used in drawing score)"""
-        n = self.count_passed_points / self.count_points
-        if n >= 0.95:
+        try:
+            n = self.count_passed_points / self.count_points
+        except ZeroDivisionError:
+            n = 0
+        if n >= 0.9:
             self.score = score_300_img
             self.hit_callback(300)
         elif n >= 0.5:
