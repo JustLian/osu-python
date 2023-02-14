@@ -65,9 +65,9 @@ class Cursor:
                 (pos[0] - self.trail[-1][0]) ** 2 + (pos[1] - self.trail[-1][1]) ** 2
             ) ** 0.5
             if dist > 10:
-                self.trail.append([*pos, 25])
+                self.trail.append([*pos, 20])
         else:
-            self.trail.append([*pos, 25])
+            self.trail.append([*pos, 20])
         for t in self.trail:
             trail = self.trail_img.copy()
             trail.set_alpha(t[2] * 6)
