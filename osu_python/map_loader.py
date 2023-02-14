@@ -7,6 +7,7 @@ import zipfile
 import logging
 import typing as t
 import pygame as pg
+from osu_python.__main__ import width, height
 
 
 log = logging.getLogger("map_loader")
@@ -150,13 +151,10 @@ def load_map(
                     time,
                     time - preempt,
                     time - preempt + fade_in,
-                    (add_x + obj.position.x * scale, add_y + obj.position.y * scale),
-                    combo_value,
-                    colours[color_index],
+                    (int(width / 2), int(height / 2)),
                     (),
                     667,
-                    800,
-                    hit_windows,
+                    1000,
                     hit_callback,
                     endtime,
                 )
