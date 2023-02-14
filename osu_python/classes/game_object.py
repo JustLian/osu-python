@@ -160,24 +160,31 @@ class Spinner(pg.sprite.Sprite):
         self.hit_time = hit_time
         self.appear_time = appear_time
         self.fade_in_time = fade_in_time
-        self.endtime = end_time
+        self.endtime = end_time + 400
 
         self.sound_types = sound_types
 
         self.rect = self.bottom.get_rect()
         self.rect.x, self.rect.y = location[0], location[1]
 
-        self.current_r_middle = 255
-        self.velocity_r_middle = round(255 / (self.endtime - self.fade_in_time))
+        self.velocity_r_middle = 255 / (self.endtime - self.fade_in_time)
 
-        self.fade_pms = 255 / (hit_time - fade_in_time)
-        self.shrink_pms = (appr_size - hit_size) / (hit_time - fade_in_time)
+        self.fade_pms = 255 / (fade_in_time - appear_time)
+        self.shrink_pms = (appr_size - hit_size) / (fade_in_time - appear_time)
 
         self.x, self.y = location[0], location[1]
 
         self.adding_bonus_points = False
 
         self.touching = False
+
+        self.spin_coeff0 = 0.2 * self.spin.get_size()[0] / (fade_in_time - appear_time)
+        self.spin_coeff1 = 0.2 * self.spin.get_size()[1] / (fade_in_time - appear_time)
+        self.spin_fade_pms = 255 / (fade_in_time - appear_time)
+
+        self.clear_coeff0 = 0.2 * self.clear.get_size()[0] / 400
+        self.clear_coeff1 = 0.2 * self.clear.get_size()[1] / 400
+        self.clear_fade_pms = 255 / 400
 
     def circles_adding(self):
         """Adding parts of spinner"""
@@ -188,8 +195,10 @@ class Spinner(pg.sprite.Sprite):
         glow_size = Spinner.glow_img.get_size()[0] * coeff
         middle_size = Spinner.middle_img.get_size()[0] * coeff
         middle2_size = Spinner.middle2_img.get_size()[0] * coeff
-        spin_size = Spinner.spin_img.get_size()[0] * coeff
-        clear_size = Spinner.clear_img.get_size()[0] * coeff
+        spin_size0 = Spinner.spin_img.get_size()[0] * coeff
+        spin_size1 = Spinner.spin_img.get_size()[1] * coeff
+        clear_size0 = Spinner.clear_img.get_size()[0] * coeff
+        clear_size1 = Spinner.clear_img.get_size()[1] * coeff
 
         self.bottom = pg.transform.scale(
             Spinner.bottom_img, (bottom_size, bottom_size)
@@ -216,16 +225,16 @@ class Spinner(pg.sprite.Sprite):
         )
 
         self.spin = pg.transform.scale(
-            Spinner.spin_img, (spin_size, spin_size)
+            Spinner.spin_img, (spin_size0, spin_size1)
         ).convert_alpha()
 
-        self.slear = pg.transform.scale(
-            Spinner.clear_img, (clear_size, clear_size)
+        self.clear = pg.transform.scale(
+            Spinner.clear_img, (clear_size0, clear_size1)
         ).convert_alpha()
     
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
-        if time < self.fade_in_time:
+        if self.fade_in_time > time:
             for part in [self.glow, self.bottom, self.top, self.middle2, self.middle]:
                 part.set_alpha((time - self.appear_time) * self.fade_pms)
 
@@ -236,7 +245,11 @@ class Spinner(pg.sprite.Sprite):
         self.draw_middle(screen, time)
         self.draw_appr_circle(screen, time)
 
-        self.current_r_middle -= self.velocity_r_middle
+        if self.fade_in_time > time:
+            self.draw_spin(screen, time)
+        
+        elif time > self.endtime - 400:
+            self.draw_score(screen, time)
 
     def draw_glow(self, screen: pg.Surface, time: int):
         """Draws glow"""
@@ -244,7 +257,6 @@ class Spinner(pg.sprite.Sprite):
         glow = self.glow.copy()
 
         if not self.adding_bonus_points:
-            # not working properly
             glow.fill((135, 206, 250), special_flags=3)
         
         screen.blit(glow, (self.x - diff, self.y - diff))
@@ -272,9 +284,10 @@ class Spinner(pg.sprite.Sprite):
         diff = self.middle.get_size()[0] / 2
         middle = self.middle.copy()
 
-        if time > self.fade_in_time:
-            # not working properly
-            middle.fill((self.current_r_middle, 255, 255), special_flags=3)
+        c = round(255 - self.velocity_r_middle * (time - self.appear_time))
+        if c < 0:
+            c = 0
+        middle.fill((255, c, c), special_flags=3)
 
         screen.blit(middle, (self.x - diff, self.y - diff))
 
@@ -284,7 +297,7 @@ class Spinner(pg.sprite.Sprite):
         appr_circle = self.appr_circle.copy()
 
         if self.fade_in_time >= time >= self.appear_time:
-            new_size = self.appr_size - (time - self.fade_in_time) * self.shrink_pms
+            new_size = self.appr_size - (time - self.appear_time) * self.shrink_pms
             screen.blit(
                 pg.transform.scale(appr_circle, (new_size, new_size)),
                 (self.rect.x - new_size / 2, self.rect.y - new_size / 2)
@@ -295,9 +308,35 @@ class Spinner(pg.sprite.Sprite):
                 (self.rect.x - self.hit_size / 2, self.rect.y - self.hit_size / 2)
             )
     
+    def draw_spin(self, screen: pg.Surface, time: int):
+        """Draws spin"""
+        spin = self.spin.copy()
+        new_size0 = self.spin.get_size()[0] + (self.fade_in_time - time) * self.spin_coeff0
+        new_size1 = self.spin.get_size()[1] + (self.fade_in_time - time) * self.spin_coeff1
+
+        spin.set_alpha(self.spin_fade_pms * (time - self.appear_time))
+        spin = pg.transform.scale(spin, (new_size0, new_size1))
+
+        diff = spin.get_size()[0] / 2
+
+        screen.blit(spin, (self.x - diff, self.y + self.hit_size / 2 - diff))
+    
     def hit(self, screen: pg.Surface, time: int):
         """Controls hit events"""
         self.touching = True
+    
+    def draw_score(self, screen: pg.Surface, time: int):
+        """Draws score"""
+        clear = self.clear.copy()
+        new_size0 = self.clear.get_size()[0] + (self.endtime - time) * self.clear_coeff0
+        new_size1 = self.clear.get_size()[1] + (self.endtime - time) * self.clear_coeff1
+
+        clear.set_alpha(self.clear_fade_pms * (self.endtime - time))
+        clear = pg.transform.scale(clear, (new_size0, new_size1))
+
+        diff = clear.get_size()[0] / 2
+
+        screen.blit(clear, (self.x - diff, self.y - diff))
 
 
 class Circle(pg.sprite.Sprite):
@@ -771,7 +810,7 @@ class Slider(Circle):
     def get_score(self):
         """Gets score (used in drawing score)"""
         n = self.count_passed_points / self.count_points
-        if n == 1.0:
+        if n >= 0.95:
             self.score = score_300_img
             self.hit_callback(300)
         elif n >= 0.5:
