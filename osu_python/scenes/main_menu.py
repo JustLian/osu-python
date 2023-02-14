@@ -3,6 +3,7 @@ import pygame as pg
 from glob import glob
 from random import choice
 from osu_python import utils
+from osu_python.classes import ui
 import audio2numpy as a2n
 
 
@@ -14,7 +15,7 @@ def load_music(path):
 
 
 def setup(_height, _width, _screen: pg.Surface):
-    global height, width, screen, bg, logo
+    global height, width, screen, bg, logo, mgr
     height = _height
     width = _width
     screen = _screen
@@ -23,18 +24,20 @@ def setup(_height, _width, _screen: pg.Surface):
     bg = utils.fit_image_to_screen(
         pg.image.load(choice(glob('./ui/backgrounds/*'))),
         (width, height)
-    )
+    ).convert()
 
     # osu! logo
-    logo = pg.transform.scale(
-        pg.image.load('./ui/menu/logo.png'),
-        (height * .8, height * .8)
-    )
+    logo = ui.main_menu.OsuLogo(width, height)
+
+    # setting up ui manager
+    mgr = ui.root.UiManager([logo])
 
 
 def draw():
     screen.blit(bg, (0, 0))
+    mgr.draw(screen)
 
 
 def tick(dt: float, events):
     draw()
+    mgr.update(events)

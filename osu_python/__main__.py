@@ -90,6 +90,9 @@ def run():
 
     fps = Config.cfg['fps']
     fps_clock = pg.time.Clock()
+
+    root.info('Running osu!python at {} fps'.format(fps))
+
     focused = False
 
     pg.display.set_caption("osu!python")

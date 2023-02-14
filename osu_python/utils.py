@@ -200,3 +200,12 @@ def fit_image_to_screen(image: pg.Surface, size: t.Tuple[int, int]):
     smaller_side = WIDTH if bg[WIDTH] < bg[HEIGHT] else HEIGHT
     scale = size[smaller_side] / bg[smaller_side]
     return pg.transform.scale(image, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
+
+
+def inside_a_circle(x, y, c_x, c_y, r) -> bool:
+    """
+    Determines wether potint `(x, y)` is inside
+    a circle with center at `(c_x, c_y)` and
+    radius `r`
+    """
+    return (x - c_x) ** 2 + (y - c_y) ** 2 < r ** 2
