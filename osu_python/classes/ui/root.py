@@ -162,14 +162,13 @@ class UiManager:
 
         # detecting collision and changing obj.hover state
         mouse = pg.mouse.get_pos()
-        hovering_object = None
         for obj in self.objects:
             hovering = obj.is_colliding(mouse)
             if (not obj.hover and hovering) or (obj.hover and not hovering):
                 obj.toggle_hover()
-                if hovering and obj.enabled:
-                    hovering_object = obj
-        
+
         for event in events:
-            if event.type == pg.MOUSEBUTTONUP and hovering_object != None:
-                hovering_object.click()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                for obj in self.objects:
+                    if obj.enabled and obj.is_colliding(mouse):
+                        obj.click()
