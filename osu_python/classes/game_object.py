@@ -516,6 +516,7 @@ class Slider(Circle):
     hit_circle_overlay_img = None
     appr_circle_img = None
     slider_ball_frames_img = None
+    slider_track_override = None
 
     def __init__(
         self,
@@ -646,7 +647,7 @@ class Slider(Circle):
         y = [v[1] for v in self.body]
         min_y = min(y)
         height = max(y) - min_y + self.hit_size
-        self.slider_offset = (min_x, min_y)
+        self.slider_offset = (min_x + 1, min_y + 2)
         surface = pg.Surface([width, height], pg.SRCALPHA, 32)
         for point in self.body:
             pg.draw.circle(
@@ -656,11 +657,11 @@ class Slider(Circle):
                     point[0] - min_x + self.hit_size / 2,
                     point[1] - min_y + self.hit_size / 2,
                 ),
-                round(self.hit_size / 2.3),
+                round(self.hit_size / 2.1),
             )
         precision = 25
         for iter in range(precision):
-            _color = [iter * (60 / precision)] * 3
+            _color = (*self.slider_border, 80 + iter * (60 / precision))
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
                 pg.draw.circle(
@@ -670,7 +671,7 @@ class Slider(Circle):
                         point[0] - min_x + self.hit_size / 2,
                         point[1] - min_y + self.hit_size / 2,
                     ),
-                    round(_width / 2.6),
+                    round(_width / 2.3),
                 )
         return surface
 

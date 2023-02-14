@@ -51,6 +51,7 @@ class InGameUI:
         background_dim: float,
         monitor_size: t.Tuple[int, int],
         HP: float,
+        current_time: int,
     ) -> None:
         """Class of in game UI
 
@@ -74,6 +75,7 @@ class InGameUI:
         self.accuracy = 1.00
         self.hp = 1
         self.map_hp = HP
+        self.last_hp_drain = current_time
 
         self.scores = {"300": 0, "100": 0, "50": 0, "0": 0}
 
@@ -103,10 +105,10 @@ class InGameUI:
                 )
             )
             self.combo += 1
-            self.hp = min(self.hp + (0.02 * self.map_hp * (score / 100)), 1)
+            self.hp = min(self.hp + (0.05 * (score / 100)), 1)
         else:
             self.combo = 0
-            self.hp -= 0.05 * self.map_hp
+            self.hp -= 0.05 * self.map_hp / 2
         self.accuracy = utils.calculate_accuracy(self.scores.values())
 
     def draw(self, screen: pg.Surface):
@@ -155,7 +157,6 @@ class InGameUI:
 
         # HP bar
         screen.blit(hp_bar_bg_img, (0, 0))
-        # TODO: make some tests to figure out how does offseting hp bar colour actually works in original osu!
         offset = (5, 17)
         if hp_bar_marker_img:
             offset = (12, 13)
@@ -210,5 +211,7 @@ class InGameUI:
         scale = size[smaller_side] / bg[smaller_side]
         return pg.transform.scale(background, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
 
-    def drain_hp(self):
-        self.hp -= 0.00025 * self.map_hp
+    def drain_hp(self, current_time):
+        self.hp -= (current_time - self.last_hp_drain) * 0.000005 * self.map_hp
+        self.last_hp_drain = current_time
+        # self.hp -= 0.00025 * self.map_hp
