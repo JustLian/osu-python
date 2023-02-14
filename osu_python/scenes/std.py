@@ -8,8 +8,7 @@ all_objects = []
 
 
 def click(mouse_pos: t.Tuple[int, int]):
-    active_object = None
-    for obj in all_objects:
+    for index, obj in enumerate(all_objects):
         if current_time < obj.appear_time:
             break
 
@@ -17,9 +16,6 @@ def click(mouse_pos: t.Tuple[int, int]):
             continue
 
         elif obj.appear_time < current_time and obj.score == None:
-            if active_object == None:
-                active_object = obj
-
             mouse_pos = pg.mouse.get_pos()
             if obj.rect.collidepoint(mouse_pos) and isinstance(
                 obj, classes.game_object.Circle
@@ -33,13 +29,16 @@ def click(mouse_pos: t.Tuple[int, int]):
                     (mouse_pos[0] - obj_center[0]) ** 2
                     + (mouse_pos[1] - obj_center[1]) ** 2
                 ) ** 0.5 <= (obj_pos[2] / 2):
-                    if obj == active_object:
+                    prev = all_objects[index - 1]
+                    if prev.score != None or prev.hit_time + 100 < current_time:
                         score = obj.hit(current_time)
                         if score:
                             ui.hit(score)
+                        break
                     else:
                         obj.count_vibr = 20
-                    break
+                        break
+                    continue
 
 
 def update(events):

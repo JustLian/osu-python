@@ -109,6 +109,8 @@ class InGameUI:
         else:
             self.combo = 0
             self.hp -= 0.05 * self.map_hp / 2
+            if self.hp < 0:
+                self.hp = 0
         self.accuracy = utils.calculate_accuracy(self.scores.values())
 
     def draw(self, screen: pg.Surface):
