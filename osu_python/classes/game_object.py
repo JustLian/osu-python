@@ -177,27 +177,27 @@ class Spinner(pg.sprite.Sprite):
 
         self.bottom = pg.transform.scale(
             Spinner.bottom_img, (bottom_size, bottom_size)
-        ).convert_alpha()
+        )
 
         self.top = pg.transform.scale(
             Spinner.top_img, (top_size, top_size)
-        ).convert_alpha()
+        )
 
         self.glow = pg.transform.scale(
             Spinner.glow_img, (glow_size, glow_size)
-        ).convert_alpha()
+        )
 
         self.middle = pg.transform.scale(
             Spinner.middle_img, (middle_size, middle_size)
-        ).convert_alpha()
+        )
 
         self.middle2 = pg.transform.scale(
             Spinner.middle2_img, (middle2_size, middle2_size)
-        ).convert_alpha()
+        )
 
         self.appr_circle = pg.transform.scale(
             Spinner.appr_circle_img, (self.appr_size, self.appr_size)
-        ).convert_alpha()
+        )
 
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
