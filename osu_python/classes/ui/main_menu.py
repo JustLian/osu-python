@@ -7,11 +7,11 @@ class OsuLogo(root.UiElement):
     logo = pg.image.load('./ui/menu/logo.png').convert_alpha()
 
     def __init__(self, width: int, height: int):
-        self.original_size = height * .8
-        self.current_size = height * .8
+        self.original_size = (height * .8, height * .8)
+        self.current_size = (height * .8, height * .8)
         self.img = pg.transform.scale(
             OsuLogo.logo,
-            (height * .8, height * .8)
+            self.original_size
         )
 
         self.rect = self.img.get_rect()
@@ -21,36 +21,38 @@ class OsuLogo(root.UiElement):
         self.goal_size = self.rect.height
         self.step = 0
 
+        self.size = root.Animation(
+            1, self.original_size, self.original_size, 'LinearInOut'
+        )
+
         super().__init__(True, True)
     
     def toggle_hover(self):
         if not self.hover:
-            self.goal_size = round(self.original_size * 1.05)
+            self.size = root.Animation(
+                300, self.original_size,
+                (self.original_size[0] * 1.05, self.original_size[0] * 1.05),
+                'ElasticEaseOut'
+            )
         else:
-            self.goal_size = self.original_size
-        
-        self.step = (self.goal_size - self.current_size) / 5
+            self.size = root.Animation(
+                300, (self.original_size[0] * 1.05, self.original_size[0] * 1.05),
+                self.original_size, 'ElasticEaseOut'
+            )
 
         super().toggle_hover()
 
 
-    def draw(self, screen: pg.Surface):
-        if self.goal_size != self.current_size:
-            self.current_size += self.step
-            if (self.step > 0 and self.current_size > self.goal_size) or (self.step < 0 and self.current_size < self.goal_size):
-                self.current_size = self.goal_size
-
-        x = self.rect.x - self.current_size // 2
-        y = self.rect.y - self.current_size // 2
-        pg.draw.circle(
-            screen, (255, 125, 183),
-            (self.rect.x, self.rect.y), self.current_size * .45
-        )
-        screen.blit(pg.transform.scale(self.img, (self.current_size, self.current_size)), (x, y))
+    def draw(self, screen: pg.Surface, dt):
+        self.current_size = self.size(dt)
+        screen.blit(pg.transform.scale(self.img, self.current_size), (
+            (screen.get_width() - self.current_size[0]) // 2,
+            (screen.get_height() - self.current_size[1]) // 2
+        ))
     
     def is_colliding(self, pos) -> bool:
         return utils.inside_a_circle(
-            *pos, self.rect.x, self.rect.y, self.current_size / 2
+            *pos, self.rect.x, self.rect.y, self.current_size[0] / 2
         )
     
     def click(self):

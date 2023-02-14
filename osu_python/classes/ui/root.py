@@ -1,14 +1,54 @@
 import typing as t
 import pygame as pg
+from easing_functions import easing
 
 
-class AnimationManager:
-    def __init__(self, width, height, x, y):
-        self.animation = {
-            'size': {
-                'goal': (width, height)
-            }
-        }
+class Animation:
+    def __init__(self, duration: int, start_values: list, end_values: list, func: str):
+        """
+        This class is used for playing animations easily.
+        
+        Parameters
+        ----------
+        duration : int
+            Duration of animation (ms)
+        start_values : list
+            List of starting values. You can pass location,
+            size or any other values
+        end_values : list
+            List of end values. Size of this list should be
+            equal to size of `start_values` list
+        func : str
+            Type of easing
+        """
+
+        assert hasattr(easing, func), "There are not such easing as {}".format(func)
+
+        self.t = 0
+        self.e = duration
+        self.last = None
+        
+        e = getattr(easing, func)
+        self.easing = [
+            e(start_values[n], end_values[n], duration)
+            for n in range(len(start_values))
+        ]
+    
+    def __call__(self, dt: float) -> list:
+        """
+        Calculates new values from time between frames
+
+        Parameters
+        ----------
+        dt : float
+            Time from last Animation.frame method call
+        """
+        self.t += dt
+        if self.t > self.e:
+            if not self.last:
+                self.last = [e(self.e) for e in self.easing]
+            return self.last
+        return [e(self.t) for e in self.easing]
 
 
 class UiElement:
@@ -109,12 +149,12 @@ class UiManager:
 
         self.objects = objects
     
-    def draw(self, screen: pg.Surface):
+    def draw(self, screen: pg.Surface, dt: int):
         """Draws all UI elements os `screen`"""
 
         for obj in self.objects:
             if obj.shown:
-                obj.draw(screen)
+                obj.draw(screen, dt)
         
 
     def update(self, events):

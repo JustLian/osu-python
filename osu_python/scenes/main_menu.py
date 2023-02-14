@@ -33,11 +33,11 @@ def setup(_height, _width, _screen: pg.Surface):
     mgr = ui.root.UiManager([logo])
 
 
-def draw():
+def draw(dt):
     screen.blit(bg, (0, 0))
-    mgr.draw(screen)
+    mgr.draw(screen, dt)
 
 
 def tick(dt: float, events):
-    draw()
+    draw(dt)
     mgr.update(events)
