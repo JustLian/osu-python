@@ -175,10 +175,11 @@ class Spinner(pg.sprite.Sprite):
 
         self.sound_types = sound_types
 
-        self.rect = self.bottom.get_rect()
-        self.rect.x, self.rect.y = location[0], location[1]
+        self.rect = self.top.get_rect()
+        diff = self.top.get_size()[0] / 2
+        self.rect.left, self.rect.top = location[0] - diff, location[1] - diff
 
-        self.velocity_r_middle = 255 / (self.endtime - self.fade_in_time)
+        self.velocity_r_middle = 255 / (end_time - appear_time)
 
         self.fade_pms = 255 / (fade_in_time - appear_time)
         self.shrink_pms = (appr_size - hit_size) / (fade_in_time - appear_time)
@@ -188,7 +189,7 @@ class Spinner(pg.sprite.Sprite):
         self.adding_bonus_points = False
 
         self.touching = False
-
+        
         self.spin_coeff0 = 0.2 * self.spin.get_size()[0] / (fade_in_time - appear_time)
         self.spin_coeff1 = 0.2 * self.spin.get_size()[1] / (fade_in_time - appear_time)
         self.spin_fade_pms = 255 / (fade_in_time - appear_time)
@@ -229,29 +230,31 @@ class Spinner(pg.sprite.Sprite):
 
         self.spin = pg.transform.scale(
             Spinner.spin_img, (spin_size0, spin_size1)
-        ).convert_alpha()
+        )
 
         self.clear = pg.transform.scale(
             Spinner.clear_img, (clear_size0, clear_size1)
-        ).convert_alpha()
+        )
 
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
-        if self.fade_in_time > time:
-            for part in [self.glow, self.bottom, self.top, self.middle2, self.middle]:
-                part.set_alpha((time - self.appear_time) * self.fade_pms)
+        if not(time > self.endtime - 400):
+            if self.fade_in_time > time:
+                for part in [self.glow, self.bottom, self.top, self.middle2, self.middle]:
+                    part.set_alpha((time - self.appear_time) * self.fade_pms)
 
-        self.draw_glow(screen, time)
-        self.draw_bottom(screen, time)
-        self.draw_top(screen, time)
-        self.draw_middle2(screen, time)
-        self.draw_middle(screen, time)
-        self.draw_appr_circle(screen, time)
+            self.draw_glow(screen, time)
+            self.draw_bottom(screen, time)
+            self.draw_top(screen, time)
+            self.draw_middle2(screen, time)
+            self.draw_middle(screen, time)
 
-        if self.fade_in_time > time:
-            self.draw_spin(screen, time)
+            if self.fade_in_time > time:
+                self.draw_spin(screen, time)
+            
+            return True
 
-        elif time > self.endtime - 400:
+        else:
             self.draw_score(screen, time)
 
     def draw_glow(self, screen: pg.Surface, time: int):
@@ -303,12 +306,12 @@ class Spinner(pg.sprite.Sprite):
             new_size = self.appr_size - (time - self.appear_time) * self.shrink_pms
             screen.blit(
                 pg.transform.scale(appr_circle, (new_size, new_size)),
-                (self.rect.x - new_size / 2, self.rect.y - new_size / 2),
+                (self.x - new_size / 2, self.y - new_size / 2),
             )
         else:
             screen.blit(
                 pg.transform.scale(appr_circle, (self.hit_size, self.hit_size)),
-                (self.rect.x - self.hit_size / 2, self.rect.y - self.hit_size / 2),
+                (self.x - self.hit_size / 2, self.y - self.hit_size / 2),
             )
 
     def draw_spin(self, screen: pg.Surface, time: int):
@@ -328,7 +331,7 @@ class Spinner(pg.sprite.Sprite):
 
         screen.blit(spin, (self.x - diff, self.y + self.hit_size / 2 - diff))
 
-    def hit(self, screen: pg.Surface, time: int):
+    def hit(self, time: int):
         """Controls hit events"""
         self.touching = True
 
@@ -451,9 +454,9 @@ class Circle(pg.sprite.Sprite):
             self.draw_score(screen, time)
 
         elif self.score is None:
-            self.draw_appr_circle(screen, time)
             self.draw_hit_circle(screen, time)
             self.draw_combo_value(screen, time)
+            return True
 
         else:
             if not self.shortening:
@@ -753,9 +756,9 @@ class Slider(Circle):
                 self.draw_body_appr_circle(screen, time)
                 self.count_passed_points += 1
         else:
-            self.draw_appr_circle(screen, time)
             self.draw_hit_circle(screen, time)
             self.draw_combo_value(screen, time)
+            return True
 
     def hit(self, time: int):
         """Controls hit events"""

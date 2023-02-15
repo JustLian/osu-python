@@ -153,14 +153,12 @@ def load_map(
                     time - preempt + fade_in,
                     (int(width / 2), int(height / 2)),
                     (),
-                    667,
-                    1000,
+                    round(0.75 * height),
+                    round(0.9 * height),
                     hit_callback,
                     endtime,
                 )
             )
-
-            # TODO: calc sizes of spinner circles
 
     bg = get_background(path)
     return (queue, parent.joinpath(mp.audio_filename).absolute(), bg, mp)

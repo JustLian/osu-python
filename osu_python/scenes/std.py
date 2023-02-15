@@ -38,6 +38,10 @@ def click(mouse_pos: t.Tuple[int, int]):
                     if score:
                         ui.hit(score)
                     break
+            if obj.rect.collidepoint(mouse_pos) and isinstance(
+                obj, classes.game_object.Spinner
+            ):
+                obj.hit(current_time)
 
 
 def update(events):
@@ -85,6 +89,8 @@ def draw(screen: pg.Surface):
     ui.draw_background(screen)
 
     tmp = []
+    dac = []
+
     for obj in reversed(all_objects):
         if type(obj) == game_object.Slider:
             if current_time > obj.endtime and not obj.drawing_score:
@@ -100,7 +106,11 @@ def draw(screen: pg.Surface):
             break
 
         elif obj.appear_time < current_time:
-            obj.draw(screen, current_time)
+            if obj.draw(screen, current_time):
+                dac.append(obj)
+
+    for obj in dac:
+        obj.draw_appr_circle(screen, current_time)
 
     # removing objects
     [all_objects.remove(obj) for obj in tmp]
