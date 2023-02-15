@@ -14,16 +14,24 @@ def load_music(path):
     return a2n.audio_from_file(path)
 
 
+def calc_bg_offset(pos):
+    return (
+        (pos[0] - width // 2) * .008,
+        (pos[1] - height // 2) * .008
+    )
+
+
 def setup(_height, _width, _screen: pg.Surface):
-    global height, width, screen, bg, logo, mgr
+    global height, width, screen, bg, logo, mgr, global_bg_offset
     height = _height
     width = _width
     screen = _screen
 
     # loading background
+    global_bg_offset = calc_bg_offset((0, 0))
     bg = utils.fit_image_to_screen(
         pg.image.load(choice(glob('./ui/backgrounds/*'))),
-        (width, height)
+        (width - global_bg_offset[0] * 2, height - global_bg_offset[1] * 2)
     ).convert()
 
     # osu! logo
@@ -34,7 +42,11 @@ def setup(_height, _width, _screen: pg.Surface):
 
 
 def draw(dt):
-    screen.blit(bg, (0, 0))
+    offset = calc_bg_offset(pg.mouse.get_pos())
+    screen.blit(bg, (
+        global_bg_offset[0] + offset[0],
+        global_bg_offset[1] + offset[1]
+    ))
     mgr.draw(screen, dt)
 
 

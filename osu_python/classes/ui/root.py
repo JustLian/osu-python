@@ -44,9 +44,9 @@ class Animation:
             Time from last Animation.frame method call
         """
         self.t += dt
+        if self.t >= self.e:
+            self.last = [e(self.e) for e in self.easing]
         if self.t > self.e:
-            if not self.last:
-                self.last = [e(self.e) for e in self.easing]
             return self.last
         return [e(self.t) for e in self.easing]
 

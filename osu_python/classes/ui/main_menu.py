@@ -37,7 +37,7 @@ class OsuLogo(root.UiElement):
 
         # gray line animations
         self.line = root.Animation(
-            1, (0, 0, 0), (0, 0, 0), 'LinearInOut'
+            1, (0, 0, 0, 0), (0, 0, 0, 0), 'LinearInOut'
         )
 
         super().__init__(True, True)
@@ -60,12 +60,16 @@ class OsuLogo(root.UiElement):
 
     def draw(self, screen: pg.Surface, dt):
         line = self.line(dt)
-        if self.stage == 1:
-            line[2] = 255 - line[2]
-        pg.draw.rect(
-            screen, (50, 50, 50, line[2]),
-            (0, (self.height - line[1]) // 2, line[0], line[1])
-        )
+
+        dim = pg.Surface((self.width, self.height))
+        dim.fill((0, 0, 0))
+        dim.set_alpha(line[3])
+        screen.blit(dim, (0, 0))
+
+        line_s = pg.Surface((line[0], line[1]))
+        line_s.set_alpha(line[2])
+        line_s.fill((50, 50, 50))
+        screen.blit(line_s, (0, (self.height - line[1]) // 2))
 
         self.current_size = self.size(dt)
         self.c_offset = self.offset(dt)
@@ -98,8 +102,8 @@ class OsuLogo(root.UiElement):
                 ), 'QuinticEaseInOut'
             )
             self.line = root.Animation(
-                500, (self.width, self.stage2_size[0] * .25, 0), (
-                    self.width, self.stage2_size[0] * .5, 255
+                500, (self.width, self.stage2_size[0] * .25, 0, 0), (
+                    self.width, self.stage2_size[0] * .5, 255, 50
                 ), 'QuinticEaseOut'
             )
         else:
@@ -115,7 +119,7 @@ class OsuLogo(root.UiElement):
                 ), 'QuinticEaseInOut'
             )
             self.line = root.Animation(
-                500, (self.width, self.stage2_size[0] * .5, 0), (
-                    self.width, self.stage2_size[0] * .25, 255
+                500, (self.width, self.stage2_size[0] * .5, 255, 50), (
+                    self.width, self.stage2_size[0] * .25, 0, 0
                 ), 'QuinticEaseOut'
             )
