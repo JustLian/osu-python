@@ -75,9 +75,11 @@ def load_skin():
         except FileNotFoundError:
             break
     Slider.slider_ball_frames_img = frames
-    
+
     try:
-        Slider.slider_track_override = Config.skin_ini["[Colours]"]["SliderTrackOverride"]
+        Slider.slider_track_override = Config.skin_ini["[Colours]"][
+            "SliderTrackOverride"
+        ]
     except KeyError:
         pass
 
@@ -209,21 +211,13 @@ class Spinner(pg.sprite.Sprite):
         clear_size0 = Spinner.clear_img.get_size()[0] * coeff
         clear_size1 = Spinner.clear_img.get_size()[1] * coeff
 
-        self.bottom = pg.transform.scale(
-            Spinner.bottom_img, (bottom_size, bottom_size)
-        )
+        self.bottom = pg.transform.scale(Spinner.bottom_img, (bottom_size, bottom_size))
 
-        self.top = pg.transform.scale(
-            Spinner.top_img, (top_size, top_size)
-        )
+        self.top = pg.transform.scale(Spinner.top_img, (top_size, top_size))
 
-        self.glow = pg.transform.scale(
-            Spinner.glow_img, (glow_size, glow_size)
-        )
+        self.glow = pg.transform.scale(Spinner.glow_img, (glow_size, glow_size))
 
-        self.middle = pg.transform.scale(
-            Spinner.middle_img, (middle_size, middle_size)
-        )
+        self.middle = pg.transform.scale(Spinner.middle_img, (middle_size, middle_size))
 
         self.middle2 = pg.transform.scale(
             Spinner.middle2_img, (middle2_size, middle2_size)
@@ -240,7 +234,7 @@ class Spinner(pg.sprite.Sprite):
         self.clear = pg.transform.scale(
             Spinner.clear_img, (clear_size0, clear_size1)
         ).convert_alpha()
-    
+
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         if self.fade_in_time > time:
@@ -256,7 +250,7 @@ class Spinner(pg.sprite.Sprite):
 
         if self.fade_in_time > time:
             self.draw_spin(screen, time)
-        
+
         elif time > self.endtime - 400:
             self.draw_score(screen, time)
 
@@ -267,7 +261,7 @@ class Spinner(pg.sprite.Sprite):
 
         if not self.adding_bonus_points:
             glow.fill((135, 206, 250), special_flags=3)
-        
+
         screen.blit(glow, (self.x - diff, self.y - diff))
 
     def draw_bottom(self, screen: pg.Surface, time: int):
@@ -309,19 +303,23 @@ class Spinner(pg.sprite.Sprite):
             new_size = self.appr_size - (time - self.appear_time) * self.shrink_pms
             screen.blit(
                 pg.transform.scale(appr_circle, (new_size, new_size)),
-                (self.rect.x - new_size / 2, self.rect.y - new_size / 2)
+                (self.rect.x - new_size / 2, self.rect.y - new_size / 2),
             )
         else:
             screen.blit(
                 pg.transform.scale(appr_circle, (self.hit_size, self.hit_size)),
-                (self.rect.x - self.hit_size / 2, self.rect.y - self.hit_size / 2)
+                (self.rect.x - self.hit_size / 2, self.rect.y - self.hit_size / 2),
             )
-    
+
     def draw_spin(self, screen: pg.Surface, time: int):
         """Draws spin"""
         spin = self.spin.copy()
-        new_size0 = self.spin.get_size()[0] + (self.fade_in_time - time) * self.spin_coeff0
-        new_size1 = self.spin.get_size()[1] + (self.fade_in_time - time) * self.spin_coeff1
+        new_size0 = (
+            self.spin.get_size()[0] + (self.fade_in_time - time) * self.spin_coeff0
+        )
+        new_size1 = (
+            self.spin.get_size()[1] + (self.fade_in_time - time) * self.spin_coeff1
+        )
 
         spin.set_alpha(self.spin_fade_pms * (time - self.appear_time))
         spin = pg.transform.scale(spin, (new_size0, new_size1))
@@ -329,11 +327,11 @@ class Spinner(pg.sprite.Sprite):
         diff = spin.get_size()[0] / 2
 
         screen.blit(spin, (self.x - diff, self.y + self.hit_size / 2 - diff))
-    
+
     def hit(self, screen: pg.Surface, time: int):
         """Controls hit events"""
         self.touching = True
-    
+
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score"""
         clear = self.clear.copy()
@@ -465,18 +463,20 @@ class Circle(pg.sprite.Sprite):
 
     def hit(self, time: int):
         """Controls hit events"""
-        if time <= self.endtime - 400:
-            if abs(self.hit_time - time) <= self.hit_windows[0]:
-                self.score = score_300_img
-                return 300
-            elif self.hit_windows[1] >= abs(self.hit_time - time) > self.hit_windows[0]:
-                self.score = score_100_img
-                return 100
-            elif self.hit_windows[2] >= abs(self.hit_time - time) > self.hit_windows[1]:
-                self.score = score_50_img
-                return 50
-            elif self.hit_time - time > 0:
-                self.count_vibr = 20
+        if abs(self.hit_time - time) <= self.hit_windows[0]:
+            self.score = score_300_img
+            return 300
+        elif self.hit_windows[1] >= abs(self.hit_time - time):
+            self.score = score_100_img
+            return 100
+        elif self.hit_windows[2] >= abs(self.hit_time - time) or -100 < self.hit_time - time < 0:
+            self.score = score_50_img
+            return 50
+        else:
+            if self.hit_time - time < 0:
+                self.score = miss_img
+                return 0
+            self.count_vibr = 20
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
@@ -714,12 +714,12 @@ class Slider(Circle):
             track_color = self.combo_color
         precision = 25
         for iter in range(precision):
-            color_addition = min(1.2 * (iter - 25), 255)
+            color_addition = min((20 / precision) * (iter * 1.5), 255)
             _color = (
-                min(track_color[0] + color_addition, 255),
-                min(track_color[1] + color_addition, 255),
-                min(track_color[2] + color_addition, 255),
-                190
+                min(max(track_color[0] + color_addition, 0), 255),
+                min(max(track_color[1] + color_addition, 0), 255),
+                min(max(track_color[2] + color_addition, 0), 255),
+                190,
             )
             _width = (precision - iter) * self.hit_size / precision
             for point in self.body:
@@ -782,9 +782,9 @@ class Slider(Circle):
             rotated_frame = pg.transform.rotate(frame, -angle)
             offset = (
                 (rotated_frame.get_width() - frame.get_width()) // 2
-                - (self.hit_size - self.hit_size / 1.15) / 2,
+                - (self.hit_size - self.hit_size / 1.17) / 2,
                 (rotated_frame.get_height() - frame.get_height()) // 2
-                - (self.hit_size - self.hit_size / 1.15) / 2,
+                - (self.hit_size - self.hit_size / 1.17) / 2,
             )
             screen.blit(rotated_frame, (x - offset[0], y - offset[1]))
             self.slider_ball_frame += 1

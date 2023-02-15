@@ -105,10 +105,10 @@ class InGameUI:
                 )
             )
             self.combo += 1
-            self.hp = min(self.hp + (0.05 * (score / 100)), 1)
+            self.hp = min(self.hp + (0.04 * (score / 100)), 1)
         else:
             self.combo = 0
-            self.hp -= 0.05 * self.map_hp / 2
+            self.hp -= 0.05 * (1 + self.map_hp / 2)
             if self.hp < 0:
                 self.hp = 0
         self.accuracy = utils.calculate_accuracy(self.scores.values())
@@ -214,6 +214,5 @@ class InGameUI:
         return pg.transform.scale(background, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
 
     def drain_hp(self, current_time):
-        self.hp -= (current_time - self.last_hp_drain) * 0.000005 * self.map_hp
+        self.hp -= (current_time - self.last_hp_drain) * 0.000005 * (1 + self.map_hp / 2)
         self.last_hp_drain = current_time
-        # self.hp -= 0.00025 * self.map_hp

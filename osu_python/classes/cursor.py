@@ -65,12 +65,12 @@ class Cursor:
                 (pos[0] - self.trail[-1][0]) ** 2 + (pos[1] - self.trail[-1][1]) ** 2
             ) ** 0.5
             if dist > 10:
-                self.trail.append([*pos, 20])
+                self.trail.append([*pos, 8])
         else:
-            self.trail.append([*pos, 20])
+            self.trail.append([*pos, 8])
         for t in self.trail:
             trail = self.trail_img.copy()
-            trail.set_alpha(t[2] * 6)
+            trail.set_alpha(t[2] * 32)
             screen.blit(
                 trail, (t[0] - self.trail_sizes[0] / 2, t[1] - self.trail_sizes[1] / 2)
             )

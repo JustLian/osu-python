@@ -30,15 +30,14 @@ def click(mouse_pos: t.Tuple[int, int]):
                     + (mouse_pos[1] - obj_center[1]) ** 2
                 ) ** 0.5 <= (obj_pos[2] / 2):
                     prev = all_objects[index - 1]
-                    if prev.score != None or prev.hit_time + 100 < current_time:
-                        score = obj.hit(current_time)
-                        if score:
-                            ui.hit(score)
-                        break
-                    else:
-                        obj.count_vibr = 20
-                        break
-                    continue
+                    if isinstance(prev, classes.game_object.Circle):
+                        if prev.score == None:
+                            obj.count_vibr = 20
+                            break
+                    score = obj.hit(current_time)
+                    if score:
+                        ui.hit(score)
+                    break
 
 
 def update(events):
@@ -147,7 +146,9 @@ def setup(_height, _width, _screen, diff_path):
         / 38
         * 5
     )
-    ui = classes.InGameUI(diff_multiplier, 1, bg, 1, (width, height), map.hp(), current_time)
+    ui = classes.InGameUI(
+        diff_multiplier, 1, bg, 1, (width, height), map.hp(), current_time
+    )
 
     music = pg.mixer.music
     music.load(audio)
