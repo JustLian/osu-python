@@ -119,17 +119,22 @@ class Spinner(pg.sprite.Sprite):
         hit_time: int,
         appear_time: int,
         fade_in_time: int,
+        end_time: int,
+        bottom_top_size: int,
+        glow_size: int,
+        middle_size: int,
+        middle2_size: int,
+        spin_size: tuple,
+        clear_size: tuple,
+        appr_size: int,
         location: tuple,
         sound_types: tuple,
-        hit_size: int,
-        appr_size: int,
         miss_callback: t.Callable,
-        end_time: int,
         *group,
     ):
         """Spinner object
 
-        Draws spinner within approach circle, handles spin events
+        Draws spinner within approach circle, Handles spin events
 
         Parameters
         ----------
@@ -139,52 +144,75 @@ class Spinner(pg.sprite.Sprite):
             Time when circle will start fade_in phase (pre-calculated from AR)
         fade_in_time : int
             Time when hit circle should reach 100% opacity (pre-calculated from AR)
-        location : tuple
-            Location of circle
-        combo_value : int
-            Combo value of circle
-        combo_color : Tuple[int, int, int]
-            Color of circle
-        sound_types : tuple
-            Which sounds should circle emit when clicked
-        hit_size : int
-            Radius of hit circle (in px, not osu!pixels!)
-        appr_size : int
-            Radius of approach circle (in px, not osu!pixels!)
-        hit_windows : Tuple[int, int, int]
-            Hit windows for 300, 100 and 50
-        miss_callback : t.Callable
-            Miss callback function
         end_time : int
             Endtime of spinner
+        bottom_top_size : int
+            Radius of bottom and top in px
+        glow_size : int
+            Radius of glow in px
+        middle_size : int
+            Radius of middle in px
+        middle2_size : int
+            Radius of middle2 in px
+        spin_size : tuple
+            Width and height of spin in px
+        clear_size : tuple
+            Width and height of clear in px
+        appr_size : int
+            Radius of appr_circle in px
+        location : tuple
+            Location of circle
+        sound_types : tuple
+            Which sounds should circle emit when clicked
+        miss_callback : t.Callable
+            Miss callback function
         """
 
         super().__init__(*group)
-
-        self.hit_size = hit_size
-        self.appr_size = appr_size
-
-        self.circles_adding()
-
-        self.score = None
 
         self.hit_time = hit_time
         self.appear_time = appear_time
         self.fade_in_time = fade_in_time
         self.endtime = end_time + 400
 
-        self.sound_types = sound_types
+        self.bt_size = bottom_top_size
+        self.appr_size = appr_size
+
+        self.bottom = pg.transform.scale(Spinner.bottom_img, (bottom_top_size, bottom_top_size))
+        self.top = pg.transform.scale(Spinner.top_img, (bottom_top_size, bottom_top_size))
+        self.glow = pg.transform.scale(Spinner.glow_img, (glow_size, glow_size))
+        self.middle = pg.transform.scale(Spinner.middle_img, (middle_size, middle_size))
+        self.middle2 = pg.transform.scale(
+            Spinner.middle2_img, (middle2_size, middle2_size)
+        )
+        self.appr_circle = pg.transform.scale(
+            Spinner.appr_circle_img, (self.appr_size, self.appr_size)
+        )
+        self.spin = pg.transform.scale(
+            Spinner.spin_img, spin_size
+        )
+        self.clear = pg.transform.scale(
+            Spinner.clear_img, clear_size
+        )
+
+        self.x, self.y = location[0], location[1]
+
+        self.sps = {}
+        for part in [self.bottom, self.top, self.middle, self.middle2, self.glow]:
+            diff = part.get_size()[0] / 2
+            self.sps[part] = (self.x - diff, self.y - diff)
 
         self.rect = self.top.get_rect()
-        diff = self.top.get_size()[0] / 2
-        self.rect.left, self.rect.top = location[0] - diff, location[1] - diff
+        self.rect.left, self.rect.top = self.sps[self.top]
+
+        self.sound_types = sound_types
+
+        self.score = None
 
         self.velocity_r_middle = 255 / (end_time - appear_time)
 
         self.fade_pms = 255 / (fade_in_time - appear_time)
-        self.shrink_pms = (appr_size - hit_size) / (fade_in_time - appear_time)
-
-        self.x, self.y = location[0], location[1]
+        self.shrink_pms = (appr_size - bottom_top_size) / (fade_in_time - appear_time)
 
         self.adding_bonus_points = False
 
@@ -198,49 +226,11 @@ class Spinner(pg.sprite.Sprite):
         self.clear_coeff1 = 0.2 * self.clear.get_size()[1] / 400
         self.clear_fade_pms = 255 / 400
 
-    def circles_adding(self):
-        """Adding parts of spinner"""
-        coeff = self.hit_size / (Spinner.bottom_img.get_size()[0])
-
-        bottom_size = self.hit_size
-        top_size = Spinner.top_img.get_size()[0] * coeff
-        glow_size = Spinner.glow_img.get_size()[0] * coeff
-        middle_size = Spinner.middle_img.get_size()[0] * coeff
-        middle2_size = Spinner.middle2_img.get_size()[0] * coeff
-        spin_size0 = Spinner.spin_img.get_size()[0] * coeff
-        spin_size1 = Spinner.spin_img.get_size()[1] * coeff
-        clear_size0 = Spinner.clear_img.get_size()[0] * coeff
-        clear_size1 = Spinner.clear_img.get_size()[1] * coeff
-
-        self.bottom = pg.transform.scale(Spinner.bottom_img, (bottom_size, bottom_size))
-
-        self.top = pg.transform.scale(Spinner.top_img, (top_size, top_size))
-
-        self.glow = pg.transform.scale(Spinner.glow_img, (glow_size, glow_size))
-
-        self.middle = pg.transform.scale(Spinner.middle_img, (middle_size, middle_size))
-
-        self.middle2 = pg.transform.scale(
-            Spinner.middle2_img, (middle2_size, middle2_size)
-        )
-
-        self.appr_circle = pg.transform.scale(
-            Spinner.appr_circle_img, (self.appr_size, self.appr_size)
-        )
-
-        self.spin = pg.transform.scale(
-            Spinner.spin_img, (spin_size0, spin_size1)
-        )
-
-        self.clear = pg.transform.scale(
-            Spinner.clear_img, (clear_size0, clear_size1)
-        )
-
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         if not(time > self.endtime - 400):
-            if self.fade_in_time > time:
-                for part in [self.glow, self.bottom, self.top, self.middle2, self.middle]:
+            if self.fade_in_time >= time:
+                for part in self.sps:
                     part.set_alpha((time - self.appear_time) * self.fade_pms)
 
             self.draw_glow(screen, time)
@@ -259,35 +249,27 @@ class Spinner(pg.sprite.Sprite):
 
     def draw_glow(self, screen: pg.Surface, time: int):
         """Draws glow"""
-        diff = self.glow.get_size()[0] / 2
         glow = self.glow.copy()
 
         if not self.adding_bonus_points:
             glow.fill((135, 206, 250), special_flags=3)
 
-        screen.blit(glow, (self.x - diff, self.y - diff))
+        screen.blit(glow, self.sps[self.glow])
 
     def draw_bottom(self, screen: pg.Surface, time: int):
         """Draw bottom"""
-        diff = self.bottom.get_size()[0] / 2
-
-        screen.blit(self.bottom, (self.x - diff, self.y - diff))
+        screen.blit(self.bottom, self.sps[self.bottom])
 
     def draw_top(self, screen: pg.Surface, time: int):
         """Draws top"""
-        diff = self.top.get_size()[0] / 2
-
-        screen.blit(self.top, (self.x - diff, self.y - diff))
+        screen.blit(self.top, self.sps[self.top])
 
     def draw_middle2(self, screen: pg.Surface, time: int):
         """Draws middle2"""
-        diff = self.middle2.get_size()[0] / 2
-
-        screen.blit(self.middle2, (self.x - diff, self.y - diff))
+        screen.blit(self.middle2, self.sps[self.middle2])
 
     def draw_middle(self, screen: pg.Surface, time: int):
         """Draws middle"""
-        diff = self.middle.get_size()[0] / 2
         middle = self.middle.copy()
 
         c = round(255 - self.velocity_r_middle * (time - self.appear_time))
@@ -295,11 +277,10 @@ class Spinner(pg.sprite.Sprite):
             c = 0
         middle.fill((255, c, c), special_flags=3)
 
-        screen.blit(middle, (self.x - diff, self.y - diff))
+        screen.blit(middle, self.sps[self.middle])
 
     def draw_appr_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle from current time"""
-        diff = self.appr_circle.get_size()[0] / 2
         appr_circle = self.appr_circle.copy()
 
         if self.fade_in_time >= time >= self.appear_time:
@@ -310,8 +291,8 @@ class Spinner(pg.sprite.Sprite):
             )
         else:
             screen.blit(
-                pg.transform.scale(appr_circle, (self.hit_size, self.hit_size)),
-                (self.x - self.hit_size / 2, self.y - self.hit_size / 2),
+                pg.transform.scale(appr_circle, (self.bt_size, self.bt_size)),
+                (self.x - self.bt_size / 2, self.y - self.bt_size / 2),
             )
 
     def draw_spin(self, screen: pg.Surface, time: int):
@@ -329,7 +310,7 @@ class Spinner(pg.sprite.Sprite):
 
         diff = spin.get_size()[0] / 2
 
-        screen.blit(spin, (self.x - diff, self.y + self.hit_size / 2 - diff))
+        screen.blit(spin, (self.x - diff, self.y + self.bt_size / 2 - diff))
 
     def hit(self, time: int):
         """Controls hit events"""

@@ -8,6 +8,7 @@ import logging
 import typing as t
 import pygame as pg
 from osu_python.__main__ import width, height
+from osu_python.classes.game_object import Spinner
 
 
 log = logging.getLogger("map_loader")
@@ -146,17 +147,35 @@ def load_map(
             endtime = obj.end_time.total_seconds() * 1000
             hitsound = obj.hitsound
 
+            bottom_top_size = round(0.75 * height)
+            appr_size = round(0.9 * height)
+
+            coeff = bottom_top_size / Spinner.bottom_img.get_size()[0]
+
+            glow_size = Spinner.glow_img.get_size()[0] * coeff
+            middle_size = Spinner.middle_img.get_size()[0] * coeff
+            middle2_size = Spinner.middle2_img.get_size()[0] * coeff
+            spin_size = (Spinner.spin_img.get_size()[0] * coeff,
+                    Spinner.spin_img.get_size()[1] * coeff)
+            clear_size = (Spinner.clear_img.get_size()[0] * coeff, 
+                    Spinner.clear_img.get_size()[1] * coeff)
+
             queue.append(
                 game_object.Spinner(
                     time,
                     time - preempt,
                     time - preempt + fade_in,
+                    endtime,
+                    bottom_top_size,
+                    glow_size,
+                    middle_size,
+                    middle2_size,
+                    spin_size,
+                    clear_size,
+                    appr_size,
                     (int(width / 2), int(height / 2)),
                     (),
-                    round(0.75 * height),
-                    round(0.9 * height),
                     hit_callback,
-                    endtime,
                 )
             )
 
