@@ -523,11 +523,12 @@ class Circle(pg.sprite.Sprite):
 
     def draw_combo_value(self, screen: pg.Surface, time: int):
         center = (self.rect[0] + self.rect[2] / 2, self.rect[1] + self.rect[3] / 2)
+        scale = self.hit_size / 4 / combo_numbers["0"].get_height()
         full_width = 0
         for v in str(self.combo_value):
             full_width += combo_numbers[v].get_width()
-        x = center[0] - full_width / 2
-        y = center[1] - (combo_numbers["0"].get_height() / 2) + 1
+        x = center[0] - (full_width / 2 * scale)
+        y = center[1] - (combo_numbers["0"].get_height() / 2 * scale) + 1
 
         offset = 0
         if self.count_vibr != 0:
@@ -537,13 +538,19 @@ class Circle(pg.sprite.Sprite):
                 offset = 3
 
         for v in str(self.combo_value):
-            img = combo_numbers[v].copy()
+            img = pg.transform.scale(
+                combo_numbers[v],
+                (
+                    combo_numbers[v].get_width() * scale,
+                    combo_numbers[v].get_height() * scale,
+                ),
+            )
             img.set_alpha((time - self.appear_time) * self.fade_pms)
             screen.blit(
                 img,
                 (x - offset, y),
             )
-            x += img.get_width()
+            x += img.get_width() * scale
 
 
 class Slider(Circle):
