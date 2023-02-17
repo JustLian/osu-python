@@ -5,10 +5,11 @@ from os.path import isdir
 
 cursor_img = None
 trail_img = None
+cursor_middle_img = None
 
 
 def load_skin():
-    global cursor_img, trail_img
+    global cursor_img, trail_img, cursor_middle_img
     try:
         path = Config.base_path + "/skins/" + Config.cfg["skin"]
         # Fallback skin
@@ -19,6 +20,10 @@ def load_skin():
 
     cursor_img = pg.image.load(path + "/cursor.png").convert_alpha()
     trail_img = pg.image.load(path + "/cursortrail.png").convert_alpha()
+    try:
+        cursor_middle_img = pg.image.load(path + "/cursormiddle.png").convert_alpha()
+    except FileNotFoundError:
+        pass
 
 
 class Cursor:
@@ -40,6 +45,16 @@ class Cursor:
             trail_img.get_height() * scale,
         )
         self.trail_img = pg.transform.scale(trail_img, self.trail_sizes)
+
+        if cursor_middle_img:
+            self.cursor_middle_sizes = (
+                cursor_middle_img.get_width() * scale,
+                cursor_middle_img.get_height() * scale,
+            )
+            self.cursor_middle_img = pg.transform.scale(
+                cursor_middle_img, self.cursor_middle_sizes
+            )
+
         self.trail = []
 
     def trail_tick(self):
@@ -74,9 +89,13 @@ class Cursor:
             screen.blit(
                 trail, (t[0] - self.trail_sizes[0] / 2, t[1] - self.trail_sizes[1] / 2)
             )
+
         screen.blit(
             self.cursor_img, (pos[0] - self.sizes[0] / 2, pos[1] - self.sizes[1] / 2)
         )
 
-    def set_cursor_scale(self, float):
-        pass
+        if self.cursor_middle_img:
+            screen.blit(
+                self.cursor_middle_img,
+                (pos[0] - self.cursor_middle_sizes[0] / 2, pos[1] - self.cursor_middle_sizes[1] / 2),
+            )

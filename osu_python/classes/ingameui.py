@@ -159,7 +159,7 @@ class InGameUI:
             )
 
         # HP bar
-        scale = (screen_width / hp_bar_bg_img.get_width()) / 0.5
+        scale = (screen_width / hp_bar_bg_img.get_width()) / 2
         _hp_bar_sizes = hp_bar_bg_img.get_size()
         hp_bar_bg = pg.transform.scale(
             hp_bar_bg_img, (_hp_bar_sizes[0] * scale, _hp_bar_sizes[1] * scale)
