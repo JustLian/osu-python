@@ -46,6 +46,7 @@ class Cursor:
         )
         self.trail_img = pg.transform.scale(trail_img, self.trail_sizes)
 
+        self.cursor_middle_img = None
         if cursor_middle_img:
             self.cursor_middle_sizes = (
                 cursor_middle_img.get_width() * scale,
@@ -97,5 +98,8 @@ class Cursor:
         if self.cursor_middle_img:
             screen.blit(
                 self.cursor_middle_img,
-                (pos[0] - self.cursor_middle_sizes[0] / 2, pos[1] - self.cursor_middle_sizes[1] / 2),
+                (
+                    pos[0] - self.cursor_middle_sizes[0] / 2,
+                    pos[1] - self.cursor_middle_sizes[1] / 2,
+                ),
             )
