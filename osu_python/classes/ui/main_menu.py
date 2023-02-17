@@ -151,6 +151,7 @@ class Button(root.UiElement):
         self.left_obj = left_obj
         self.color = color
         self.logo = osu_logo
+        self.last_w = 0
         self.img = icon
         self.right_border = 0
         self.text = font.render(
@@ -160,14 +161,16 @@ class Button(root.UiElement):
 
         if self.fb:
             self.left_offset = -width * .028
-            self.size = root.Animation(
-                1, (width * .1,), (width * .1,), 'LinearInOut'
-            )
+            self.original_size = width * .1
+            self.exp_size = width * .15
         else:
             self.left_offset = 0
-            self.size = root.Animation(
-                1, (width * .128,), (width * .128,), 'LinearInOut'
-            )
+            self.original_size = width * .128
+            self.exp_size = width * .188
+
+        self.size = root.Animation(
+            1, (self.original_size,), (self.original_size,), 'LinearInOut'
+        )
 
         self.offset = width * .015
 
@@ -178,6 +181,7 @@ class Button(root.UiElement):
             return
         
         w = self.size(dt)[0]
+        self.last_w = w
         h = self.logo.line_height
         top = (self.height - h) // 2
         bottom = (self.height + h) // 2
@@ -215,6 +219,24 @@ class Button(root.UiElement):
                 self.height // 2 + h * .3
             )
         )
-    
+
+    def is_colliding(self, pos):
+        return (
+            self.left_obj.right_border < pos[0] < self.left_obj.right_border + self.last_w + self.offset
+            and (self.height - self.logo.line_height) // 2 < pos[1] < (self.height + self.logo.line_height) // 2
+        )
+
+    def toggle_hover(self):
+        if not self.hover:
+            self.size = root.Animation(
+                300, (self.original_size,), (self.exp_size,), 'ElasticEaseOut'
+            )
+        else:
+            self.size = root.Animation(
+                300, (self.exp_size,), (self.original_size,), 'ElasticEaseOut'
+            )
+
+        super().toggle_hover()
+
     def click(self):
         ...
