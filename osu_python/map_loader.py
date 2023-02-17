@@ -155,10 +155,14 @@ def load_map(
             glow_size = Spinner.glow_img.get_size()[0] * coeff
             middle_size = Spinner.middle_img.get_size()[0] * coeff
             middle2_size = Spinner.middle2_img.get_size()[0] * coeff
-            spin_size = (Spinner.spin_img.get_size()[0] * coeff,
-                    Spinner.spin_img.get_size()[1] * coeff)
-            clear_size = (Spinner.clear_img.get_size()[0] * coeff, 
-                    Spinner.clear_img.get_size()[1] * coeff)
+            spin_size = (
+                Spinner.spin_img.get_size()[0] * coeff,
+                Spinner.spin_img.get_size()[1] * coeff,
+            )
+            clear_size = (
+                Spinner.clear_img.get_size()[0] * coeff,
+                Spinner.clear_img.get_size()[1] * coeff,
+            )
 
             queue.append(
                 game_object.Spinner(

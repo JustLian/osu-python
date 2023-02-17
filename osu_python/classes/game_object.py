@@ -178,8 +178,12 @@ class Spinner(pg.sprite.Sprite):
         self.bt_size = bottom_top_size
         self.appr_size = appr_size
 
-        self.bottom = pg.transform.scale(Spinner.bottom_img, (bottom_top_size, bottom_top_size))
-        self.top = pg.transform.scale(Spinner.top_img, (bottom_top_size, bottom_top_size))
+        self.bottom = pg.transform.scale(
+            Spinner.bottom_img, (bottom_top_size, bottom_top_size)
+        )
+        self.top = pg.transform.scale(
+            Spinner.top_img, (bottom_top_size, bottom_top_size)
+        )
         self.glow = pg.transform.scale(Spinner.glow_img, (glow_size, glow_size))
         self.middle = pg.transform.scale(Spinner.middle_img, (middle_size, middle_size))
         self.middle2 = pg.transform.scale(
@@ -188,12 +192,8 @@ class Spinner(pg.sprite.Sprite):
         self.appr_circle = pg.transform.scale(
             Spinner.appr_circle_img, (self.appr_size, self.appr_size)
         )
-        self.spin = pg.transform.scale(
-            Spinner.spin_img, spin_size
-        )
-        self.clear = pg.transform.scale(
-            Spinner.clear_img, clear_size
-        )
+        self.spin = pg.transform.scale(Spinner.spin_img, spin_size)
+        self.clear = pg.transform.scale(Spinner.clear_img, clear_size)
 
         self.x, self.y = location[0], location[1]
 
@@ -217,7 +217,7 @@ class Spinner(pg.sprite.Sprite):
         self.adding_bonus_points = False
 
         self.touching = False
-        
+
         self.spin_coeff0 = 0.2 * self.spin.get_size()[0] / (fade_in_time - appear_time)
         self.spin_coeff1 = 0.2 * self.spin.get_size()[1] / (fade_in_time - appear_time)
         self.spin_fade_pms = 255 / (fade_in_time - appear_time)
@@ -228,7 +228,7 @@ class Spinner(pg.sprite.Sprite):
 
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
-        if not(time > self.endtime - 400):
+        if not (time > self.endtime - 400):
             if self.fade_in_time >= time:
                 for part in self.sps:
                     part.set_alpha((time - self.appear_time) * self.fade_pms)
@@ -241,7 +241,7 @@ class Spinner(pg.sprite.Sprite):
 
             if self.fade_in_time > time:
                 self.draw_spin(screen, time)
-            
+
             return True
 
         else:
@@ -453,7 +453,10 @@ class Circle(pg.sprite.Sprite):
         elif self.hit_windows[1] >= abs(self.hit_time - time):
             self.score = score_100_img
             return 100
-        elif self.hit_windows[2] >= abs(self.hit_time - time) or -100 < self.hit_time - time < 0:
+        elif (
+            self.hit_windows[2] >= abs(self.hit_time - time)
+            or -100 < self.hit_time - time < 0
+        ):
             self.score = score_50_img
             return 50
         else:
@@ -616,6 +619,7 @@ class Slider(Circle):
             hit_callback,
         )
 
+        self.rect.x, self.rect.y = body[0]
         self.combo_value = combo_value
         self.combo_color = combo_color
 

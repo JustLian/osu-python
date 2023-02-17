@@ -214,5 +214,7 @@ class InGameUI:
         return pg.transform.scale(background, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
 
     def drain_hp(self, current_time):
-        self.hp -= (current_time - self.last_hp_drain) * 0.000005 * (1 + self.map_hp / 2)
+        self.hp -= (
+            (current_time - self.last_hp_drain) * 0.000005 * (1 + self.map_hp / 2)
+        )
         self.last_hp_drain = current_time
