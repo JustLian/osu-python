@@ -506,12 +506,13 @@ class Circle(pg.sprite.Sprite):
 
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score from current time"""
-        need = (time - self.hit_time + 400) // 100
-        score = self.score.copy()
-        w, h = score.get_size()
+        w, h = self.score.get_size()
+        scale = (self.hit_size / self.score.get_height()) / 2.3
+        w *= scale
+        h *= scale
+        score = pg.transform.scale(self.score, (w, h))
 
         score.set_alpha(255 - (255 / 400) * (time - self.endtime + 400))
-        score = pg.transform.scale(score, (w + need, h + need))
 
         screen.blit(
             score,
@@ -523,7 +524,7 @@ class Circle(pg.sprite.Sprite):
 
     def draw_combo_value(self, screen: pg.Surface, time: int):
         center = (self.rect[0] + self.rect[2] / 2, self.rect[1] + self.rect[3] / 2)
-        scale = self.hit_size / 4 / combo_numbers["0"].get_height()
+        scale = self.hit_size / 3.5 / combo_numbers["0"].get_height()
         full_width = 0
         for v in str(self.combo_value):
             full_width += combo_numbers[v].get_width()
