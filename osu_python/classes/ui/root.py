@@ -152,9 +152,14 @@ class UiManager:
     def draw(self, screen: pg.Surface, dt: int):
         """Draws all UI elements os `screen`"""
 
+        draw_after = []
         for obj in self.objects:
             if obj.shown:
-                obj.draw(screen, dt)
+                f = obj.draw(screen, dt)
+                if f is not None:
+                    draw_after.append(f)
+        for f in draw_after:
+            f()
         
 
     def update(self, events):

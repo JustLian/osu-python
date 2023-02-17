@@ -37,8 +37,18 @@ def setup(_height, _width, _screen: pg.Surface):
     # osu! logo
     logo = ui.main_menu.OsuLogo(width, height)
 
+    btns_font = pg.font.Font('./ui/torus.otf', round(height * .3 * .25 * .25))
+    btn_play = ui.main_menu.Button(
+        True, logo, logo, pg.image.load('./ui/menu/icons/osu.png').convert_alpha(),
+        'play', (102, 68, 204), width, height, btns_font
+    )
+    btn_exit = ui.main_menu.Button(
+        False, btn_play, logo, pg.image.load('./ui/menu/icons/exit.png').convert_alpha(),
+        'exit', (238, 51, 154), width, height, btns_font
+    )
+
     # setting up ui manager
-    mgr = ui.root.UiManager([logo])
+    mgr = ui.root.UiManager([logo, btn_exit, btn_play])
 
 
 def draw(dt):
