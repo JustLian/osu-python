@@ -82,6 +82,7 @@ class InGameUI:
         self.difficulty_multiplier = difficulty_multiplier
         self.mod_multiplier = mod_multiplier
 
+        self.monitor_size = monitor_size
         self.raw_background = self.background_resize(background, monitor_size)
         self.bg_dim = background_dim
         self.background = self.get_dimmed_bg().convert_alpha()
@@ -158,33 +159,50 @@ class InGameUI:
             )
 
         # HP bar
-        screen.blit(hp_bar_bg_img, (0, 0))
-        offset = (5, 17)
-        if hp_bar_marker_img:
-            offset = (12, 13)
+        scale = (screen_width / hp_bar_bg_img.get_width()) / 0.5
+        _hp_bar_sizes = hp_bar_bg_img.get_size()
+        hp_bar_bg = pg.transform.scale(
+            hp_bar_bg_img, (_hp_bar_sizes[0] * scale, _hp_bar_sizes[1] * scale)
+        )
+        screen.blit(hp_bar_bg, (0, 0))
 
-        colour = hp_bar_colour_img.copy()
+        offset = (5 * scale, 17 * scale)
+        if hp_bar_marker_img:
+            offset = (12 * scale, 14 * scale)
+
+        colour = pg.transform.scale(
+            hp_bar_colour_img,
+            (
+                hp_bar_colour_img.get_width() * scale,
+                hp_bar_colour_img.get_height() * scale,
+            ),
+        )
         screen.blit(
             colour,
             offset,
             (
                 0,
                 0,
-                hp_bar_colour_img.get_width() * self.hp,
-                hp_bar_colour_img.get_height(),
+                colour.get_width() * self.hp,
+                colour.get_height(),
             ),
         )
         if hp_bar_marker_img and self.hp > 0:
-            width = hp_bar_colour_img.get_width()
+            width = colour.get_width()
+            marker = pg.transform.scale(
+                hp_bar_marker_img,
+                (
+                    hp_bar_marker_img.get_width() * scale,
+                    hp_bar_marker_img.get_height() * scale,
+                ),
+            )
+            marker_offset = (marker.get_height() - colour.get_height()) / 2
             marker_offset = (
-                hp_bar_marker_img.get_height() - hp_bar_colour_img.get_height()
-            ) / 2
-            marker_offset = (
-                offset[0] - marker_offset - hp_bar_marker_img.get_width() / 4,
+                offset[0] - marker_offset - hp_bar_marker_img.get_width() / 3,
                 offset[1] - marker_offset,
             )
             screen.blit(
-                hp_bar_marker_img,
+                marker,
                 (marker_offset[0] + self.hp * width, marker_offset[1]),
             )
 
