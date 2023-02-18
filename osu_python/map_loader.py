@@ -191,6 +191,7 @@ def load_map(
                     (int(width / 2), int(height / 2)),
                     (),
                     hit_callback,
+                    hit_size,
                 )
             )
 

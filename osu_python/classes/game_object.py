@@ -136,6 +136,7 @@ class Spinner(pg.sprite.Sprite):
         location: tuple,
         sound_types: tuple,
         miss_callback: t.Callable,
+        hit_size,
         *group,
     ):
         """Spinner object
@@ -172,6 +173,8 @@ class Spinner(pg.sprite.Sprite):
             Which sounds should circle emit when clicked
         miss_callback : t.Callable
             Miss callback function
+        hit_size
+            Uses in drawing score
         """
 
         super().__init__(*group)
@@ -232,6 +235,16 @@ class Spinner(pg.sprite.Sprite):
         self.clear_coeff1 = 0.2 * self.clear.get_size()[1] / 400
         self.clear_fade_pms = 255 / 400
 
+        self.last_coords = (0, 0)
+        self.angle_mouse = 0
+        self.angle_circle = 0
+
+        self.drawing_clear = False
+        self.hit_size = hit_size
+
+        self.rnr = 40
+        # TODO: calculate required number of rotations
+
     def draw(self, screen: pg.Surface, time: int):
         """Controls drawing processes"""
         if not (time > self.endtime - 400):
@@ -247,12 +260,24 @@ class Spinner(pg.sprite.Sprite):
 
             if self.fade_in_time > time:
                 self.draw_spin(screen, time)
+            
+            if (self.angle_circle / 360) / self.rnr >= 1:
+                self.score = score_300_img
+                self.draw_score(screen, time)
+                self.drawing_clear = True
 
             return True
 
         else:
-            self.draw_score(screen, time)
-
+            if self.drawing_clear:
+                self.draw_clear(screen, time)
+            else:
+                self.get_score()
+                self.draw_score(screen, time)
+        
+        if self.touching:
+            self.angle_change()
+        
     def draw_glow(self, screen: pg.Surface, time: int):
         """Draws glow"""
         glow = self.glow.copy()
@@ -318,12 +343,8 @@ class Spinner(pg.sprite.Sprite):
 
         screen.blit(spin, (self.x - diff, self.y + self.bt_size / 2 - diff))
 
-    def hit(self, time: int):
-        """Controls hit events"""
-        self.touching = True
-
-    def draw_score(self, screen: pg.Surface, time: int):
-        """Draws score"""
+    def draw_clear(self, screen: pg.Surface, time: int):
+        """Draws clear"""
         clear = self.clear.copy()
         new_size0 = self.clear.get_size()[0] + (self.endtime - time) * self.clear_coeff0
         new_size1 = self.clear.get_size()[1] + (self.endtime - time) * self.clear_coeff1
@@ -334,6 +355,47 @@ class Spinner(pg.sprite.Sprite):
         diff = clear.get_size()[0] / 2
 
         screen.blit(clear, (self.x - diff, self.y - diff))
+    
+    def hit(self, time: int):
+        """Controls hit events"""
+        self.touching = True
+    
+    def angle_change(self):
+        """Controls angle changes"""
+        if self.last_coords != (0, 0):
+            x1, y1 = self.last_coords
+            x2, y2 = pg.mouse.get_pos()
+            self.angle_mouse = atan2((x2 - x1), (y2 - y1))
+
+        self.last_coords = pg.mouse.get_pos()
+
+    def get_score(self):
+        """Gets score (used in drawing score)"""
+        n = round((self.angle_circle / 360) / self.rnr)
+        if n == self.rnr - 1:
+            self.score = score_100_img
+        elif n >= self.rnr * 0.25:
+            self.score = score_50_img
+        else:
+            self.score = miss_img
+    
+    def draw_score(self, screen: pg.Surface, time: int):
+        """Draws score from current time"""
+        w, h = self.score.get_size()
+        scale = (self.hit_size / self.score.get_height()) / 2.3
+        w *= scale
+        h *= scale
+        score = pg.transform.scale(self.score, (w, h))
+
+        score.set_alpha(255 - (255 / 400) * (time - self.endtime + 400))
+
+        screen.blit(
+            score,
+            (
+                self.rect.left + round((self.rect.width / 2) - (w / 2)),
+                self.rect.top + round((self.rect.height / 2) - (h / 2)),
+            ),
+        )
 
 
 class Circle(pg.sprite.Sprite):
