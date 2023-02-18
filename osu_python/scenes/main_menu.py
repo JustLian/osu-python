@@ -4,14 +4,9 @@ from glob import glob
 from random import choice
 from osu_python import utils
 from osu_python.classes import ui
-import audio2numpy as a2n
 
 
 log = getLogger('scenes/main_menu')
-
-
-def load_music(path):
-    return a2n.audio_from_file(path)
 
 
 def calc_bg_offset(pos):
@@ -21,7 +16,7 @@ def calc_bg_offset(pos):
     )
 
 
-def setup(_height, _width, _screen: pg.Surface):
+def setup(_height, _width, _screen: pg.Surface, play_fn):
     global height, width, screen, bg, logo, mgr, global_bg_offset
     height = _height
     width = _width
@@ -38,9 +33,13 @@ def setup(_height, _width, _screen: pg.Surface):
     logo = ui.main_menu.OsuLogo(width, height)
 
     btns_font = pg.font.Font('./ui/torus.otf', round(height * .3 * .25 * .25))
+
+    def play_click_fn():
+        play_fn(logo.bm, 0)
+
     btn_play = ui.main_menu.Button(
         True, logo, logo, pg.image.load('./ui/menu/icons/osu.png').convert_alpha(),
-        'play', (102, 68, 204), width, height, btns_font
+        'play', (102, 68, 204), width, height, btns_font, play_click_fn
     )
     btn_exit = ui.main_menu.Button(
         False, btn_play, logo, pg.image.load('./ui/menu/icons/exit.png').convert_alpha(),

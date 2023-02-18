@@ -1,6 +1,9 @@
 import pygame as pg
 from osu_python.classes.ui import root
 from osu_python import utils
+from osu_python.classes import Library
+from random import randint
+import typing as t
 
 
 class OsuLogo(root.UiElement):
@@ -28,6 +31,11 @@ class OsuLogo(root.UiElement):
 
         self.goal_size = self.rect.height
         self.step = 0
+
+        self.bm = randint(1, len(Library.db))
+        while 'path' not in Library.db.get(doc_id=self.bm):
+            self.bm = randint(1, len(Library.db))
+        # print(Library.db.get(doc_id=self.bm)['path'])
 
         # logo animations
         self.size = root.Animation(
@@ -145,8 +153,11 @@ class Button(root.UiElement):
         icon: pg.Surface,
         text: str, color: tuple,
         width: int, height: int,
-        font: pg.font.Font
+        font: pg.font.Font,
+        on_click: t.Callable = None
     ):
+        if on_click:
+            self.click = on_click
         self.width, self.height = width, height
         self.left_obj = left_obj
         self.color = color
