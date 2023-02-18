@@ -94,7 +94,8 @@ class InGameUI:
 
     def hit(self, score: int):
         """Updates score with hit score"""
-        self.scores[str(score)] += 1
+        if score != 10:
+            self.scores[str(score)] += 1
         if score != 0:
             self.score += score * (
                 1

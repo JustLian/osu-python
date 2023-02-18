@@ -123,6 +123,16 @@ def load_map(
                 c = obj.curve(n / 100)
                 body.append((round(add_x + c.x * scale), round(add_y + c.y * scale)))
 
+            tick_points = []
+            for p in obj.tick_points:
+                tick_points.append(
+                    (
+                        add_x + p.x * scale,
+                        add_x + p.y * scale,
+                        p.offset.total_seconds() * 1000,
+                    )
+                )
+
             queue.append(
                 game_object.Slider(
                     time,
@@ -139,6 +149,7 @@ def load_map(
                     body,
                     endtime,
                     slider_border,
+                    tick_points,
                 )
             )
 

@@ -63,6 +63,12 @@ def load_skin():
         path + "/hitcircleoverlay.png"
     ).convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
+    Slider.tick_point_img = pg.image.load(
+        path + "/sliderscorepoint.png"
+    ).convert_alpha()
+    Slider.slider_follow_circle = pg.image.load(
+        path + "/sliderfollowcircle.png"
+    ).convert_alpha()
 
     try:
         frames_amount = Config.skin_ini["[General]"]["SliderBallFrames"]
@@ -559,7 +565,9 @@ class Slider(Circle):
     hit_circle_overlay_img = None
     appr_circle_img = None
     slider_ball_frames_img = None
+    tick_point_img = None
     slider_track_override = None
+    slider_follow_circle = None
 
     def __init__(
         self,
@@ -577,6 +585,7 @@ class Slider(Circle):
         body: t.Tuple[t.Tuple[int, int]],
         endtime: int,
         slider_border: t.Tuple[int, int, int],
+        tick_points: t.List[t.Tuple[int, int, int]],
         *group,
     ):
         """Slider object
@@ -605,12 +614,14 @@ class Slider(Circle):
             Hit windows for 300, 100 and 50
         miss_callback : t.Callable
             Miss callback function
-        body : Tuple[Tuple[int, int]]:
+        body : Tuple[Tuple[int, int]]
             Coordinates of points in slider's body
         endtime : int
             Endtime of slider,
         slider_border : Tuple[int, int, int]
             Color of slider border
+        tick_points : t.List[t.Tuple[int, int, int]]
+            Tick points of slider
         """
 
         super().__init__(
@@ -657,8 +668,10 @@ class Slider(Circle):
         self.current_point_index = 0
         self.velocity = len(self.body) / (self.endtime - self.hit_time)
 
+        self.tick_points = tick_points
+        self.last_follow_point = 0
         self.count_passed_points = 0
-        self.count_points = 0
+        self.count_points = len(tick_points)
 
         self.drawing_score = False
         self.hit_callback = hit_callback
@@ -740,21 +753,56 @@ class Slider(Circle):
         """Draws slider for passed time"""
         if not self.drawing_score:
             self.draw_body(screen, time)
+            self.draw_tick_points(screen, time)
         if self.drawing_score == True:
             self.draw_score(screen, time)
         elif time > self.hit_time or self.begin_touch:
+            self.draw_tick_points(screen, time)
             self.draw_slider_ball(screen, time)
-            self.count_points += 1
             if self.touching:
-                self.draw_body_appr_circle(screen, time)
-                self.count_passed_points += 1
+                for point in self.tick_points:
+                    if abs(time - point[2]) <= 50:
+                        self.hit_callback(10)
+                        self.count_passed_points += 1
+                        self.tick_points.remove(point)
+                        self.last_follow_point = 10
+                self.draw_follow_circle(screen, time)
         else:
             self.draw_hit_circle(screen, time)
             self.draw_combo_value(screen, time)
             return True
 
+    def draw_tick_points(self, screen: pg.Surface, time: int):
+        offset = (
+            self.tick_point_img.get_width() / 2,
+            self.tick_point_img.get_height() / 2,
+        )
+        time_offset = 0
+        for p in self.tick_points:
+            if (
+                min(
+                    ((p[0] - self.body[-1][0]) ** 2 + (p[1] - self.body[-1][1]) ** 2)
+                    ** 0.5,
+                    ((p[0] - self.body[0][0]) ** 2 + (p[1] - self.body[0][1]) ** 2)
+                    ** 0.5,
+                )
+                > 35
+            ):
+                self.tick_point_img.set_alpha(
+                    (time - (self.appear_time + time_offset)) * self.fade_pms / 1.3
+                )
+                time_offset += 300
+                screen.blit(
+                    self.tick_point_img,
+                    (
+                        (p[0] - offset[0]) + self.hit_size / 2,
+                        (p[1] - offset[1]) + self.hit_size / 2,
+                    ),
+                )
+
     def hit(self, time: int):
         """Controls hit events"""
+        self.last_follow_point = 10
         if time > self.hit_time:
             self.touching = True
         else:
@@ -774,7 +822,9 @@ class Slider(Circle):
             point_2 = self.body[min(ind + 10, len(self.body) - 1)]
             angle = degrees(atan2(point_2[1] - point_1[1], point_2[0] - point_1[0]))
 
-            frame = self.slider_ball_frames[self.slider_ball_frame // 2]
+            frame = self.slider_ball_frames[
+                (self.slider_ball_frame // 2) % len(self.slider_ball_frames)
+            ]
             rotated_frame = pg.transform.rotate(frame, -angle)
             offset = (
                 (rotated_frame.get_width() - frame.get_width()) // 2
@@ -784,43 +834,27 @@ class Slider(Circle):
             )
             screen.blit(rotated_frame, (x - offset[0], y - offset[1]))
             self.slider_ball_frame += 1
-            if self.slider_ball_frame >= len(self.slider_ball_frames) * 2:
-                self.slider_ball_frame = 0
 
             if self.current_point_index == 99:
                 self.get_score()
                 self.drawing_score = True
                 self.endtime += 400
 
-    def draw_body_appr_circle(self, screen: pg.Surface, time: int):
+    def draw_follow_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle on slider"""
-        if (time - self.hit_time) // 250 % 2 == 0:
-            coeff = 0.9
+        if self.last_follow_point > 0:
+            coeff = 1 + (self.last_follow_point) / 100
+            self.last_follow_point -= 1
         else:
             coeff = 1
 
         new_size = self.appr_size * coeff
         size_diff = (new_size - self.hit_size) / 2
         screen.blit(
-            pg.transform.scale(self.appr_circle, (new_size, new_size)).convert_alpha(),
+            pg.transform.scale(
+                self.slider_follow_circle, (new_size, new_size)
+            ).convert_alpha(),
             (self.rect.x - size_diff, self.rect.y - size_diff),
-        )
-
-    def draw_score(self, screen: pg.Surface, time: int):
-        """Draws score from current time"""
-        need = (time - self.hit_time + 400) // 100
-        score = self.score.copy()
-        w, h = score.get_size()
-
-        score.set_alpha(255 - (255 / 400) * (time - self.endtime + 400))
-        score = pg.transform.scale(score, (w + need, h + need))
-
-        screen.blit(
-            score,
-            (
-                self.rect.left + round((self.rect.width / 2) - (w / 2)),
-                self.rect.top + round((self.rect.height / 2) - (h / 2)),
-            ),
         )
 
     def get_score(self):
