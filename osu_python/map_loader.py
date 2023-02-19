@@ -119,8 +119,9 @@ def load_map(
             endtime = obj.end_time.total_seconds() * 1000
 
             body = []
-            for n in range(100):
-                c = obj.curve(n / 100)
+            point_count = round(obj.length / 8)
+            for n in range(point_count):
+                c = obj.curve(n / point_count)
                 body.append((round(add_x + c.x * scale), round(add_y + c.y * scale)))
 
             tick_points = []
@@ -203,19 +204,22 @@ def get_background(path: os.PathLike):
     all_lines = f.readlines()
     for i, line in enumerate(all_lines):
         if "[Events]" in line:
-            str_path = str(path)
-            bg_path = (
-                path[: len(str_path) - len(str_path.split("/")[-1])]
-                + all_lines[i + 2].split('"')[1]
-            )
-            break
+            for i2 in range(20):
+                i3 = i2 + i
+                if all_lines[i3].split('"')[0].strip() == "0,0,":
+                    str_path = str(path)
+                    bg_path = (
+                        path[: len(str_path) - len(str_path.split("/")[-1])]
+                        + all_lines[i3].split('"')[1]
+                    )
+                    break
     bg = None
     if bg_path:
         try:
             bg = pg.image.load(bg_path)
         except FileNotFoundError:
             log.warning("Map background was not found in map's directory")
-            bg = pg.Surface((640, 480))
+            bg = pg.Surface((2, 2))
             bg.fill((0, 0, 0))
     return bg
 

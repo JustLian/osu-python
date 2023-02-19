@@ -118,6 +118,7 @@ def calculate_difficulty_multiplier(
 
 
 def convert_type(value: str):
+    value.split("//")[0]
     try:
         return int(value)
     except ValueError:
@@ -173,7 +174,7 @@ def parse_additional_info(path: os.PathLike):
         if line.strip() == "[HitObjects]":
             category = "[HitObjects]"
             continue
-        if category == "[Colours]":
+        if category == "[Colours]" and line.strip().startswith("Combo"):
             try:
                 colour = line.split(":")[1]
                 colours.append(convert_type(colour))

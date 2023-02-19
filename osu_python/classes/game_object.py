@@ -63,9 +63,12 @@ def load_skin():
         path + "/hitcircleoverlay.png"
     ).convert_alpha()
     Slider.appr_circle_img = pg.image.load(path + "/approachcircle.png").convert_alpha()
-    Slider.tick_point_img = pg.image.load(
-        path + "/sliderscorepoint.png"
-    ).convert_alpha()
+    try:
+        Slider.tick_point_img = pg.image.load(
+            path + "/sliderscorepoint.png"
+        ).convert_alpha()
+    except FileNotFoundError:
+        pass
     Slider.slider_follow_circle = pg.image.load(
         path + "/sliderfollowcircle.png"
     ).convert_alpha()
@@ -773,6 +776,8 @@ class Slider(Circle):
             return True
 
     def draw_tick_points(self, screen: pg.Surface, time: int):
+        if self.tick_point_img == None:
+            return
         offset = (
             self.tick_point_img.get_width() / 2,
             self.tick_point_img.get_height() / 2,
@@ -818,8 +823,8 @@ class Slider(Circle):
             x, y = self.body[ind]
             self.rect.left, self.rect.top = x, y
 
-            point_1 = self.body[min(ind, len(self.body) - 11)]
-            point_2 = self.body[min(ind + 10, len(self.body) - 1)]
+            point_1 = self.body[ind]
+            point_2 = self.body[min(ind + 1, len(self.body) - 1)]
             angle = degrees(atan2(point_2[1] - point_1[1], point_2[0] - point_1[0]))
 
             frame = self.slider_ball_frames[
