@@ -4,7 +4,7 @@ from screeninfo import get_monitors
 from osu_python.classes import Config, cursor, ingameui
 from logging import getLogger
 from os.path import isdir
-from math import degrees, atan2
+from math import degrees, atan2, ceil, atan, sin, cos
 
 
 log = getLogger("game_object")
@@ -731,7 +731,14 @@ class Slider(Circle):
         self.touching = False
 
         self.current_point_index = 0
+        self.next_point_index = 0
         self.velocity = len(self.body) / (self.endtime - self.hit_time)
+
+        self.period_time = (self.endtime - self.hit_time) / (len(self.body) - 1)
+
+        x1, y1 = self.body[0]
+        x2, y2 = self.body[1]
+        self.period_velocity = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 / self.period_time
 
         self.tick_points = tick_points
         self.last_follow_point = 0
@@ -740,6 +747,8 @@ class Slider(Circle):
 
         self.drawing_score = False
         self.hit_callback = hit_callback
+
+        self.k, self.b = 0, 0
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -879,14 +888,26 @@ class Slider(Circle):
 
     def draw_slider_ball(self, screen: pg.Surface, time: int):
         """Draws slider ball on slider"""
-        if round(self.velocity * (time - self.hit_time)) >= 1:
-            ind = round(self.velocity * (time - self.hit_time)) - 1
-            self.current_point_index = ind
-            x, y = self.body[ind]
+        if time - self.hit_time > 0:
+            cur_ind = int((time - self.hit_time) // self.period_time)
+            next_ind = ceil((time - self.hit_time) / self.period_time)
+
+            x1, y1 = self.body[cur_ind]
+            x2, y2 = self.body[next_ind]
+
+            if self.next_point_index != next_ind:
+                self.k, self.b = self.get_formula(x1, y1, x2, y2)
+                self.next_point_index = next_ind
+            
+            c = self.period_velocity * ((time - self.hit_time) - self.period_time * cur_ind)
+            ang = atan(self.k) 
+            x = round(x1 + cos(ang) * c)
+            y = round(y1 + sin(ang) * c)
+
             self.rect.left, self.rect.top = x, y
 
-            point_1 = self.body[ind]
-            point_2 = self.body[min(ind + 1, len(self.body) - 1)]
+            point_1 = (x1, y1)
+            point_2 = (x2, y2)
             angle = degrees(atan2(point_2[1] - point_1[1], point_2[0] - point_1[0]))
 
             frame = self.slider_ball_frames[
@@ -902,7 +923,7 @@ class Slider(Circle):
             screen.blit(rotated_frame, (x - offset[0], y - offset[1]))
             self.slider_ball_frame += 1
 
-            if self.current_point_index == 99:
+            if self.body[cur_ind] == self.body[-1]:
                 self.get_score()
                 self.drawing_score = True
                 self.endtime += 400
@@ -942,3 +963,14 @@ class Slider(Circle):
         else:
             self.score = miss_img
             self.hit_callback(0)
+    
+    def get_formula(self, x1, y1, x2, y2):
+        """Returns the current k and b of a linear equation"""
+        if x1 - x2 == 0:
+            k = 0
+        else:
+            k = (y1 - y2) / (x1 - x2)
+        
+        b = y2 - k*x2
+
+        return k, b
