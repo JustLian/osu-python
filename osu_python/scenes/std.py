@@ -80,6 +80,10 @@ def update(events):
                         ) ** 0.5 <= (obj_pos[2] / 2):
                             obj.touching = False
                             break
+                    if obj.rect.collidepoint(mouse_pos) and isinstance(
+                        obj, classes.game_object.Spinner
+                    ):
+                        obj.touching = False
 
 
 def draw(screen: pg.Surface):
