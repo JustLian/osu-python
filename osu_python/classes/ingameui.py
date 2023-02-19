@@ -94,7 +94,7 @@ class InGameUI:
 
     def hit(self, score: int):
         """Updates score with hit score"""
-        if score != 10:
+        if score not in [10, 30]:
             self.scores[str(score)] += 1
         if score != 0:
             self.score += score * (
@@ -110,7 +110,7 @@ class InGameUI:
             self.hp = min(self.hp + (0.04 * (score / 100)), 1)
         else:
             self.combo = 0
-            self.hp -= 0.05 * (1 + self.map_hp / 2)
+            self.hp -= 0.02 * (1 + self.map_hp / 2)
             if self.hp < 0:
                 self.hp = 0
         self.accuracy = utils.calculate_accuracy(self.scores.values())
@@ -160,7 +160,7 @@ class InGameUI:
             )
 
         # HP bar
-        scale = (screen_width / hp_bar_bg_img.get_width()) / 2
+        scale = (screen_width / hp_bar_bg_img.get_width()) / 1.5
         _hp_bar_sizes = hp_bar_bg_img.get_size()
         hp_bar_bg = pg.transform.scale(
             hp_bar_bg_img, (_hp_bar_sizes[0] * scale, _hp_bar_sizes[1] * scale)

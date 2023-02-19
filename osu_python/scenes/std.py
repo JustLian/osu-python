@@ -16,37 +16,41 @@ def click(mouse_pos: t.Tuple[int, int]):
             continue
 
         elif obj.appear_time < current_time and obj.score == None:
+            if obj.hit_time - current_time > 10:
+                continue
             mouse_pos = pg.mouse.get_pos()
-            if obj.rect.collidepoint(mouse_pos) and isinstance(
-                obj, classes.game_object.Circle
-            ):
-                obj_pos = obj.rect
-                obj_center = (
-                    obj_pos[0] + obj_pos[2] / 2,
-                    obj_pos[1] + obj_pos[3] / 2,
-                )
-                if (
-                    (mouse_pos[0] - obj_center[0]) ** 2
-                    + (mouse_pos[1] - obj_center[1]) ** 2
-                ) ** 0.5 <= (obj_pos[2] / 2):
-                    if index != 0:
-                        prev = all_objects[index - 1]
-                        if isinstance(prev, classes.game_object.Circle):
-                            if prev.score == None and abs(prev.hit_time - obj.hit_time) < 100:
-                                obj.count_vibr = 20
-                                break
-                    score = obj.hit(current_time)
-                    if score:
-                        ui.hit(score)
-                    break
             if obj.rect.collidepoint(mouse_pos) and isinstance(
                 obj, classes.game_object.Spinner
             ):
                 obj.hit(current_time)
+                break
+            obj_pos = obj.rect
+            obj_center = (
+                obj_pos[0] + obj_pos[2] / 2,
+                obj_pos[1] + obj_pos[3] / 2,
+            )
+            if (
+                (mouse_pos[0] - obj_center[0]) ** 2
+                + (mouse_pos[1] - obj_center[1]) ** 2
+            ) ** 0.5 <= (obj_pos[2] / 2):
+                if index != 0:
+                    prev = all_objects[index - 1]
+                    if isinstance(prev, classes.game_object.Circle):
+                        if (
+                            prev.score == None
+                            and abs(prev.hit_time - obj.hit_time) < 100
+                        ):
+                            obj.count_vibr = 20
+                            break
+                score = obj.hit(current_time)
+                if score:
+                    ui.hit(score)
+                break
 
 
 def update(events):
     global c, ui
+    click(pg.mouse.get_pos())
     ui.drain_hp(current_time)
     for event in events:
         if (Config.cfg["mouse_buttons"] and event.type == pg.MOUSEBUTTONDOWN) or (

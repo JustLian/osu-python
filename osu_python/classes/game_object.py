@@ -72,6 +72,9 @@ def load_skin():
     Slider.slider_follow_circle = pg.image.load(
         path + "/sliderfollowcircle.png"
     ).convert_alpha()
+    Slider.reverse_arrow_img = pg.transform.scale(
+        pg.image.load(path + "/reversearrow.png").convert_alpha(), (128, 128)
+    )
 
     try:
         frames_amount = Config.skin_ini["[General]"]["SliderBallFrames"]
@@ -263,7 +266,7 @@ class Spinner(pg.sprite.Sprite):
 
             if self.fade_in_time > time:
                 self.draw_spin(screen, time)
-            
+
             if (self.angle_circle / 360) / self.rnr >= 1:
                 self.score = score_300_img
                 self.draw_score(screen, time)
@@ -277,10 +280,10 @@ class Spinner(pg.sprite.Sprite):
             else:
                 self.get_score()
                 self.draw_score(screen, time)
-        
+
         if self.touching:
             self.angle_change()
-        
+
     def draw_glow(self, screen: pg.Surface, time: int):
         """Draws glow"""
         glow = self.glow.copy()
@@ -358,11 +361,11 @@ class Spinner(pg.sprite.Sprite):
         diff = clear.get_size()[0] / 2
 
         screen.blit(clear, (self.x - diff, self.y - diff))
-    
+
     def hit(self, time: int):
         """Controls hit events"""
         self.touching = True
-    
+
     def angle_change(self):
         """Controls angle changes"""
         if self.last_coords != (0, 0):
@@ -381,7 +384,7 @@ class Spinner(pg.sprite.Sprite):
             self.score = score_50_img
         else:
             self.score = miss_img
-    
+
     def draw_score(self, screen: pg.Surface, time: int):
         """Draws score from current time"""
         w, h = self.score.get_size()
@@ -633,6 +636,7 @@ class Slider(Circle):
     tick_point_img = None
     slider_track_override = None
     slider_follow_circle = None
+    reverse_arrow_img = None
 
     def __init__(
         self,
@@ -651,6 +655,7 @@ class Slider(Circle):
         endtime: int,
         slider_border: t.Tuple[int, int, int],
         tick_points: t.List[t.Tuple[int, int, int]],
+        reverse_arrows: int,
         *group,
     ):
         """Slider object
@@ -687,6 +692,8 @@ class Slider(Circle):
             Color of slider border
         tick_points : t.List[t.Tuple[int, int, int]]
             Tick points of slider
+        reverse_arrows : int
+            Number of reverse arrows
         """
 
         super().__init__(
@@ -732,18 +739,27 @@ class Slider(Circle):
 
         self.current_point_index = 0
         self.next_point_index = 0
-        self.velocity = len(self.body) / (self.endtime - self.hit_time)
+        self.velocity = len(self.body) / (self.endtime - self.hit_time) * reverse_arrows
 
         self.period_time = (self.endtime - self.hit_time) / (len(self.body) - 1)
+        self.period_time /= reverse_arrows
 
         x1, y1 = self.body[0]
         x2, y2 = self.body[1]
-        self.period_velocity = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 / self.period_time
+        self.period_velocity = (
+            ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 / self.period_time * reverse_arrows
+        )
 
         self.tick_points = tick_points
         self.last_follow_point = 0
         self.count_passed_points = 0
         self.count_points = len(tick_points)
+        self.reverse_arrow_amount = reverse_arrows
+        self.reverse_arrows = []
+        for a in range(reverse_arrows - 1):
+            ind = -((a + 1) % 2)
+            self.reverse_arrows.append((*self.body[ind], ind))
+        self.last_reverse = 0
 
         self.drawing_score = False
         self.hit_callback = hit_callback
@@ -828,10 +844,12 @@ class Slider(Circle):
         if not self.drawing_score:
             self.draw_body(screen, time)
             self.draw_tick_points(screen, time)
+            self.draw_reverse_arrows(screen, time, 1)
         if self.drawing_score == True:
             self.draw_score(screen, time)
         elif time > self.hit_time or self.begin_touch:
             self.draw_tick_points(screen, time)
+            self.draw_reverse_arrows(screen, time, 2)
             self.draw_slider_ball(screen, time)
             if self.touching:
                 for point in self.tick_points:
@@ -845,6 +863,24 @@ class Slider(Circle):
             self.draw_hit_circle(screen, time)
             self.draw_combo_value(screen, time)
             return True
+
+    def draw_reverse_arrows(self, screen: pg.Surface, time: int, amount: int):
+        for arrow in self.reverse_arrows[:amount]:
+            _off = 1 if arrow[2] == 0 else -1
+            point_1 = self.body[arrow[2]]
+            point_2 = self.body[arrow[2] + _off]
+            angle = degrees(atan2(point_2[1] - point_1[1], point_2[0] - point_1[0]))
+
+            img = self.reverse_arrow_img
+            rotated_frame = pg.transform.rotate(img, -angle)
+            offset = (
+                (rotated_frame.get_width() - img.get_width()) // 2
+                - (self.hit_size - self.hit_size / 1.17) / 2,
+                (rotated_frame.get_height() - img.get_height()) // 2
+                - (self.hit_size - self.hit_size / 1.17) / 2,
+            )
+            rotated_frame.set_alpha((time - self.appear_time) * self.fade_pms)
+            screen.blit(rotated_frame, (arrow[0] - offset[0], arrow[1] - offset[1]))
 
     def draw_tick_points(self, screen: pg.Surface, time: int):
         if self.tick_point_img == None:
@@ -889,8 +925,18 @@ class Slider(Circle):
     def draw_slider_ball(self, screen: pg.Surface, time: int):
         """Draws slider ball on slider"""
         if time - self.hit_time > 0:
-            cur_ind = floor((time - self.hit_time) // self.period_time)
-            next_ind = ceil((time - self.hit_time) / self.period_time)
+            raw_cur_ind = floor((time - self.hit_time) // self.period_time)
+            raw_next_ind = ceil((time - self.hit_time) / self.period_time)
+
+            l = len(self.body) - 1
+            cur_ind = abs(raw_cur_ind % l - (raw_cur_ind // l % 2 * l))
+            next_ind = abs(raw_next_ind % l - (raw_next_ind // l % 2 * l))
+
+            rev = raw_cur_ind // l
+            if rev != self.last_reverse and self.reverse_arrows:
+                self.last_reverse = rev
+                self.reverse_arrows.pop(0)
+                self.hit_callback(30)
 
             x1, y1 = self.body[cur_ind]
             x2, y2 = self.body[next_ind]
@@ -917,11 +963,6 @@ class Slider(Circle):
             )
             screen.blit(rotated_frame, (x - offset[0], y - offset[1]))
             self.slider_ball_frame += 1
-
-            if self.body[cur_ind] == self.body[-1]:
-                self.get_score()
-                self.drawing_score = True
-                self.endtime += 400
 
     def draw_follow_circle(self, screen: pg.Surface, time: int):
         """Draws approach circle on slider"""

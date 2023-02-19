@@ -151,6 +151,7 @@ def load_map(
                     endtime,
                     slider_border,
                     tick_points,
+                    obj.repeat,
                 )
             )
 
