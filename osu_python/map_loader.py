@@ -122,7 +122,7 @@ def load_map(
             point_count = round(obj.length / 8)
             for n in range(point_count):
                 c = obj.curve(n / point_count)
-                body.append((round(add_x + c.x * scale), round(add_y + c.y * scale)))
+                body.append((add_x + c.x * scale, add_y + c.y * scale))
 
             tick_points = []
             for p in obj.tick_points:

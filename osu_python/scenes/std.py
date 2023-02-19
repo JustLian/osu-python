@@ -29,11 +29,12 @@ def click(mouse_pos: t.Tuple[int, int]):
                     (mouse_pos[0] - obj_center[0]) ** 2
                     + (mouse_pos[1] - obj_center[1]) ** 2
                 ) ** 0.5 <= (obj_pos[2] / 2):
-                    prev = all_objects[index - 1]
-                    if isinstance(prev, classes.game_object.Circle):
-                        if prev.score == None and abs(prev.hit_time - obj.hit_time) < 100:
-                            obj.count_vibr = 20
-                            break
+                    if index != 0:
+                        prev = all_objects[index - 1]
+                        if isinstance(prev, classes.game_object.Circle):
+                            if prev.score == None and abs(prev.hit_time - obj.hit_time) < 100:
+                                obj.count_vibr = 20
+                                break
                     score = obj.hit(current_time)
                     if score:
                         ui.hit(score)

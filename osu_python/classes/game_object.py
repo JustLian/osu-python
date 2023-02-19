@@ -4,7 +4,7 @@ from screeninfo import get_monitors
 from osu_python.classes import Config, cursor, ingameui
 from logging import getLogger
 from os.path import isdir
-from math import degrees, atan2, ceil, atan, sin, cos
+from math import degrees, atan2, ceil, floor
 
 
 log = getLogger("game_object")
@@ -889,20 +889,15 @@ class Slider(Circle):
     def draw_slider_ball(self, screen: pg.Surface, time: int):
         """Draws slider ball on slider"""
         if time - self.hit_time > 0:
-            cur_ind = int((time - self.hit_time) // self.period_time)
+            cur_ind = floor((time - self.hit_time) // self.period_time)
             next_ind = ceil((time - self.hit_time) / self.period_time)
 
             x1, y1 = self.body[cur_ind]
             x2, y2 = self.body[next_ind]
 
-            if self.next_point_index != next_ind:
-                self.k, self.b = self.get_formula(x1, y1, x2, y2)
-                self.next_point_index = next_ind
-            
-            c = self.period_velocity * ((time - self.hit_time) - self.period_time * cur_ind)
-            ang = atan(self.k) 
-            x = round(x1 + cos(ang) * c)
-            y = round(y1 + sin(ang) * c)
+            ibt = ((time - self.hit_time) % self.period_time) / self.period_time
+            x = x1 + (x2 - x1) * ibt
+            y = y1 + (y2 - y1) * ibt
 
             self.rect.left, self.rect.top = x, y
 
@@ -963,14 +958,3 @@ class Slider(Circle):
         else:
             self.score = miss_img
             self.hit_callback(0)
-    
-    def get_formula(self, x1, y1, x2, y2):
-        """Returns the current k and b of a linear equation"""
-        if x1 - x2 == 0:
-            k = 0
-        else:
-            k = (y1 - y2) / (x1 - x2)
-        
-        b = y2 - k*x2
-
-        return k, b
