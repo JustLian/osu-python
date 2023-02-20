@@ -129,7 +129,7 @@ def load_map(
                 tick_points.append(
                     (
                         add_x + p.x * scale,
-                        add_x + p.y * scale,
+                        add_y + p.y * scale,
                         p.offset.total_seconds() * 1000,
                     )
                 )
