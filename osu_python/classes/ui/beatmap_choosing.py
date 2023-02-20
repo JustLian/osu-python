@@ -1,6 +1,7 @@
 import pygame as pg
 from osu_python.classes.ui import root
 from osu_python.classes import Library, Config
+from osu_python import utils, map_loader
 
 
 def load_skin():
@@ -33,6 +34,17 @@ class BeatmapSetCard(root.UiElement):
             (self.width, self.height)
         )
 
+        self.thumbnail_width = self.height * 1.6
+        self.thumbnail = utils.fit_image_to_screen(
+            map_loader.get_background(
+                Library.path_for_diff(self.data, 0)
+            ).convert(), (
+                self.height * 0.8737864078 * 1.5, self.height * 0.8737864078
+            )
+        ).convert()
+        ts = self.thumbnail.get_width()
+        self.thumbnail_offset = self.height * 0.8737864078 * 1.5 // 2 - ts // 2 + self.width * .004291845494
+
         line_1 = self.font.render(
             self.data['title'],
             True, (0, 0, 0)
@@ -57,14 +69,20 @@ class BeatmapSetCard(root.UiElement):
         screen.blit(
             self.line_1,
             (
-                img_pos[0] + self.width * .015,
+                img_pos[0] + self.width * .015 + self.thumbnail_width,
                 img_pos[1] + self.height * .01 + self.const
             )
         )
         screen.blit(
             self.line_2,
             (
-                img_pos[0] + self.width * .015,
+                img_pos[0] + self.width * .015 + self.thumbnail_width,
                 img_pos[1] + self.height * .02 + self.line_1.get_height() + self.const
+            )
+        )
+        screen.blit(
+            self.thumbnail, (
+                img_pos[0] + self.thumbnail_offset,
+                img_pos[1] + self.height * 0.06796116505
             )
         )
