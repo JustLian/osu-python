@@ -173,12 +173,15 @@ def get_background(path: os.PathLike):
     all_lines = f.readlines()
     for i, line in enumerate(all_lines):
         if "[Events]" in line:
-            str_path = str(path)
-            bg_path = (
-                path[: len(str_path) - len(str_path.split("/")[-1])]
-                + all_lines[i + 2].split('"')[1]
-            )
-            break
+            for i2 in range(20):
+                i3 = i2 + i
+                if all_lines[i3].startswith("0,0,"):
+                    str_path = str(path)
+                    bg_path = (
+                        path[: len(str_path) - len(str_path.split("\\")[-1])]
+                        + all_lines[i3].split('"')[1]
+                    )
+                    break
     bg = None
     if bg_path:
         try:
