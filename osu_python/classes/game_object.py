@@ -72,9 +72,10 @@ def load_skin():
     Slider.slider_follow_circle = pg.image.load(
         path + "/sliderfollowcircle.png"
     ).convert_alpha()
-    Slider.reverse_arrow_img = pg.transform.scale(
-        pg.image.load(path + "/reversearrow.png").convert_alpha(), (128, 128)
-    )
+    _temp = pg.Surface((100, 100), pg.SRCALPHA, 32)
+    _temp_img = pg.image.load(path + "/reversearrow.png").convert_alpha()
+    _temp.blit(_temp_img, ((100 - _temp_img.get_width()) / 2, (100 - _temp_img.get_height()) / 2))
+    Slider.reverse_arrow_img = _temp.convert_alpha()
 
     try:
         frames_amount = Config.skin_ini["[General]"]["SliderBallFrames"]
@@ -760,6 +761,11 @@ class Slider(Circle):
             ind = -((a + 1) % 2)
             self.reverse_arrows.append((*self.body[ind], ind))
         self.last_reverse = 0
+        
+        self.reverse_arrow = pg.transform.scale(
+            Slider.reverse_arrow_img,
+            (hit_size / 1.28, hit_size / 1.28)
+        )
 
         self.drawing_score = False
         self.hit_callback = hit_callback
@@ -871,16 +877,14 @@ class Slider(Circle):
             point_2 = self.body[arrow[2] + _off]
             angle = degrees(atan2(point_2[1] - point_1[1], point_2[0] - point_1[0]))
 
-            img = self.reverse_arrow_img
+            img = self.reverse_arrow
             rotated_frame = pg.transform.rotate(img, -angle)
             offset = (
-                (rotated_frame.get_width() - img.get_width()) // 2
-                - (self.hit_size - self.hit_size / 1.17) / 2,
-                (rotated_frame.get_height() - img.get_height()) // 2
-                - (self.hit_size - self.hit_size / 1.17) / 2,
+                (self.hit_size - img.get_width()) / 2 - (rotated_frame.get_width() - img.get_width()) // 2,
+                (self.hit_size - img.get_height()) / 2 - (rotated_frame.get_height() - img.get_height()) // 2,
             )
             rotated_frame.set_alpha((time - self.appear_time) * self.fade_pms)
-            screen.blit(rotated_frame, (arrow[0] - offset[0], arrow[1] - offset[1]))
+            screen.blit(rotated_frame, (arrow[0] + offset[0], arrow[1] + offset[1]))
 
     def draw_tick_points(self, screen: pg.Surface, time: int):
         if self.tick_point_img == None:
@@ -936,7 +940,13 @@ class Slider(Circle):
             if rev != self.last_reverse and self.reverse_arrows:
                 self.last_reverse = rev
                 self.reverse_arrows.pop(0)
-                self.hit_callback(30)
+                self.count_points += 1
+                if self.touching:
+                    self.hit_callback(30)
+                    self.count_passed_points += 1
+                else:
+                    self.hit_callback(0)
+                    self.count_passed_points = 0
 
             x1, y1 = self.body[cur_ind]
             x2, y2 = self.body[next_ind]

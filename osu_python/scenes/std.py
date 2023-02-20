@@ -16,8 +16,6 @@ def click(mouse_pos: t.Tuple[int, int]):
             continue
 
         elif obj.appear_time < current_time and obj.score == None:
-            if obj.hit_time - current_time > 10:
-                continue
             mouse_pos = pg.mouse.get_pos()
             if obj.rect.collidepoint(mouse_pos) and isinstance(
                 obj, classes.game_object.Spinner
@@ -50,7 +48,6 @@ def click(mouse_pos: t.Tuple[int, int]):
 
 def update(events):
     global c, ui
-    click(pg.mouse.get_pos())
     ui.drain_hp(current_time)
     for event in events:
         if (Config.cfg["mouse_buttons"] and event.type == pg.MOUSEBUTTONDOWN) or (
