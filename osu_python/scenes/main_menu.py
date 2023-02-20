@@ -3,7 +3,7 @@ import pygame as pg
 from glob import glob
 from random import choice
 from osu_python import utils
-from osu_python.classes import ui
+from osu_python.classes import ui, game_object
 
 
 log = getLogger('scenes/main_menu')

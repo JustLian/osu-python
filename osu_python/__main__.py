@@ -98,8 +98,10 @@ def run():
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
 
-    change_scene(scenes.main_menu, lambda *args: change_scene(scenes.beatmap_choosing, *args))
-    # change_scene(scenes.loading, lambda p: change_scene(scenes.std, p))
+    change_scene(
+        scenes.loading,
+        lambda: change_scene(scenes.main_menu, lambda *args: change_scene(scenes.beatmap_choosing, *args))
+    )
 
     cursor = classes.Cursor(1.5)
 

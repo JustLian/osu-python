@@ -1,7 +1,7 @@
 import pygame as pg
 import typing as t
-from screeninfo import get_monitors
 from osu_python.classes import Config, cursor, ingameui
+from osu_python.classes.ui import beatmap_choosing
 from logging import getLogger
 from os.path import isdir
 
@@ -78,6 +78,9 @@ def load_skin():
 
     # ingameui images
     ingameui.load_skin()
+
+    # ui images
+    beatmap_choosing.load_skin()
 
     log.info("Skin reloaded")
 
