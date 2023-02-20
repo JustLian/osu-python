@@ -49,8 +49,8 @@ class BeatmapSetCard(root.UiElement):
             line_2, (line_2.get_width() * (self.height * .16766784452 / line_2.get_height()), self.height * .16766784452)
         )
     
-    def draw(self, y_pos: int, screen: pg.Surface, dt: float):
-        img_pos = (screen.get_width() - self.width, y_pos - self.height // 2)
+    def draw(self, y_pos: int, screen: pg.Surface, dt: float, scroll):
+        img_pos = (screen.get_width() - self.width + scroll[0], y_pos - self.height // 2 + scroll[1])
         screen.blit(
             self.img, img_pos
         )
