@@ -12,7 +12,7 @@ def change_bms(new_bms_index, new_diff_index):
     dp = Library.path_for_diff(Library.db.get(doc_id=bms_index), diff_index)
     old_bg, bg = bg, utils.fit_image_to_screen(
         map_loader.get_background(dp),
-        (height, width)
+        (width, height)
     )
 
 
