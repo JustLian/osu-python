@@ -25,11 +25,18 @@ def load_skin():
     except FileNotFoundError:
         pass
 
+    try:
+        Cursor.rotation = Config.skin_ini["[General]"]["CursorRotate"]
+    except KeyError:
+        pass
+
 
 class Cursor:
     """
     osu!python cursor class
     """
+    
+    rotation = 0
 
     def __init__(self, scale) -> None:
         load_skin()
@@ -57,6 +64,7 @@ class Cursor:
             )
 
         self.trail = []
+        self.angle = 0
 
     def trail_tick(self):
         """Updates cursor trail"""
@@ -91,9 +99,20 @@ class Cursor:
                 trail, (t[0] - self.trail_sizes[0] / 2, t[1] - self.trail_sizes[1] / 2)
             )
 
-        screen.blit(
-            self.cursor_img, (pos[0] - self.sizes[0] / 2, pos[1] - self.sizes[1] / 2)
-        )
+        if self.rotation:
+            self.angle += 1
+            rotated_frame = pg.transform.rotate(self.cursor_img, self.angle)
+            offset = (
+                (rotated_frame.get_width() - self.cursor_img.get_width()) // 2 + self.cursor_img.get_width() // 2,
+                (rotated_frame.get_height() - self.cursor_img.get_height()) // 2 + self.cursor_img.get_height() // 2,
+            )
+            screen.blit(
+                rotated_frame, (pos[0] - offset[0], pos[1] - offset[1])
+            )
+        else:
+            screen.blit(
+                self.cursor_img, (pos[0] - self.sizes[0] / 2, pos[1] - self.sizes[1] / 2)
+            )
 
         if self.cursor_middle_img:
             screen.blit(
