@@ -110,8 +110,8 @@ def draw(screen: pg.Surface):
     ui.draw(screen)
 
 
-def setup(_height, _width, _screen, diff_path):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset
+def setup(_height, _width, _screen, diff_path, _current_time: 0):
+    global circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset
 
     height = _height
     width = _width
@@ -120,7 +120,7 @@ def setup(_height, _width, _screen, diff_path):
     pg.mixer.init()
 
     music_offset = 0
-    current_time = 0
+    current_time = _current_time
 
     m, n = utils.playfield_size(height)
     add_x = (width - m) / 2
@@ -130,6 +130,8 @@ def setup(_height, _width, _screen, diff_path):
 
     def hit_callback(score: int):
         ui.hit(score)
+    
+    global bg
 
     queue, audio, bg, map = map_loader.load_map(
         diff_path, scale, add_x, add_y, hit_callback

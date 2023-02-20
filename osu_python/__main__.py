@@ -4,6 +4,10 @@ from screeninfo import get_monitors
 import logging
 from datetime import datetime
 import typing as t
+from osu_python.scenes import pause, std
+
+
+TIME_GO_IN = 0
 
 
 # Initializing display before loading game objects
@@ -48,8 +52,16 @@ def change_scene(new_scene, *args):
 
     root.info("Switching scene {} to {}".format(scene, new_scene))
 
-    scene = new_scene
-    scene.setup(height, width, screen, *args)
+    if scene == std and new_scene == pause:
+        TIME_GO_IN = std.current_time
+        scene = new_scene
+        scene.setup(height, width, screen, *args)
+    elif scene == pause and new_scene == std:
+        scene = new_scene
+        scene.setup(height, width, screen, TIME_GO_IN, *args)
+    else:
+        scene = new_scene
+        scene.setup(height, width, screen, *args)
 
     root.info("Switched scenes.")
 
