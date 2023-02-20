@@ -13,21 +13,22 @@ def change_bms(new_bms_index, new_diff_index):
     old_bg, bg = bg, utils.fit_image_to_screen(
         map_loader.get_background(dp),
         (width, height)
-    )
+    ).convert_alpha()
+    bg.set_alpha(120)
 
 
 def update(events):
     global scroll
     for event in events:
         if event.type == pg.MOUSEWHEEL:
-            scroll[2] += event.y * 5
+            scroll[2] += event.y * 10
             scroll[0] += abs(event.y * 10)
 
 
 def draw(dt: float):
     global scroll
+    screen.fill((0, 0, 0))
     screen.blit(bg, (0, 0))
-    screen.fill((0, 0, 0, 120))
 
     lh = bms_card_height // 2
     scroll[1] = max(min(scroll[2] + scroll[1], bms_card_height * 3.7), -bms_card_height * len(cards) + bms_card_height * 3.7)
@@ -59,7 +60,7 @@ def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: in
     bms_card_height = height // 8
     height_constant = bms_card_height * 0.035
     font = pg.font.Font('./ui/aller_light.ttf', round(bms_card_height * .5))
-    for _ in range(len(Library.db)):
+    for _ in range(15):
         d = {'broken': 1}
         while 'broken' in d:
             index = random.randint(1, len(Library.db) - 1)

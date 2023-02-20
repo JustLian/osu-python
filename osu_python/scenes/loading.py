@@ -103,5 +103,5 @@ def tick(dt: float, events):
 
     if phase == 3:
         success_screen += dt
-        if success_screen >= 3000:
+        if success_screen >= 1000:
             next_scene()
