@@ -8,10 +8,12 @@ score_imgs = None
 hp_bar_bg_img = None
 hp_bar_colour_img = None
 hp_bar_marker_img = None
+score_overlap = 0
+combo_overlap = 0
 
 
 def load_skin():
-    global score_imgs, hp_bar_colour_img, hp_bar_bg_img, hp_bar_marker_img
+    global score_imgs, hp_bar_colour_img, hp_bar_bg_img, hp_bar_marker_img, score_overlap, combo_overlap
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
     score_path = (
         path + "/" + Config.skin_ini["[Fonts]"]["ScorePrefix"].replace("\\", "/")
@@ -39,6 +41,16 @@ def load_skin():
     try:
         hp_bar_marker_img = pg.image.load(path + "/scorebar-marker.png").convert_alpha()
     except FileNotFoundError:
+        pass
+
+    try:
+        score_overlap = Config.skin_ini["[Fonts]"]["ScoreOverlap"]
+    except KeyError:
+        pass
+
+    try:
+        combo_overlap = Config.skin_ini["[Fonts]"]["ComboOverlap"]
+    except KeyError:
         pass
 
 
@@ -110,7 +122,7 @@ class InGameUI:
             self.hp = min(self.hp + (0.04 * (score / 100)), 1)
         else:
             self.combo = 0
-            self.hp -= 0.02 * (1 + self.map_hp / 2)
+            self.hp -= 0.02 * (1 + self.map_hp)
             if self.hp < 0:
                 self.hp = 0
         self.accuracy = utils.calculate_accuracy(self.scores.values())
@@ -130,7 +142,7 @@ class InGameUI:
         screen_width, screen_height = screen.get_size()
         offset_x = screen_width - 20
         for v in reversed(numbers):
-            offset_x -= self.num_gap
+            offset_x -= score_imgs[v].get_width() - score_overlap
             screen.blit(
                 score_imgs[v], (offset_x + (20 - score_imgs[v].get_width()) / 2, 10)
             )
@@ -139,25 +151,23 @@ class InGameUI:
         offset_x = screen_width - 20
         accuracy = str(round(self.accuracy * 100, 1)) + "%"
         for v in reversed(accuracy):
-            gap = (
-                self.num_gap
-                if v in [str(n) for n in range(10)]
-                else score_imgs[v].get_width()
-            )
+            gap = score_imgs[v].get_width() - score_overlap
             offset_x -= gap
             screen.blit(
                 score_imgs[v], (offset_x + (gap - score_imgs[v].get_width()) / 2, 80)
             )
 
         # Combo display
+        offset_x = 0
         for i, v in enumerate(str(self.combo) + "x"):
             screen.blit(
                 score_imgs[v],
                 (
-                    i * self.num_gap + (40 - score_imgs[v].get_width()) / 2,
+                    offset_x + (40 - score_imgs[v].get_width()) / 2,
                     screen_height - score_imgs["1"].get_height() - 5,
                 ),
             )
+            offset_x += score_imgs[v].get_width() - combo_overlap
 
         # HP bar
         scale = (screen_width / hp_bar_bg_img.get_width()) / 1.8

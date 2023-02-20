@@ -14,10 +14,11 @@ score_100_img = None
 score_50_img = None
 miss_img = None
 combo_numbers = None
+hit_circle_overlap = 0
 
 
 def load_skin():
-    global score_300_img, score_100_img, score_50_img, miss_img, combo_numbers, Circle, Slider
+    global score_300_img, score_100_img, score_50_img, miss_img, combo_numbers, hit_circle_overlap, Circle, Slider
 
     log.info("Reloading skin")
     Config.load_skin_ini()
@@ -50,6 +51,11 @@ def load_skin():
         "8": pg.image.load(combo_path + "-8.png").convert_alpha(),
         "9": pg.image.load(combo_path + "-9.png").convert_alpha(),
     }
+    try:
+        hit_circle_overlap = Config.skin_ini["[Fonts]"]["HitCircleOverlap"]
+    except KeyError:
+        pass
+
     # circle images
     Circle.hit_circle_img = pg.image.load(path + "/hitcircle.png").convert_alpha()
     Circle.hit_circle_overlay_img = pg.image.load(
@@ -600,9 +606,9 @@ class Circle(pg.sprite.Sprite):
     def draw_combo_value(self, screen: pg.Surface, time: int):
         center = (self.rect[0] + self.rect[2] / 2, self.rect[1] + self.rect[3] / 2)
         scale = self.hit_size / 3.5 / combo_numbers["0"].get_height()
-        full_width = 0
+        full_width = hit_circle_overlap
         for v in str(self.combo_value):
-            full_width += combo_numbers[v].get_width()
+            full_width += combo_numbers[v].get_width() - hit_circle_overlap
         x = center[0] - (full_width / 2 * scale)
         y = center[1] - (combo_numbers["0"].get_height() / 2 * scale) + 1
 
@@ -626,7 +632,7 @@ class Circle(pg.sprite.Sprite):
                 img,
                 (x - offset, y),
             )
-            x += img.get_width() * scale
+            x += (img.get_width() - hit_circle_overlap) * scale
 
 
 class Slider(Circle):

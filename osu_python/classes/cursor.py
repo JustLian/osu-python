@@ -100,7 +100,7 @@ class Cursor:
             )
 
         if self.rotation:
-            self.angle += 1
+            self.angle -= 1
             rotated_frame = pg.transform.rotate(self.cursor_img, self.angle)
             offset = (
                 (rotated_frame.get_width() - self.cursor_img.get_width()) // 2 + self.cursor_img.get_width() // 2,
