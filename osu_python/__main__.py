@@ -4,7 +4,6 @@ from screeninfo import get_monitors
 import logging
 from datetime import datetime
 import typing as t
-from osu_python.scenes import pause, std
 
 
 TIME_GO_IN = 0
@@ -18,6 +17,7 @@ pg.display.init()
 screen = pg.display.set_mode((width, height), flags=pg.FULLSCREEN | pg.DOUBLEBUF)
 
 
+from osu_python.scenes import pause, std
 from osu_python import classes, scenes
 
 
