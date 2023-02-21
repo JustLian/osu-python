@@ -142,7 +142,7 @@ class InGameUI:
         screen_width, screen_height = screen.get_size()
         offset_x = screen_width - 20
         for v in reversed(numbers):
-            offset_x -= score_imgs[v].get_width() - score_overlap
+            offset_x -= score_imgs["0"].get_width() - score_overlap
             screen.blit(
                 score_imgs[v], (offset_x + (20 - score_imgs[v].get_width()) / 2, 10)
             )
@@ -159,15 +159,15 @@ class InGameUI:
 
         # Combo display
         offset_x = 0
-        for i, v in enumerate(str(self.combo) + "x"):
+        for v in str(self.combo) + "x":
             screen.blit(
                 score_imgs[v],
                 (
                     offset_x + (40 - score_imgs[v].get_width()) / 2,
-                    screen_height - score_imgs["1"].get_height() - 5,
+                    screen_height - score_imgs["0"].get_height() - 5,
                 ),
             )
-            offset_x += score_imgs[v].get_width() - combo_overlap
+            offset_x += score_imgs["0"].get_width() - combo_overlap
 
         # HP bar
         scale = (screen_width / hp_bar_bg_img.get_width()) / 1.8
