@@ -2,9 +2,12 @@ import pygame as pg
 import typing as t
 from osu_python import classes, utils, map_loader
 from osu_python.classes import Config, game_object
+from osu_python.classes import ui as cui
 
 
 all_objects = []
+PAUSED = False
+IS_FALL = False
 
 
 def click(mouse_pos: t.Tuple[int, int]):
@@ -43,9 +46,12 @@ def click(mouse_pos: t.Tuple[int, int]):
 
 
 def update(events):
-    global c, ui
+    global c, ui, PAUSED
     ui.drain_hp()
     for event in events:
+        if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            PAUSED = True
+
         if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN) or (
             event.type == pg.KEYDOWN
             and int(event.key)
@@ -110,8 +116,8 @@ def draw(screen: pg.Surface):
     ui.draw(screen)
 
 
-def setup(_height, _width, _screen, diff_path, _current_time: 0):
-    global circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset
+def setup(_height, _width, _screen, diff_path):
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset
 
     height = _height
     width = _width
@@ -120,7 +126,7 @@ def setup(_height, _width, _screen, diff_path, _current_time: 0):
     pg.mixer.init()
 
     music_offset = 0
-    current_time = _current_time
+    current_time = 0
 
     m, n = utils.playfield_size(height)
     add_x = (width - m) / 2
@@ -130,8 +136,6 @@ def setup(_height, _width, _screen, diff_path, _current_time: 0):
 
     def hit_callback(score: int):
         ui.hit(score)
-    
-    global bg
 
     queue, audio, bg, map = map_loader.load_map(
         diff_path, scale, add_x, add_y, hit_callback
@@ -160,12 +164,37 @@ def setup(_height, _width, _screen, diff_path, _current_time: 0):
 
 
 def tick(dt, events):
-    global music_offset, current_time
+    global PAUSED
+    if PAUSED:
+        cui.pause.load_skin()
 
-    current_time += dt
-    if abs(music.get_pos() - current_time - music_offset) > 500:
-        music.rewind()
-        music.set_pos(current_time / 1000)
-        music_offset = music.get_pos() - current_time
-    update(events)
-    draw(screen)
+        screen.fill((0, 0, 0))
+
+        btn_retry = cui.pause.ButtonRetry(height, width)
+        btn_back = cui.pause.ButtonBack(height, width)
+
+        if IS_FALL:
+            mgr = cui.root.UiManager([btn_retry, btn_back])
+    
+        else:
+            btn_play = cui.pause.ButtonContinue(height, width)
+
+            mgr = cui.root.UiManager([btn_play, btn_retry, btn_back])
+        
+        mgr.draw(screen, dt)
+        mgr.update(events)
+
+        for btn in [btn_play, btn_retry, btn_back]:
+            if btn.clicked == True and type(btn) == cui.pause.ButtonContinue:
+                PAUSED = False
+
+    else:
+        global music_offset, current_time
+
+        current_time += dt
+        if abs(music.get_pos() - current_time - music_offset) > 500:
+            music.rewind()
+            music.set_pos(current_time / 1000)
+            music_offset = music.get_pos() - current_time
+        update(events)
+        draw(screen)

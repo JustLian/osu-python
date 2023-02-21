@@ -17,7 +17,6 @@ pg.display.init()
 screen = pg.display.set_mode((width, height), flags=pg.FULLSCREEN | pg.DOUBLEBUF)
 
 
-from osu_python.scenes import pause, std
 from osu_python import classes, scenes
 
 
@@ -52,16 +51,8 @@ def change_scene(new_scene, *args):
 
     root.info("Switching scene {} to {}".format(scene, new_scene))
 
-    if scene == std and new_scene == pause:
-        TIME_GO_IN = std.current_time
-        scene = new_scene
-        scene.setup(height, width, screen, *args)
-    elif scene == pause and new_scene == std:
-        scene = new_scene
-        scene.setup(height, width, screen, TIME_GO_IN, *args)
-    else:
-        scene = new_scene
-        scene.setup(height, width, screen, *args)
+    scene = new_scene
+    scene.setup(height, width, screen, *args)
 
     root.info("Switched scenes.")
 
