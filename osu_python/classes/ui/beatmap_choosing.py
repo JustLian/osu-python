@@ -35,15 +35,26 @@ class BeatmapSetCard(root.UiElement):
         )
 
         self.thumbnail_width = self.height * 1.6
-        self.thumbnail = utils.fit_image_to_screen(
-            map_loader.get_background(
-                Library.path_for_diff(self.data, 0)
-            ).convert(), (
-                self.height * 0.8737864078 * 1.5, self.height * 0.8737864078
-            )
+        bg = map_loader.get_background(
+            Library.path_for_diff(self.data, 0)
         ).convert()
-        ts = self.thumbnail.get_width()
-        self.thumbnail_offset = self.height * 0.8737864078 * 1.5 // 2 - ts // 2 + self.width * .004291845494
+        h = self.height * 0.8537864078
+        w = h * bg.get_width() / bg.get_height()
+        self.thumbnail = pg.transform.scale(
+            bg, (h * bg.get_width() / bg.get_height(), h)
+        )
+
+        if w > self.height * 1.5:
+            crop = (w - self.height * 1.5) // 2
+            self.thumbnail = self.thumbnail.subsurface(
+                pg.Rect(
+                    crop, 0, 
+                    self.height * 1.5 - crop, h
+                )
+            )
+
+        # self.thumbnail_offset = w // 2 - ts // 2
+        self.thumbnail_offset = (self.height * 1.5 - w) // 2 + self.width * .005
 
         line_1 = self.font.render(
             self.data['title'],
