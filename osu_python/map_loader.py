@@ -169,14 +169,15 @@ def load_map(
 
 
 def get_background(path: os.PathLike):
+    bg = pg.Surface((640, 480))
+    bg.fill((0, 0, 0))
     try:
         f = open(path, encoding="utf-8-sig")
     except FileNotFoundError:
         log.warning("Map background was not found in map's directory")
-        bg = pg.Surface((640, 480))
-        bg.fill((0, 0, 0))
         return bg
 
+    bg_path = None
     all_lines = f.readlines()
     for i, line in enumerate(all_lines):
         if "[Events]" in line:
@@ -189,14 +190,11 @@ def get_background(path: os.PathLike):
                         + all_lines[i3].split('"')[1]
                     )
                     break
-    bg = None
     if bg_path:
         try:
             bg = pg.image.load(bg_path)
         except FileNotFoundError:
             log.warning("Map background was not found in map's directory")
-            bg = pg.Surface((640, 480))
-            bg.fill((0, 0, 0))
     return bg
 
 

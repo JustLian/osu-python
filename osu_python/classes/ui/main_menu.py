@@ -33,7 +33,7 @@ class OsuLogo(root.UiElement):
         self.step = 0
 
         self.bm = randint(1, len(Library.db))
-        while 'path' not in Library.db.get(doc_id=self.bm):
+        while 'diffs' not in Library.db.get(doc_id=self.bm):
             self.bm = randint(1, len(Library.db))
         # print(Library.db.get(doc_id=self.bm)['path'])
 
