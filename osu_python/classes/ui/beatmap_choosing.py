@@ -53,7 +53,6 @@ class BeatmapSetCard(root.UiElement):
                 )
             )
 
-        # self.thumbnail_offset = w // 2 - ts // 2
         self.thumbnail_offset = (self.height * 1.5 - w) // 2 + self.width * .005
 
         line_1 = self.font.render(
@@ -73,7 +72,20 @@ class BeatmapSetCard(root.UiElement):
         )
     
     def draw(self, y_pos: int, screen: pg.Surface, dt: float, scroll):
+        """
+        Returns
+        -------
+        None: object is on screen
+        False: object above screen
+        True: object below screen
+        """
+
         img_pos = (screen.get_width() - self.width + scroll[0], y_pos - self.height // 2 + scroll[1])
+        s_h = screen.get_height()
+        print(img_pos[1])
+        if img_pos[1] > s_h or 0 > (img_pos[1] + self.height):
+            return img_pos[1] > s_h
+
         screen.blit(
             self.img, img_pos
         )
