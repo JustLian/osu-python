@@ -45,6 +45,10 @@ Lib = classes.Library
 scene = None
 
 
+def run_bm(path):
+    change_scene(scenes.std, path, run_bm)
+
+
 def change_scene(new_scene, *args):
     """Changes current scene"""
     global scene

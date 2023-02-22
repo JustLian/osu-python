@@ -6,8 +6,6 @@ from osu_python.classes import ui as cui
 
 
 all_objects = []
-PAUSED = False
-IS_FALL = False
 
 
 def click(mouse_pos: t.Tuple[int, int]):
@@ -116,12 +114,14 @@ def draw(screen: pg.Surface):
     ui.draw(screen)
 
 
-def setup(_height, _width, _screen, diff_path):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset
+def setup(_height, _width, _screen, _diff_path, _retry_func):
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func
 
     height = _height
     width = _width
     screen = _screen
+
+    diff_path = _diff_path
 
     pg.mixer.init()
 
@@ -160,33 +160,37 @@ def setup(_height, _width, _screen, diff_path):
     music.load(audio)
     music.play()
 
+    cui.pause.load_skin()
+    btn_play = cui.pause.ButtonContinue(height, width)
+    btn_retry = cui.pause.ButtonRetry(height, width)
+    btn_back = cui.pause.ButtonBack(height, width)
+    mgr = cui.root.UiManager([btn_play, btn_retry, btn_back])
+
+    PAUSED = False
+    IS_FALL = False
+
+    retry_func = _retry_func
+
     return tick
 
 
 def tick(dt, events):
     global PAUSED
     if PAUSED:
-        cui.pause.load_skin()
-
         screen.fill((0, 0, 0))
 
-        btn_retry = cui.pause.ButtonRetry(height, width)
-        btn_back = cui.pause.ButtonBack(height, width)
-
         if IS_FALL:
-            mgr = cui.root.UiManager([btn_retry, btn_back])
-    
-        else:
-            btn_play = cui.pause.ButtonContinue(height, width)
-
-            mgr = cui.root.UiManager([btn_play, btn_retry, btn_back])
+            btn_play.toggle_click()
+            btn_play.toggle_hover()
         
-        mgr.draw(screen, dt)
         mgr.update(events)
 
-        for btn in [btn_play, btn_retry, btn_back]:
-            if btn.clicked == True and type(btn) == cui.pause.ButtonContinue:
-                PAUSED = False
+        if btn_play.clicked:
+            PAUSED = False
+        elif btn_retry.clicked:
+            retry_func("C:\osu-python\songs\864558 Franchouchou - Hikari e (TV Size)\FranChouChou - Hikari e (TV Size) (KwAIMSuckASFuk) [Normal].osu")
+
+        mgr.draw(screen, dt)
 
     else:
         global music_offset, current_time
