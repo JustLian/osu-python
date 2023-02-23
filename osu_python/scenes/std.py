@@ -50,6 +50,8 @@ def update(events):
         if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             PAUSED = True
 
+            pg.image.save(screen, './ui/pause/bg_pause.png')
+
         if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN) or (
             event.type == pg.KEYDOWN
             and int(event.key)
@@ -179,8 +181,6 @@ def tick(dt, events):
     if PAUSED:
         music.stop()
 
-        screen.fill((0, 0, 0))
-
         if IS_FALL:
             btn_play.toggle_click()
             btn_play.toggle_hover()
@@ -201,6 +201,7 @@ def tick(dt, events):
             pass
         
         else:
+            screen.blit(pg.image.load('./ui/pause/bg_pause.png'), (0, 0))
             mgr.draw(screen, dt)
 
     else:
