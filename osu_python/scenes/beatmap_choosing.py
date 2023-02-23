@@ -49,6 +49,7 @@ def update(events):
                 )
             )
             _cur += 1
+            scroll[1] -= bms_card_height
 
 
 def draw(dt: float):
