@@ -29,64 +29,67 @@ def update(events):
             scroll[0] += abs(event.y * 10)
 
 
-    if cards_above > BUFFER_CARDS:
-        for _ in range(cards_above - BUFFER_CARDS):
-            cards.pop(0)
-    
-    if cards_below > BUFFER_CARDS:
-        for _ in range(cards_below - BUFFER_CARDS):
+    if cards_above < BUFFER_CARDS:
+        if add_card_above():
             cards.pop(-1)
 
-    if cards_above < BUFFER_CARDS:
-        _last_index = cards[0].index
-        _cur, _lim = 1, BUFFER_CARDS - cards_above
-        while _cur <= _lim:
-            d = Library.db.get(doc_id=_last_index + _cur)
-            _exit = False
-            while d is None or 'diffs' not in d or d['diffs'] == []:
-                _cur += 1
-                _lim += 1
-                if _cur >= len(Library.db):
-                    _exit = True
-                    break
-                d = Library.db.get(doc_id=_last_index + _cur)
-            if _exit:
-                break
+    if cards_below < BUFFER_CARDS:
+        if add_card_below():
+            cards.pop(0)
 
-            cards.insert(
-                0, bmc.BeatmapSetCard(
-                    _last_index + _cur, bms_card_height, font,
-                    height_constant
-                )
-            )
+
+def add_card_above():
+    _last_index = cards[0].index
+    _cur, _lim = 1, BUFFER_CARDS - cards_above
+    while _cur <= _lim:
+        d = Library.db.get(doc_id=_last_index + _cur)
+        _exit = False
+        while d is None or 'diffs' not in d or d['diffs'] == []:
             _cur += 1
-            scroll[1] -= bms_card_height
-
-    if cards_below < BUFFER_CARDS and cards[-1].index - 1 >= 0:
-        _last_index = cards[-1].index
-        _cur, _lim = -1, -BUFFER_CARDS + cards_below
-        while _cur >= _lim:
-            d = Library.db.get(doc_id=_last_index + _cur)
-            _exit = False
-            while d is None or 'diffs' not in d or d['diffs'] == []:
-                _cur -= 1
-                _lim -= 1
-                if _cur < 0:
-                    _exit = True
-                    break
-                d = Library.db.get(doc_id=_last_index + _cur)
-            if _exit:
+            _lim += 1
+            if _cur >= len(Library.db):
+                _exit = True
                 break
+            d = Library.db.get(doc_id=_last_index + _cur)
+        if _exit:
+            return 0
 
-            cards.append(
-                bmc.BeatmapSetCard(
-                    _last_index + _cur, bms_card_height, font,
-                    height_constant
-                )
+        cards.insert(
+            0, bmc.BeatmapSetCard(
+                _last_index + _cur, bms_card_height, font,
+                height_constant
             )
+        )
+        _cur += 1
+        scroll[1] -= bms_card_height
+        return 1
+
+
+def add_card_below():
+    _last_index = cards[-1].index
+    _cur, _lim = -1, -BUFFER_CARDS + cards_below
+    while _cur >= _lim:
+        d = Library.db.get(doc_id=_last_index + _cur)
+        _exit = False
+        while d is None or 'diffs' not in d or d['diffs'] == []:
             _cur -= 1
-            scroll[1] += bms_card_height
-    print(len(cards))
+            _lim -= 1
+            if _last_index + _cur < 0:
+                _exit = True
+                break
+            d = Library.db.get(doc_id=_last_index + _cur)
+        if _exit:
+            return 0
+
+        cards.append(
+            bmc.BeatmapSetCard(
+                _last_index + _cur, bms_card_height, font,
+                height_constant
+            )
+        )
+        _cur -= 1
+        scroll[1] += bms_card_height
+        return 1
 
 
 def draw(dt: float):
