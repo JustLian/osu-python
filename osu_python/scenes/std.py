@@ -177,6 +177,8 @@ def setup(_height, _width, _screen, _diff_path, _retry_func):
 def tick(dt, events):
     global PAUSED
     if PAUSED:
+        music.stop()
+
         screen.fill((0, 0, 0))
 
         if IS_FALL:
@@ -187,10 +189,19 @@ def tick(dt, events):
 
         if btn_play.clicked:
             PAUSED = False
-        elif btn_retry.clicked:
-            retry_func("C:\osu-python\songs\864558 Franchouchou - Hikari e (TV Size)\FranChouChou - Hikari e (TV Size) (KwAIMSuckASFuk) [Normal].osu")
+            btn_play.clicked = False
 
-        mgr.draw(screen, dt)
+            music.play()
+
+        elif btn_retry.clicked:
+            retry_func(diff_path)
+        
+        elif btn_back.clicked:
+            # lambda call beatmap choosing scene here
+            pass
+        
+        else:
+            mgr.draw(screen, dt)
 
     else:
         global music_offset, current_time
