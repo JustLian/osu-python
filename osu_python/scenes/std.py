@@ -5,9 +5,6 @@ from osu_python.classes import Config, game_object
 from osu_python.classes import ui as cui
 
 
-all_objects = []
-
-
 def click(mouse_pos: t.Tuple[int, int]):
     active_object = None
     for obj in all_objects:
@@ -117,7 +114,9 @@ def draw(screen: pg.Surface):
 
 
 def setup(_height, _width, _screen, _diff_path, _retry_func):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func, all_objects
+
+    all_objects = []
 
     height = _height
     width = _width
