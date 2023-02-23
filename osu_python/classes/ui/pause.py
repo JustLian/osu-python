@@ -3,6 +3,9 @@ from osu_python.classes.ui import root
 from osu_python.classes import Library, Config
 
 
+COEFF = 1.1
+
+
 def load_skin():
     global ButtonContinue, ButtonRetry, ButtonBack
 
@@ -19,13 +22,18 @@ class Button(root.UiElement):
 
         self.width, self.height = width, height
 
-        self.y_p = round(self.height / 10)
-        self.x_p = round(self.width / 6)
+        self.y_p = self.height / 19.5
+        self.x_p = self.width / 17
 
         self.clicked = False
     
     def draw(self, screen: pg.Surface, dt: float):
-        screen.blit(self.im, self.rect)
+        if self.hover:
+            screen.blit(self.im2, 
+                (self.x - round((COEFF - 1) * self.x_p * 5 / 2), self.y - round((COEFF - 1) * self.y_p * 5 / 2))
+            )
+        else:
+            screen.blit(self.im1, self.rect)
     
     def click(self):
         self.clicked = True
@@ -41,11 +49,15 @@ class ButtonContinue(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
-        self.im = pg.transform.scale(
-            ButtonContinue.im, (self.x_p * 2, self.y_p * 2)
+        self.im1 = pg.transform.scale(
+            ButtonContinue.im, (round(self.x_p * 5), round(self.y_p * 3))
         ).convert_alpha()
 
-        self.x, self.y = self.x_p * 2, self.y_p
+        self.im2 = pg.transform.scale(
+            ButtonContinue.im, (round(self.x_p * 5 * COEFF), round(self.y_p * 3 * COEFF))
+        ).convert_alpha()
+
+        self.x, self.y = round(self.x_p * 6), round(self.y_p * 3.5)
 
         self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
@@ -57,11 +69,15 @@ class ButtonRetry(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
-        self.im = pg.transform.scale(
-            ButtonRetry.im, (self.x_p * 2, self.y_p * 2)
+        self.im1 = pg.transform.scale(
+            ButtonRetry.im, (round(self.x_p * 5), round(self.y_p * 3))
         ).convert_alpha()
 
-        self.x, self.y = self.x_p * 2, self.y_p * 4
+        self.im2 = pg.transform.scale(
+            ButtonRetry.im, (round(self.x_p * 5 * COEFF), round(self.y_p * 3 * COEFF))
+        ).convert_alpha()
+
+        self.x, self.y = round(self.x_p * 6), round(self.y_p * 8.5)
 
         self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
@@ -73,11 +89,15 @@ class ButtonBack(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
-        self.im = pg.transform.scale(
-            ButtonBack.im, (self.x_p * 2, self.y_p * 2)
+        self.im1 = pg.transform.scale(
+            ButtonBack.im, (round(self.x_p * 5), round(self.y_p * 3))
         ).convert_alpha()
 
-        self.x, self.y = self.x_p * 2, self.y_p * 7
+        self.im2 = pg.transform.scale(
+            ButtonBack.im, (round(self.x_p * 5 * COEFF), round(self.y_p * 3 * COEFF))
+        ).convert_alpha()
+
+        self.x, self.y = round(self.x_p * 6), round(self.y_p * 13.5)
 
         self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
