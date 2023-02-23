@@ -28,20 +28,31 @@ def update(events):
             scroll[2] += event.y * 10
             scroll[0] += abs(event.y * 10)
 
+
+    if cards_above > BUFFER_CARDS:
+        for _ in range(cards_above - BUFFER_CARDS):
+            cards.pop(0)
+    
     if cards_below > BUFFER_CARDS:
         for _ in range(cards_below - BUFFER_CARDS):
             cards.pop(-1)
-        # load new cards
+
+    if cards_above < BUFFER_CARDS:
         _last_index = cards[0].index
         _cur, _lim = 1, BUFFER_CARDS - cards_above
-        for _ in range(BUFFER_CARDS - cards_above):
+        while _cur <= _lim:
             d = Library.db.get(doc_id=_last_index + _cur)
+            _exit = False
             while d is None or 'diffs' not in d or d['diffs'] == []:
                 _cur += 1
                 _lim += 1
+                if _cur >= len(Library.db):
+                    _exit = True
+                    break
                 d = Library.db.get(doc_id=_last_index + _cur)
+            if _exit:
+                break
 
-            data.append(d)
             cards.insert(
                 0, bmc.BeatmapSetCard(
                     _last_index + _cur, bms_card_height, font,
@@ -50,6 +61,32 @@ def update(events):
             )
             _cur += 1
             scroll[1] -= bms_card_height
+
+    if cards_below < BUFFER_CARDS and cards[-1].index - 1 >= 0:
+        _last_index = cards[-1].index
+        _cur, _lim = -1, -BUFFER_CARDS + cards_below
+        while _cur >= _lim:
+            d = Library.db.get(doc_id=_last_index + _cur)
+            _exit = False
+            while d is None or 'diffs' not in d or d['diffs'] == []:
+                _cur -= 1
+                _lim -= 1
+                if _cur < 0:
+                    _exit = True
+                    break
+                d = Library.db.get(doc_id=_last_index + _cur)
+            if _exit:
+                break
+
+            cards.append(
+                bmc.BeatmapSetCard(
+                    _last_index + _cur, bms_card_height, font,
+                    height_constant
+                )
+            )
+            _cur -= 1
+            scroll[1] += bms_card_height
+    print(len(cards))
 
 
 def draw(dt: float):
