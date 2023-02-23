@@ -22,20 +22,26 @@ def change_bms(new_bms_index, new_diff_index):
 
 
 def update(events):
-    global scroll
+    global scroll, lock_above, lock_below
     for event in events:
         if event.type == pg.MOUSEWHEEL:
             scroll[2] += event.y * 10
             scroll[0] += abs(event.y * 10)
 
 
-    if cards_above < BUFFER_CARDS and BUFFER_CARDS - cards_above < 3:
+    if not lock_above and cards_above < BUFFER_CARDS and BUFFER_CARDS - cards_above < 3:
         if add_card_above():
             cards.pop(-1)
+            lock_below = False
+        else:
+            lock_above = True
 
-    if cards_below < BUFFER_CARDS and BUFFER_CARDS - cards_below < 3:
+    if not lock_below and cards_below < BUFFER_CARDS and BUFFER_CARDS - cards_below < 3:
         if add_card_below():
             cards.pop(0)
+            lock_above = False
+        else:
+            lock_below = True
 
 
 def add_card_above():
@@ -112,12 +118,10 @@ def draw(dt: float):
 
 
 def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: int):
-    global height, width, screen, old_bg, old_bms_index, bms_index, diff_index, bg, bms_card_height, cards, scroll, cards_above, cards_below, font, data, height_constant
+    global height, width, screen, old_bg, old_bms_index, bms_index, diff_index, bg, bms_card_height, cards, scroll, cards_above, cards_below, font, data, height_constant, lock_above, lock_below
     height = _height
     width = _width
     screen = _screen
-    # x, y, y_xeleration
-    scroll = [0, 0, 0]
 
     cards_above, cards_below = 0, 0
 
@@ -133,6 +137,10 @@ def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: in
     cards = []
     bms_card_height = height // 8
     height_constant = bms_card_height * 0.035
+    # x, y, y_xeleration
+    scroll = [0, bms_card_height * -4, 0]
+    lock_below = False
+    lock_above = False
     font = pg.font.Font('./ui/aller_light.ttf', round(bms_card_height * .5))
     _cur, _lim = -BUFFER_CARDS - 4, BUFFER_CARDS + 4
     while _cur <= _lim:

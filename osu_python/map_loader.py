@@ -186,7 +186,8 @@ def get_background(path: os.PathLike):
                 if all_lines[i3].startswith("0,0,"):
                     str_path = str(path)
                     bg_path = (
-                        path[: len(str_path) - len(str_path.split("\\")[-1])]
+                        # привет ваня, если у тебя всё сломалось и-за этой строчки, то напиши мне, я поплачу потому-что да
+                        path[: len(str_path) - len(str_path.split("/")[-1])]
                         + all_lines[i3].split('"')[1]
                     )
                     break
