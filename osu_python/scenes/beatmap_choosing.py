@@ -29,11 +29,11 @@ def update(events):
             scroll[0] += abs(event.y * 10)
 
 
-    if cards_above < BUFFER_CARDS:
+    if cards_above < BUFFER_CARDS and BUFFER_CARDS - cards_above < 3:
         if add_card_above():
             cards.pop(-1)
 
-    if cards_below < BUFFER_CARDS:
+    if cards_below < BUFFER_CARDS and BUFFER_CARDS - cards_below < 3:
         if add_card_below():
             cards.pop(0)
 
