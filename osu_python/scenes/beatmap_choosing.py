@@ -28,22 +28,23 @@ def update(events):
             scroll[2] += event.y * 10
             scroll[0] += abs(event.y * 10)
 
-    return
-    # TODO: fix this pls
     if cards_below > BUFFER_CARDS:
         for _ in range(cards_below - BUFFER_CARDS):
             cards.pop(-1)
+        # load new cards
+        _last_index = cards[0].index
+        _cur, _lim = 1, BUFFER_CARDS - cards_above
         for _ in range(BUFFER_CARDS - cards_above):
-            d = Library.db.get(doc_id=bms_index + _cur)
+            d = Library.db.get(doc_id=_last_index + _cur)
             while d is None or 'diffs' not in d or d['diffs'] == []:
                 _cur += 1
                 _lim += 1
-                d = Library.db.get(doc_id=bms_index + _cur)
+                d = Library.db.get(doc_id=_last_index + _cur)
 
             data.append(d)
             cards.insert(
                 0, bmc.BeatmapSetCard(
-                    bms_index + _cur, bms_card_height, font,
+                    _last_index + _cur, bms_card_height, font,
                     height_constant
                 )
             )
