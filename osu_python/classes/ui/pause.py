@@ -25,7 +25,7 @@ class Button(root.UiElement):
         self.clicked = False
     
     def draw(self, screen: pg.Surface, dt: float):
-        screen.blit(self.im, (self.x, self.y))
+        screen.blit(self.im, self.rect)
     
     def click(self):
         self.clicked = True
@@ -47,7 +47,7 @@ class ButtonContinue(Button):
 
         self.x, self.y = self.x_p * 2, self.y_p
 
-        self.rect = ButtonContinue.im.get_rect()
+        self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
 
 
@@ -63,7 +63,7 @@ class ButtonRetry(Button):
 
         self.x, self.y = self.x_p * 2, self.y_p * 4
 
-        self.rect = ButtonRetry.im.get_rect()
+        self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
 
 
@@ -79,5 +79,5 @@ class ButtonBack(Button):
 
         self.x, self.y = self.x_p * 2, self.y_p * 7
 
-        self.rect = ButtonBack.im.get_rect()
+        self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
