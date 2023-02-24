@@ -52,7 +52,7 @@ def update(events):
         if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             PAUSED = True
 
-        if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN) or (
+        if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN and event.button in [1, 3]) or (
             event.type == pg.KEYDOWN
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]

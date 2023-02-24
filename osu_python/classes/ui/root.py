@@ -173,7 +173,7 @@ class UiManager:
                 obj.toggle_hover()
 
         for event in events:
-            if event.type == pg.MOUSEBUTTONDOWN:
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 for obj in self.objects:
                     if obj.enabled and obj.is_colliding(mouse):
                         obj.click()

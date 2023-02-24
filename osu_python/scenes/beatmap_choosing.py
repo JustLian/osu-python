@@ -30,7 +30,7 @@ def update(events):
             scroll[2] += event.y * 10
             scroll[0] += abs(event.y * 10)
         
-        if event.type == pg.MOUSEBUTTONDOWN:
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             m = pg.mouse.get_pos()
             for c in cards:
                 if c.is_colliding(m):
