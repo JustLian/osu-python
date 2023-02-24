@@ -60,8 +60,8 @@ def load_map(
         Horizontal playfield offset
     add_y : int:
         Vertical playfield offset
-    callback : t.Callable
-        Miss callback function
+    hit_callback : t.Callable
+        Hit callback function
 
     Returns
     -------
@@ -69,7 +69,7 @@ def load_map(
     (
         objects_queue,
         audio_path,
-        background_path (Not implemented)
+        background_path
     )
     """
     log.debug("loading beatmap from {}".format(path))
