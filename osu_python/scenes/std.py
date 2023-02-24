@@ -1,5 +1,6 @@
 import pygame as pg
 import typing as t
+import os
 from osu_python import classes, utils, map_loader
 from osu_python.classes import Config, game_object
 from osu_python.classes import ui as cui
@@ -46,8 +47,6 @@ def update(events):
     for event in events:
         if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             PAUSED = True
-
-            pg.image.save(screen, './ui/pause/bg_pause.png')
 
         if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN) or (
             event.type == pg.KEYDOWN
@@ -114,7 +113,7 @@ def draw(screen: pg.Surface):
 
 
 def setup(_height, _width, _screen, _diff_path, _retry_func):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func, all_objects
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func, all_objects, pause_overlay, DRAW_PO
 
     all_objects = []
 
@@ -170,13 +169,21 @@ def setup(_height, _width, _screen, _diff_path, _retry_func):
     PAUSED = False
     IS_FALL = False
 
+    path_to_pause_overlay = Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png"
+    pause_overlay = None
+    DRAW_PO = False
+
+    if os.path.exists(path_to_pause_overlay):
+        pause_overlay = pg.image.load(path_to_pause_overlay)
+        DRAW_PO = True
+
     retry_func = _retry_func
 
     return tick
 
 
 def tick(dt, events):
-    global PAUSED
+    global PAUSED, pause_overlay
     if PAUSED:
         music.stop()
 
@@ -200,7 +207,7 @@ def tick(dt, events):
             pass
         
         else:
-            screen.blit(pg.image.load('./ui/pause/bg_pause.png'), (0, 0))
+            screen.blit(pause_overlay, (0, 0))
             mgr.draw(screen, dt)
 
     else:
@@ -213,3 +220,14 @@ def tick(dt, events):
             music_offset = music.get_pos() - current_time
         update(events)
         draw(screen)
+
+        if PAUSED and not DRAW_PO:
+            s = pg.Surface((width, height))
+            s.fill((0, 0, 0))
+
+            pg.image.save(screen, "./ui/pause/bg_pause.png")
+            im = pg.image.load("./ui/pause/bg_pause.png")
+            im.set_alpha(75)
+
+            s.blit(im, (0, 0))
+            pause_overlay = s
