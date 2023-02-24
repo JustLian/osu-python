@@ -86,13 +86,13 @@ def setup(
 
     im = pg.image.load(
         Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking-title.png"
-    )
+    ).convert_alpha()
     w_size = h_title / im.get_height() * im.get_width()
     ranking_title = pg.transform.scale(im, (w_size, h_title))
 
     im = pg.image.load(
         Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking-panel.png"
-    )
+    ).convert_alpha()
     w_size = h_panel / im.get_height() * im.get_width()
     ranking_panel = pg.transform.scale(im, (w_size, h_title))
 

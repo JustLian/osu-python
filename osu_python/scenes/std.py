@@ -47,10 +47,14 @@ def click(mouse_pos: t.Tuple[int, int]):
 
 
 def update(events):
-    global c, ui, PAUSED
+    global c, ui, PAUSED, FAILED
     ui.drain_hp(current_time)
+    if ui.hp <= 0:
+        PAUSED = True
+        FAILED = True
+        btn_play.toggle_show()
     for event in events:
-        if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+        if (not PAUSED or FAILED) and event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             PAUSED = True
 
         if (
@@ -132,7 +136,7 @@ def draw(screen: pg.Surface):
 
 
 def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func, all_objects, pause_overlay, DRAW_PO, back_to_menu
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu
 
     all_objects = []
 
@@ -190,18 +194,18 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu):
     mgr = cui.root.UiManager([btn_play, btn_retry, btn_back])
 
     PAUSED = False
+    FAILED = False
     IS_FALL = False
 
-    path_to_pause_overlay = (
-        Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png"
-    )
-    pause_overlay = None
-    DRAW_PO = False
-
-    if os.path.exists(path_to_pause_overlay):
-        im = pg.image.load(path_to_pause_overlay)
-        pause_overlay = pg.transform.scale(im, (width, height))
-        DRAW_PO = True
+    try:
+        fail_overlay = utils.fit_image_to_screen(pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/fail-background.png").convert_alpha(), screen.get_size())
+    except FileNotFoundError:
+        fail_overlay = None
+        
+    try:
+        pause_overlay = utils.fit_image_to_screen(pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png").convert_alpha(), screen.get_size())
+    except FileNotFoundError:
+        pause_overlay = None
 
     retry_func = _retry_func
 
@@ -209,9 +213,9 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu):
 
 
 def tick(dt, events):
-    global PAUSED, pause_overlay
-    if PAUSED:
-        music.stop()
+    global PAUSED, FAILED, pause_overlay, fail_overlay
+    if PAUSED or FAILED:
+        music.pause()
 
         if IS_FALL:
             btn_play.toggle_click()
@@ -223,7 +227,7 @@ def tick(dt, events):
             PAUSED = False
             btn_play.clicked = False
 
-            music.play()
+            music.unpause()
 
         elif btn_retry.clicked:
             retry_func()
@@ -232,7 +236,10 @@ def tick(dt, events):
             back_to_menu()
 
         else:
-            screen.blit(pause_overlay, (0, 0))
+            if FAILED:
+                screen.blit(fail_overlay, (0, 0))
+            else:
+                screen.blit(pause_overlay, (0, 0))
             mgr.draw(screen, dt)
 
     else:
@@ -246,13 +253,14 @@ def tick(dt, events):
         update(events)
         draw(screen)
 
-        if PAUSED and not DRAW_PO:
-            s = pg.Surface((width, height))
-            s.fill((0, 0, 0))
-
-            pg.image.save(screen, "./ui/pause/bg_pause.png")
-            im = pg.image.load("./ui/pause/bg_pause.png")
-            im.set_alpha(75)
-
-            s.blit(im, (0, 0))
-            pause_overlay = s
+        if PAUSED and not pause_overlay:
+            screen.set_alpha(75)
+            pause_overlay = pg.Surface(screen.get_size())
+            pause_overlay.blit(screen, (0, 0))
+            screen.set_alpha(255)
+        
+        if FAILED and not fail_overlay:
+            screen.set_alpha(75)
+            fail_overlay = pg.Surface(screen.get_size())
+            fail_overlay.blit(screen, (0, 0))
+            screen.set_alpha(255)

@@ -176,7 +176,7 @@ class UiManager:
         for event in events:
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 for obj in self.objects:
-                    if obj.enabled and obj.is_colliding(mouse):
+                    if obj.shown and obj.enabled and obj.is_colliding(mouse):
                         obj.click()
 
     def remove_obj(self, obj: UiElement):
