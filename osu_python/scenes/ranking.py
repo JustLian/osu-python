@@ -30,7 +30,7 @@ def draw(screen):
 
 
 def setup(_height, _width, _screen, _diff_path, _retry_func, _rank, _draw_bg_func, _score, _results, _combo, _accuracy):
-    global height, width, screen, diff_path, retry_func, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, mgr_btns, ranking_panel
+    global height, width, screen, diff_path, retry_func, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, mgr_btns, ranking_panel, ranking_title, h_title, h_panel
 
     height = _height
     width = _width
@@ -44,12 +44,21 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _rank, _draw_bg_fun
     combo = _combo
     accuracy = _accuracy
 
+    h_title = round(height * (2 / 13))
+    h_panel = round(width * (11 / 13))
+
     btn_retry = ui.ranking.ButtonRetry(height, width)
     btn_replay = ui.ranking.ButtonReplay(height, width)
 
     mgr_btns = ui.root.UiManager([btn_retry, btn_replay])
 
-    ranking_panel = pg.imahe.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking_panel.png")
+    im = pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking_title.png")
+    w_size = h_title / im.get_height() * im.get_width() 
+    ranking_title = pg.transform.scale(im, (w_size, h_title))
+
+    im = pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking_panel.png")
+    w_size = h_panel / im.get_height() * im.get_width()
+    ranking_panel = pg.transform.scale(im, (w_size, h_title))
 
 
 def tick(dt, events):
@@ -62,8 +71,13 @@ def draw_background(screen):
 
 
 def draw_title(screen):
-    pg.draw.rect(screen, (0, 0, 0) (0, 0, width, round(height * (2 / 13))))
+    pg.draw.rect(screen, (0, 0, 0) (0, 0, width, h_title))
+    screen.blit(ranking_title,
+        (round(width * (12.5 / 17.5)), h_title)
+    )
+    # TODO: beatmap_title
 
 
 def draw_ranking_panel(screen):
-    screen.blit(ranking_panel, (0, round(height * (2 / 13)) + 20))
+    screen.blit(ranking_panel, (0, h_panel))
+    # TODO: draw score, results, combo and accuracy
