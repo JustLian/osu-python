@@ -26,8 +26,10 @@ class Button(root.UiElement):
     
     def draw(self, screen: pg.Surface, dt: float):
         if self.hover:
-            screen.blit(self.im.set_alpha(255), self.rect)
+            self.im.set_alpha(255)
+            screen.blit(self.im, self.rect)
         else:
+            self.im.set_alpha(160)
             screen.blit(self.im, self.rect)
     
     def click(self):
@@ -44,13 +46,15 @@ class ButtonRetry(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
+        w_size = round(self.y_p * 1.5 / ButtonRetry.im.get_height() * ButtonRetry.im.get_width())
+
         self.im = pg.transform.scale(
-            ButtonRetry.im, (round(self.x_p * 2), round(self.y_p))
+            ButtonRetry.im, (w_size, round(self.y_p * 1.5))
         ).convert_alpha()
 
         self.im.set_alpha(160)
 
-        self.x, self.y = round(self.x_p * 14), round(self.y_p * 7)
+        self.x, self.y = round(self.x_p * 12), round(self.y_p * 6.5)
 
         self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
@@ -62,13 +66,15 @@ class ButtonReplay(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
+        w_size = round(self.y_p * 1.5 / ButtonReplay.im.get_height() * ButtonReplay.im.get_width())
+
         self.im = pg.transform.scale(
-            ButtonReplay.im, (round(self.x_p * 2), round(self.y_p))
+            ButtonReplay.im, (w_size, round(self.y_p * 1.5))
         ).convert_alpha()
 
         self.im.set_alpha(160)
 
-        self.x, self.y = round(self.x_p * 14), round(self.y_p * 8.5)
+        self.x, self.y = round(self.x_p * 12), round(self.y_p * 8)
 
         self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
@@ -80,7 +86,7 @@ class ButtonBack(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
-        w_size = ButtonBack.im.get_height() / (height * (3 / 13)) * ButtonBack.im.get_width()
+        w_size = round((height * (3 / 13)) / ButtonBack.im.get_height() * ButtonBack.im.get_width())
 
         self.im = pg.transform.scale(
             ButtonBack.im, (w_size, round(height * (3 / 13)))

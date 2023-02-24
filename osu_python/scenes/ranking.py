@@ -29,13 +29,12 @@ def draw(screen):
     draw_ranking_panel(screen)
 
 
-def setup(_height, _width, _screen, _diff_path, _retry_func, _rank, _draw_bg_func, _score, _results, _combo, _accuracy):
-    global height, width, screen, diff_path, retry_func, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, btn_back, mgr_btns, ranking_panel, ranking_title, h_title, h_panel, w_title
+def setup(_height, _width, _screen, _name_btm, _author, _retry_func, _rank, _draw_bg_func, _score, _results, _combo, _accuracy):
+    global height, width, screen, name_btm, author, retry_func, font, btm_name, btm_author, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, btn_back, mgr_btns, ranking_panel, ranking_title, h_title, h_panel, w_title
 
     height = _height
     width = _width
     screen = _screen
-    diff_path = _diff_path
     retry_func = _retry_func
     rank = _rank
     draw_bg_func = _draw_bg_func
@@ -44,10 +43,21 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _rank, _draw_bg_fun
     combo = _combo
     accuracy = _accuracy
 
+    name_btm = _name_btm
+    author = _author
+
     h_title = round(height * (2 / 13))
     h_panel = round(width * (11 / 13))
 
-    w_title = round(width * (12.5 / 17.5))
+    w_title = round(width * (12 / 17.5))
+
+    font = pg.font.Font(
+        './ui/aller_light.ttf',
+        round(h_title * 0.2)
+    )
+
+    btm_name = font.render(name_btm, True, (255, 255, 255))
+    btm_author = font.render("Beatmap by " + author, True, (255, 255, 255))
 
     ui.ranking.load_skin()
 
@@ -75,15 +85,19 @@ def tick(dt, events):
 
 
 def draw_background(screen):
-    draw_bg_func()
+    # draw_bg_func()
+    screen.fill((0, 0, 0))
 
 
 def draw_title(screen):
-    pg.draw.rect(screen, (0, 0, 0) (0, 0, width, h_title))
+    pg.draw.rect(screen, (0, 0, 0), (0, 0, width, h_title))
+
     screen.blit(ranking_title,
-        (w_title, h_title)
+        (w_title, 0)
     )
-    # TODO: beatmap_title
+
+    screen.blit(btm_name, (0, 0))
+    screen.blit(btm_author, (0, h_title * 0.3))
 
 
 def draw_ranking_panel(screen):
