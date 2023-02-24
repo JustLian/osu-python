@@ -214,7 +214,7 @@ def inside_a_circle(x, y, c_x, c_y, r) -> bool:
 
 def calculate_rank(accuracy) -> str:
     if accuracy == 1:
-        return "SS"
+        return "X"
     elif accuracy >= 0.95:
         return "S"
     elif accuracy >= 0.90:

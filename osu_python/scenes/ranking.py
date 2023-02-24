@@ -43,6 +43,10 @@ def load_numbers_skin():
         "x": pg.image.load(score_path + "-x.png").convert_alpha(),
     }
 
+    scaling = height * 0.06 / nums_imgs["0"].get_height()
+    for s, img in nums_imgs.items():
+        nums_imgs[s] = pg.transform.scale(img, (img.get_width() * scaling, img.get_height() * scaling))
+
     try:
         score_overlap = Config.skin_ini["[Fonts]"]["ScoreOverlap"]
     except KeyError:
@@ -107,7 +111,7 @@ def setup(
     _combo,
     _accuracy,
 ):
-    global height, width, screen, name_btm, author, retry_func, btm_name, btm_author, btm_player, rank, bg, score, results, combo, accuracy, btn_retry, btn_replay, btn_back, mgr_btns, ranking_panel, ranking_title, h_title, h_panel, w_title, back_to_menu
+    global height, width, screen, name_btm, author, retry_func, btm_name, btm_author, btm_player, rank, bg, score, results, combo, accuracy, btn_retry, btn_replay, btn_back, mgr_btns, ranking_panel, ranking_title, h_title, h_panel, w_title, back_to_menu, panel_pos
 
     height = _height
     width = _width
@@ -115,8 +119,9 @@ def setup(
     retry_func = _retry_func
     back_to_menu = _back_to_menu
     rank = _rank
-    bg = _bg
-    score = _score
+
+    bg = utils.fit_image_to_screen(_bg, (_width, _height))
+    score = round(_score)
     results = _results
     combo = _combo
     accuracy = _accuracy
@@ -164,7 +169,8 @@ def setup(
         Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking-panel.png"
     ).convert_alpha()
     w_size = h_panel / im.get_height() * im.get_width()
-    ranking_panel = pg.transform.scale(im, (w_size, h_title))
+    ranking_panel = pg.transform.scale(im, (width * 0.3, height * 0.6))
+    panel_pos = (0, height * 0.2)
 
 
 def draw(screen):
@@ -185,13 +191,13 @@ def draw_rank(screen):
 
 
 def draw_accuracy(screen):
-    offset_x = screen.get_width() * 0.4
+    offset_x = screen.get_width() * 0.28
     _accuracy = str(round(accuracy * 100, 1)) + "%"
     for v in reversed(_accuracy):
         gap = nums_imgs[v].get_width() - score_overlap
         offset_x -= gap
         screen.blit(
-            nums_imgs[v], (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.8)
+            nums_imgs[v], (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.72)
         )
 
 
@@ -199,7 +205,7 @@ def draw_score(screen):
     _score = str(score)
     numbers = "0" * (8 - len(_score)) + _score
 
-    offset_x = width * 0.3
+    offset_x = width * 0.28
     for v in reversed(numbers):
         offset_x -= nums_imgs["0"].get_width() - score_overlap
         screen.blit(
@@ -208,51 +214,51 @@ def draw_score(screen):
 
 
 def draw_combo(screen):
-    offset_x = screen.get_width() * 0.2
+    offset_x = screen.get_width() * 0.01
     _combo = str(combo) + "x"
-    for v in reversed(_combo):
+    for v in _combo:
         gap = nums_imgs[v].get_width() - score_overlap
-        offset_x -= gap
+        offset_x += gap
         screen.blit(
-            nums_imgs[v], (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.8)
+            nums_imgs[v], (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.72)
         )
 
 
 def draw_scores(screen):
     img = utils.fit_image_to_screen(score_300_img, [height / 16] * 2)
-    screen.blit(img, (width * 0.1, height * 0.32))
+    screen.blit(img, (width * 0.1, height * 0.34))
     offset_x = width * 0.2
     for v in str(results["300"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.32 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.34 + (img.get_height() - nums_imgs[v].get_height()) / 2)
         )
 
     img = utils.fit_image_to_screen(score_100_img, [height / 16] * 2)
-    screen.blit(img, (width * 0.1, height * 0.42))
+    screen.blit(img, (width * 0.1, height * 0.44))
     offset_x = width * 0.2
     for v in str(results["100"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.42 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.44 + (img.get_height() - nums_imgs[v].get_height()) / 2)
         )
 
     img = utils.fit_image_to_screen(score_50_img, [height / 16] * 2)
-    screen.blit(img, (width * 0.1, height * 0.52))
+    screen.blit(img, (width * 0.1, height * 0.54))
     offset_x = width * 0.2
     for v in str(results["50"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.52 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.54 + (img.get_height() - nums_imgs[v].get_height()) / 2)
         )
 
     img = utils.fit_image_to_screen(miss_img, [height / 16] * 2)
-    screen.blit(img, (width * 0.1, height * 0.62))
+    screen.blit(img, (width * 0.1, height * 0.64))
     offset_x = width * 0.2
     for v in str(results["0"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.62 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.64 + (img.get_height() - nums_imgs[v].get_height()) / 2)
         )
 
 
@@ -280,5 +286,4 @@ def draw_title(screen):
 
 
 def draw_ranking_panel(screen):
-    screen.blit(ranking_panel, (0, h_panel))
-    # TODO: draw score, results, combo and accuracy
+    screen.blit(ranking_panel, panel_pos)

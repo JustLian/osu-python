@@ -12,9 +12,9 @@ TIME_GO_IN = 0
 # Initializing display before loading game objects
 for m in get_monitors():
     if m.is_primary:
-        width, height = m.width, m.height
+        width, height = m.width, m.width/16*9
 pg.display.init()
-screen = pg.display.set_mode((width, height), flags=pg.FULLSCREEN | pg.DOUBLEBUF)
+screen = pg.display.set_mode((width, height))
 
 
 from osu_python import classes, scenes

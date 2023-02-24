@@ -199,7 +199,19 @@ class Library:
             Index of difficulty in mp['diffs']
         """
         diff = mp["diffs"][diff_index]
-        diff_path = "{}\\{} - {} ({}) [{}].osu".format(
-            mp["path"], diff["artist"], mp["title"], mp["creator"], diff["version"]
+        diff_path = "{}\\{}.osu".format(
+            mp["path"], sanitize_str("{} - {} ({}) [{}]".format(diff["artist"], mp["title"], mp["creator"], diff["version"]))
         )
+        _temp = ""
+        for symbol in diff_path:
+            if symbol not in ["*", ":", ">"]:
+                _temp += symbol
         return sanitize_filepath(diff_path, platform="auto")
+
+
+def sanitize_str(stri: str) -> str:
+    output = ""
+    for symbol in stri:
+        if symbol not in ["*", ":", ">", "/"]:
+            output += symbol
+    return output
