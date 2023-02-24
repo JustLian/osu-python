@@ -2,6 +2,7 @@ import pygame as pg
 from osu_python.classes import Library
 from osu_python.classes.ui import beatmap_choosing as bmc
 from osu_python.classes.ui import root
+from osu_python.classes.ui.ranking import ButtonBack, load_skin
 from osu_python import map_loader, utils, scenes
 
 
@@ -27,6 +28,9 @@ def update(events):
     global scroll, lock_above, lock_below
 
     mgr.update(events)
+    if btn_back.clicked:
+        func2(scenes.main_menu, func2)
+    
     for event in events:
         if event.type == pg.MOUSEWHEEL:
             scroll[2] += event.y * 10
@@ -134,10 +138,11 @@ def draw(dt: float):
 def setup(
     _height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: int, func
 ):
-    global height, width, screen, old_bg, old_bms_index, bms_index, diff_index, bg, bms_card_height, cards, scroll, cards_above, cards_below, font, data, height_constant, lock_above, lock_below, diff_mgr, mgr
+    global height, width, screen, old_bg, old_bms_index, bms_index, diff_index, bg, bms_card_height, cards, scroll, cards_above, cards_below, font, data, height_constant, lock_above, lock_below, diff_mgr, mgr, btn_back, func2
     height = _height
     width = _width
     screen = _screen
+    func2 = func
 
     cards_above, cards_below = 0, 0
 
@@ -172,7 +177,9 @@ def setup(
         )
         _cur += 1
 
-    mgr = root.UiManager()
+    load_skin()
+    btn_back = ButtonBack(height, width)
+    mgr = root.UiManager([btn_back])
     diff_mgr = bmc.DifficultyManager(
         height, func, font, mgr
     )

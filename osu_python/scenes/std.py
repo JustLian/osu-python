@@ -133,10 +133,12 @@ def draw(screen: pg.Surface):
     [all_objects.remove(obj) for obj in tmp]
 
     ui.draw(screen)
-
+    if len(all_objects) == 0:
+        music.stop()
+        ranking(bm_name, author, retry_func, back_to_menu, utils.calculate_rank(ui.accuracy), ui.background, ui.score, ui.scores, ui.max_combo, ui.accuracy)
 
 def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ranking):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu, ranking
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu, ranking, author, bm_name
 
     all_objects = []
 
@@ -167,6 +169,9 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
         diff_path, scale, add_x, add_y, hit_callback
     )
     all_objects.extend(queue)
+    author = map.artist
+    bm_name = map.display_name
+    print(bm_name)
 
     drain_time = (all_objects[-1].endtime - all_objects[0].appear_time) / 1000
     # TODO: break time should not be in drain_time

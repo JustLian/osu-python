@@ -57,6 +57,7 @@ def setup(_height, _width, _screen: pg.Surface, play_fn):
         width,
         height,
         btns_font,
+        exit,
     )
 
     # setting up ui manager

@@ -210,3 +210,19 @@ def inside_a_circle(x, y, c_x, c_y, r) -> bool:
     radius `r`
     """
     return (x - c_x) ** 2 + (y - c_y) ** 2 < r**2
+
+
+def calculate_rank(accuracy) -> str:
+    if accuracy == 1:
+        return "SS"
+    elif accuracy >= 0.95:
+        return "S"
+    elif accuracy >= 0.90:
+        return "A"
+    elif accuracy >= 0.80:
+        return "B"
+    elif accuracy >= 0.70:
+        return "C"
+    else:
+        return "D"
+    

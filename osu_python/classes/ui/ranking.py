@@ -4,13 +4,19 @@ from osu_python.classes import Library, Config
 
 
 def load_skin():
-    global ButtonRetry, ButtonReplay, ButtonBack
+    global ButtonRetry, ButtonBack
 
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
+    default_path = Config.base_path + "/skins/default"
 
-    ButtonRetry.im = pg.image.load(path + "/pause-retry.png")
-    ButtonReplay.im = pg.image.load(path + "/pause-replay.png")
-    ButtonBack.im = pg.image.load(path + "/menu-back.png")
+    try:
+        ButtonRetry.im = pg.image.load(path + "/pause-retry.png").convert_alpha()
+    except FileNotFoundError:
+        ButtonRetry.im = pg.image.load(default_path + "/pause-retry.png").convert_alpha()
+    try:
+        ButtonBack.im = pg.image.load(path + "/menu-back.png").convert_alpha()
+    except FileNotFoundError:
+        ButtonBack.im = pg.image.load(default_path + "/menu-back.png").convert_alpha()
 
 
 class Button(root.UiElement):
@@ -52,28 +58,6 @@ class ButtonRetry(Button):
 
         self.im = pg.transform.scale(
             ButtonRetry.im, (w_size, round(self.y_p * 1.5))
-        ).convert_alpha()
-
-        self.im.set_alpha(160)
-
-        self.x, self.y = round(self.x_p * 12), round(self.y_p * 6.5)
-
-        self.rect = self.im.get_rect()
-        self.rect.left, self.rect.top = self.x, self.y
-
-
-class ButtonReplay(Button):
-    im = None
-
-    def __init__(self, height: int, width: int):
-        super().__init__(height, width)
-
-        w_size = round(
-            self.y_p * 1.5 / ButtonReplay.im.get_height() * ButtonReplay.im.get_width()
-        )
-
-        self.im = pg.transform.scale(
-            ButtonReplay.im, (w_size, round(self.y_p * 1.5))
         ).convert_alpha()
 
         self.im.set_alpha(160)
