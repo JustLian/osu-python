@@ -135,8 +135,8 @@ def draw(screen: pg.Surface):
     ui.draw(screen)
 
 
-def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu
+def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ranking):
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu, ranking
 
     all_objects = []
 
@@ -145,6 +145,7 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu):
     screen = _screen
 
     back_to_menu = _back_to_menu
+    ranking = _ranking
 
     diff_path = _diff_path
 

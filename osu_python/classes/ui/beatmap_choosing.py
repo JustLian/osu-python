@@ -189,7 +189,7 @@ class DifficultyManager:
         for d in range(len(data["diffs"])):
 
             def f(x=d):
-                self.func(scenes.std, Library.path_for_diff(data, x), f, lambda: self.func(scenes.beatmap_choosing, bm, 0, self.func))
+                self.func(scenes.std, Library.path_for_diff(data, x), f, lambda: self.func(scenes.beatmap_choosing, bm, 0, self.func), lambda *args: self.func(scenes.ranking, *args))
 
             offset += self.offset
             self.elements.append(
