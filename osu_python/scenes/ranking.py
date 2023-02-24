@@ -1,7 +1,7 @@
 import pygame as pg
 from osu_python.classes import Config
 from osu_python.classes import ui
-import random
+from datetime import datetime
 
 
 all_objects = []
@@ -30,7 +30,7 @@ def draw(screen):
 
 
 def setup(_height, _width, _screen, _name_btm, _author, _retry_func, _rank, _draw_bg_func, _score, _results, _combo, _accuracy):
-    global height, width, screen, name_btm, author, retry_func, font, btm_name, btm_author, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, btn_back, mgr_btns, ranking_panel, ranking_title, h_title, h_panel, w_title
+    global height, width, screen, name_btm, author, retry_func, btm_name, btm_author, btm_player, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, btn_back, mgr_btns, ranking_panel, ranking_title, h_title, h_panel, w_title
 
     height = _height
     width = _width
@@ -51,13 +51,19 @@ def setup(_height, _width, _screen, _name_btm, _author, _retry_func, _rank, _dra
 
     w_title = round(width * (12 / 17.5))
 
-    font = pg.font.Font(
+    font1 = pg.font.Font(
         './ui/aller_light.ttf',
-        round(h_title * 0.2)
+        round(h_title * 0.3)
     )
 
-    btm_name = font.render(name_btm, True, (255, 255, 255))
-    btm_author = font.render("Beatmap by " + author, True, (255, 255, 255))
+    font2 = pg.font.Font(
+        './ui/aller_light.ttf',
+        round(h_title * 0.17)
+    )
+
+    btm_name = font1.render(name_btm, True, (255, 255, 255))
+    btm_author = font2.render("Beatmap by " + author, True, (255, 255, 255))
+    btm_player = font2.render("Played by guest on " + datetime.now().strftime("%d-%m-%Y %H:%M:%S"), True, (255, 255, 255))
 
     ui.ranking.load_skin()
 
@@ -98,6 +104,7 @@ def draw_title(screen):
 
     screen.blit(btm_name, (0, 0))
     screen.blit(btm_author, (0, h_title * 0.3))
+    screen.blit(btm_player, (0, h_title * 0.45))
 
 
 def draw_ranking_panel(screen):
