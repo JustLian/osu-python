@@ -1,8 +1,8 @@
 import pygame as pg
 from osu_python.classes import Library
-from threading import Thread
 from osu_python.classes.ui import beatmap_choosing as bmc
-from osu_python import map_loader, utils
+from osu_python.classes.ui import root
+from osu_python import map_loader, utils, scenes
 
 
 BUFFER_CARDS = 3
@@ -23,10 +23,21 @@ def change_bms(new_bms_index, new_diff_index):
 
 def update(events):
     global scroll, lock_above, lock_below
+
+    mgr.update(events)
     for event in events:
         if event.type == pg.MOUSEWHEEL:
             scroll[2] += event.y * 10
             scroll[0] += abs(event.y * 10)
+        
+        if event.type == pg.MOUSEBUTTONDOWN:
+            m = pg.mouse.get_pos()
+            for c in cards:
+                if c.is_colliding(m):
+                    diff_mgr.update(
+                        c.data
+                    )
+                    break
 
 
     if not lock_above and cards_above < BUFFER_CARDS and BUFFER_CARDS - cards_above < 3:
@@ -103,6 +114,8 @@ def draw(dt: float):
     screen.fill((0, 0, 0))
     screen.blit(bg, (0, 0))
 
+    mgr.draw(screen, dt)
+
     lh = bms_card_height // 2
     scroll[1] = max(min(scroll[2] + scroll[1], bms_card_height * 3.7), -bms_card_height * len(cards) + bms_card_height * 3.7)
     scroll[0] *= 0.95
@@ -117,8 +130,8 @@ def draw(dt: float):
         lh += bms_card_height * 1.01
 
 
-def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: int):
-    global height, width, screen, old_bg, old_bms_index, bms_index, diff_index, bg, bms_card_height, cards, scroll, cards_above, cards_below, font, data, height_constant, lock_above, lock_below
+def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: int, func):
+    global height, width, screen, old_bg, old_bms_index, bms_index, diff_index, bg, bms_card_height, cards, scroll, cards_above, cards_below, font, data, height_constant, lock_above, lock_below, diff_mgr, mgr
     height = _height
     width = _width
     screen = _screen
@@ -159,6 +172,10 @@ def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: in
         )
         _cur += 1
 
+    mgr = root.UiManager()
+    diff_mgr = bmc.DifficultyManager(
+        height, lambda *args: func(scenes.std, *args), font, mgr
+    )
     change_bms(_bms_index, _diff_index)
 
 

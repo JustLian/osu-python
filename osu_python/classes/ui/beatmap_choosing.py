@@ -1,11 +1,12 @@
 import pygame as pg
 from osu_python.classes.ui import root
 from osu_python.classes import Library, Config
-from osu_python import utils, map_loader
+from osu_python import map_loader
+import typing as t
 
 
 def load_skin():
-    global BeatmapSetCard
+    global BeatmapSetCard, DifficultyCard
 
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
     BeatmapSetCard.bg = pg.image.load(path + "/menu-button-background.png").convert_alpha()
@@ -33,6 +34,7 @@ class BeatmapSetCard(root.UiElement):
             BeatmapSetCard.bg,
             (self.width, self.height)
         )
+        self.rect = self.img.get_rect()
 
         self.thumbnail_width = self.height * 1.6
         bg = map_loader.get_background(
@@ -81,6 +83,7 @@ class BeatmapSetCard(root.UiElement):
         """
 
         img_pos = (screen.get_width() - self.width + scroll[0], y_pos - self.height // 2 + scroll[1])
+        self.rect.x, self.rect.y = img_pos
         s_h = screen.get_height()
         if img_pos[1] > s_h or 0 > (img_pos[1] + self.height):
             return img_pos[1] > s_h
@@ -108,3 +111,101 @@ class BeatmapSetCard(root.UiElement):
                 img_pos[1] + self.height * 0.06796116505
             )
         )
+    
+    def is_colliding(self, pos) -> bool:
+        return self.rect.collidepoint(*pos)
+
+
+class DifficultyCard(root.UiElement):
+    def __init__(
+        self,
+        version: str,
+        stars: int,
+        func: t.Callable,
+        font: pg.font.Font,
+        img: pg.Surface,
+        dest: t.Tuple[int, int]
+    ):
+        self.click = func
+        self.img = img
+
+        h = self.img.get_height()
+
+        hc = h // 3
+
+        line1 = font.render(version, True, (0, 0, 0))
+        line1 = pg.transform.scale(line1, (hc * line1.get_width() / line1.get_height(), hc))
+
+        line2 = font.render('{} stars'.format(round(stars, 2)), True, (0, 0, 0))
+        line2 = pg.transform.scale(line2, (hc * line2.get_width() / line2.get_height(), hc))
+
+        offset = self.img.get_height() * .1
+        self.img.blit(
+            line1, (offset, offset)
+        )
+
+        self.rect = img.get_rect()
+        self.rect.x, self.rect.y = dest
+
+        self.img.blit(
+            line2, (offset, offset + line1.get_height())
+        )
+
+        self.dest = dest
+
+        super().__init__()
+    
+    def draw(self, screen: pg.Surface, _):
+        screen.blit(
+            self.img, self.dest
+        )
+
+    def is_colliding(self, pos) -> bool:
+        return self.rect.collidepoint(pos)
+
+
+class DifficultyManager:
+    def __init__(
+        self,
+        height: int,
+        func: t.Callable,
+        font: pg.font.Font,
+        mgr: root.UiManager
+    ):
+        size = BeatmapSetCard.bg.get_size()
+        self.h = height // 8
+        w = round(self.h * size[0] / size[1])
+        self.offset = height * .05
+        self.el_offset = height * .05
+        self.img = pg.transform.scale(
+            BeatmapSetCard.bg, (w, self.h)
+        )
+        self.font = font
+        self.func = func
+        self.mgr = mgr
+
+        self.elements = []
+    
+    def update(
+        self,
+        data: dict
+    ):
+        for e in self.elements:
+            self.mgr.remove_obj(e)
+
+        self.elements = []        
+        offset = 0
+        for d in range(len(data['diffs'])):
+            def f(x = d):
+                self.func(Library.path_for_diff(data, x), f)
+            offset += self.offset
+            self.elements.append(DifficultyCard(
+                data['diffs'][d]['version'],
+                data['diffs'][d]['stars'],
+                f, self.font, self.img.copy(),
+                (self.el_offset, self.el_offset + offset)
+            ))
+            offset += self.h
+
+        for e in self.elements:
+            self.mgr.add_obj(e)

@@ -133,7 +133,7 @@ class UiElement:
 
 class UiManager:
     def __init__(
-        self, objects: t.Sequence[UiElement]
+        self, objects: t.Sequence[UiElement] = []
     ):
         """
         Class for managing UIs
@@ -147,7 +147,7 @@ class UiManager:
             Objects that should be drawn on screen
         """
 
-        self.objects = objects
+        self.objects = list(objects)
     
     def draw(self, screen: pg.Surface, dt: int):
         """Draws all UI elements os `screen`"""
@@ -177,3 +177,12 @@ class UiManager:
                 for obj in self.objects:
                     if obj.enabled and obj.is_colliding(mouse):
                         obj.click()
+    
+    def remove_obj(self, obj: UiElement):
+        self.objects.remove(obj)
+    
+    def add_obj(self, obj: UiElement, index: int = -1):
+        if index == -1:
+            self.objects.append(obj)
+        else:
+            self.objects.insert(index, obj)

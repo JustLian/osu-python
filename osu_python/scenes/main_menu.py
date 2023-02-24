@@ -3,7 +3,8 @@ import pygame as pg
 from glob import glob
 from random import choice
 from osu_python import utils
-from osu_python.classes import ui, game_object
+from osu_python.classes import ui
+from osu_python import scenes
 
 
 log = getLogger('scenes/main_menu')
@@ -35,7 +36,7 @@ def setup(_height, _width, _screen: pg.Surface, play_fn):
     btns_font = pg.font.Font('./ui/torus.otf', round(height * .3 * .25 * .25))
 
     def play_click_fn():
-        play_fn(logo.bm, 0)
+        play_fn(scenes.beatmap_choosing, logo.bm, 0, play_fn)
 
     btn_play = ui.main_menu.Button(
         True, logo, logo, pg.image.load('./ui/menu/icons/osu.png').convert_alpha(),

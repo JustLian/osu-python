@@ -107,7 +107,7 @@ def run():
 
     change_scene(
         scenes.loading,
-        lambda: change_scene(scenes.main_menu, lambda *args: change_scene(scenes.beatmap_choosing, *args))
+        lambda *args: change_scene(*args)
     )
 
     cursor = classes.Cursor(1.5)

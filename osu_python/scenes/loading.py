@@ -4,6 +4,7 @@ import os
 from logging import getLogger
 import requests, zipfile, io
 from osu_python import map_loader
+from osu_python import scenes
 import pygame as pg
 
 
@@ -104,4 +105,4 @@ def tick(dt: float, events):
     if phase == 3:
         success_screen += dt
         if success_screen >= 1000:
-            next_scene()
+            next_scene(scenes.main_menu, next_scene)
