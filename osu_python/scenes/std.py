@@ -47,7 +47,7 @@ def click(mouse_pos: t.Tuple[int, int]):
 
 def update(events):
     global c, ui, PAUSED
-    ui.drain_hp()
+    ui.drain_hp(current_time)
     for event in events:
         if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             PAUSED = True
