@@ -174,7 +174,7 @@ def setup(
 
     mgr = root.UiManager()
     diff_mgr = bmc.DifficultyManager(
-        height, lambda *args: func(scenes.std, *args), font, mgr
+        height, func, font, mgr
     )
     change_bms(_bms_index, _diff_index)
 

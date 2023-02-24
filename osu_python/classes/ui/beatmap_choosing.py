@@ -1,8 +1,9 @@
 import pygame as pg
 from osu_python.classes.ui import root
 from osu_python.classes import Library, Config
-from osu_python import map_loader
+from osu_python import map_loader, scenes
 import typing as t
+from random import randint
 
 
 def load_skin():
@@ -182,10 +183,13 @@ class DifficultyManager:
 
         self.elements = []
         offset = 0
+        bm = randint(1, len(Library.db))
+        while "diffs" not in Library.db.get(doc_id=bm):
+            bm = randint(1, len(Library.db))
         for d in range(len(data["diffs"])):
 
             def f(x=d):
-                self.func(Library.path_for_diff(data, x), f)
+                self.func(scenes.std, Library.path_for_diff(data, x), f, lambda: self.func(scenes.beatmap_choosing, bm, 0, self.func))
 
             offset += self.offset
             self.elements.append(

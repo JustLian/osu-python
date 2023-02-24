@@ -130,14 +130,16 @@ def draw(screen: pg.Surface):
     ui.draw(screen)
 
 
-def setup(_height, _width, _screen, _diff_path, _retry_func):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func, all_objects, pause_overlay, DRAW_PO
+def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu):
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func, all_objects, pause_overlay, DRAW_PO, back_to_menu
 
     all_objects = []
 
     height = _height
     width = _width
     screen = _screen
+
+    back_to_menu = _back_to_menu
 
     diff_path = _diff_path
 
@@ -222,11 +224,10 @@ def tick(dt, events):
             music.play()
 
         elif btn_retry.clicked:
-            retry_func(diff_path)
+            retry_func()
 
         elif btn_back.clicked:
-            # lambda call beatmap choosing scene here
-            pass
+            back_to_menu()
 
         else:
             screen.blit(pause_overlay, (0, 0))
