@@ -5,10 +5,11 @@ from os.path import isdir
 
 cursor_img = None
 trail_img = None
+cursor_middle_img = None
 
 
 def load_skin():
-    global cursor_img, trail_img
+    global cursor_img, trail_img, cursor_middle_img
     try:
         path = Config.base_path + "/skins/" + Config.cfg["skin"]
         # Fallback skin
@@ -19,12 +20,23 @@ def load_skin():
 
     cursor_img = pg.image.load(path + "/cursor.png").convert_alpha()
     trail_img = pg.image.load(path + "/cursortrail.png").convert_alpha()
+    try:
+        cursor_middle_img = pg.image.load(path + "/cursormiddle.png").convert_alpha()
+    except FileNotFoundError:
+        pass
+
+    try:
+        Cursor.rotation = Config.skin_ini["[General]"]["CursorRotate"]
+    except KeyError:
+        pass
 
 
 class Cursor:
     """
     osu!python cursor class
     """
+    
+    rotation = 0
 
     def __init__(self, scale) -> None:
         load_skin()
@@ -40,7 +52,19 @@ class Cursor:
             trail_img.get_height() * scale,
         )
         self.trail_img = pg.transform.scale(trail_img, self.trail_sizes)
+
+        self.cursor_middle_img = None
+        if cursor_middle_img:
+            self.cursor_middle_sizes = (
+                cursor_middle_img.get_width() * scale,
+                cursor_middle_img.get_height() * scale,
+            )
+            self.cursor_middle_img = pg.transform.scale(
+                cursor_middle_img, self.cursor_middle_sizes
+            )
+
         self.trail = []
+        self.angle = 0
 
     def trail_tick(self):
         """Updates cursor trail"""
@@ -65,18 +89,36 @@ class Cursor:
                 (pos[0] - self.trail[-1][0]) ** 2 + (pos[1] - self.trail[-1][1]) ** 2
             ) ** 0.5
             if dist > 10:
-                self.trail.append([*pos, 25])
+                self.trail.append([*pos, 8])
         else:
-            self.trail.append([*pos, 25])
+            self.trail.append([*pos, 8])
         for t in self.trail:
             trail = self.trail_img.copy()
-            trail.set_alpha(t[2] * 6)
+            trail.set_alpha(t[2] * 32)
             screen.blit(
                 trail, (t[0] - self.trail_sizes[0] / 2, t[1] - self.trail_sizes[1] / 2)
             )
-        screen.blit(
-            self.cursor_img, (pos[0] - self.sizes[0] / 2, pos[1] - self.sizes[1] / 2)
-        )
 
-    def set_cursor_scale(self, float):
-        pass
+        if self.rotation:
+            self.angle -= 1
+            rotated_frame = pg.transform.rotate(self.cursor_img, self.angle)
+            offset = (
+                (rotated_frame.get_width() - self.cursor_img.get_width()) // 2 + self.cursor_img.get_width() // 2,
+                (rotated_frame.get_height() - self.cursor_img.get_height()) // 2 + self.cursor_img.get_height() // 2,
+            )
+            screen.blit(
+                rotated_frame, (pos[0] - offset[0], pos[1] - offset[1])
+            )
+        else:
+            screen.blit(
+                self.cursor_img, (pos[0] - self.sizes[0] / 2, pos[1] - self.sizes[1] / 2)
+            )
+
+        if self.cursor_middle_img:
+            screen.blit(
+                self.cursor_middle_img,
+                (
+                    pos[0] - self.cursor_middle_sizes[0] / 2,
+                    pos[1] - self.cursor_middle_sizes[1] / 2,
+                ),
+            )

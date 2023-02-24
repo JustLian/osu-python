@@ -56,7 +56,7 @@ class Config:
                         "keys": {"key1": 120, "key2": 122},
                         "skin": "default",
                         "fps": 60,
-                        "mouse_buttons": True
+                        "mouse_buttons": True,
                     },
                     f,
                 )

@@ -7,8 +7,7 @@ from osu_python.classes import ui as cui
 
 
 def click(mouse_pos: t.Tuple[int, int]):
-    active_object = None
-    for obj in all_objects:
+    for index, obj in enumerate(all_objects):
         if current_time < obj.appear_time:
             break
 
@@ -16,29 +15,34 @@ def click(mouse_pos: t.Tuple[int, int]):
             continue
 
         elif obj.appear_time < current_time and obj.score == None:
-            if active_object == None:
-                active_object = obj
-
             mouse_pos = pg.mouse.get_pos()
             if obj.rect.collidepoint(mouse_pos) and isinstance(
-                obj, classes.game_object.Circle
+                obj, classes.game_object.Spinner
             ):
-                obj_pos = obj.rect
-                obj_center = (
-                    obj_pos[0] + obj_pos[2] / 2,
-                    obj_pos[1] + obj_pos[3] / 2,
-                )
-                if (
-                    (mouse_pos[0] - obj_center[0]) ** 2
-                    + (mouse_pos[1] - obj_center[1]) ** 2
-                ) ** 0.5 <= (obj_pos[2] / 2):
-                    if obj == active_object:
-                        score = obj.hit(current_time)
-                        if score:
-                            ui.hit(score)
-                    else:
-                        obj.count_vibr = 20
-                    break
+                obj.hit(current_time)
+                break
+            obj_pos = obj.rect
+            obj_center = (
+                obj_pos[0] + obj_pos[2] / 2,
+                obj_pos[1] + obj_pos[3] / 2,
+            )
+            if (
+                (mouse_pos[0] - obj_center[0]) ** 2
+                + (mouse_pos[1] - obj_center[1]) ** 2
+            ) ** 0.5 <= (obj_pos[2] / 2):
+                if index != 0:
+                    prev = all_objects[index - 1]
+                    if isinstance(prev, classes.game_object.Circle):
+                        if (
+                            prev.score == None
+                            and abs(prev.hit_time - obj.hit_time) < 100
+                        ):
+                            obj.count_vibr = 20
+                            break
+                score = obj.hit(current_time)
+                if score:
+                    ui.hit(score)
+                break
 
 
 def update(events):
@@ -55,7 +59,7 @@ def update(events):
         ):
             click(pg.mouse.get_pos())
 
-        if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONUP) or (
+        if (Config.cfg["mouse_buttons"] and event.type == pg.MOUSEBUTTONUP) or (
             event.type == pg.KEYUP
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
@@ -80,6 +84,10 @@ def update(events):
                         ) ** 0.5 <= (obj_pos[2] / 2):
                             obj.touching = False
                             break
+                    if obj.rect.collidepoint(mouse_pos) and isinstance(
+                        obj, classes.game_object.Spinner
+                    ):
+                        obj.touching = False
 
 
 def draw(screen: pg.Surface):
@@ -89,6 +97,8 @@ def draw(screen: pg.Surface):
     ui.draw_background(screen)
 
     tmp = []
+    dac = []
+
     for obj in reversed(all_objects):
         if type(obj) == game_object.Slider:
             if current_time > obj.endtime and not obj.drawing_score:
@@ -104,7 +114,11 @@ def draw(screen: pg.Surface):
             break
 
         elif obj.appear_time < current_time:
-            obj.draw(screen, current_time)
+            if obj.draw(screen, current_time):
+                dac.append(obj)
+
+    for obj in dac:
+        obj.draw_appr_circle(screen, current_time)
 
     # removing objects
     [all_objects.remove(obj) for obj in tmp]
@@ -154,7 +168,9 @@ def setup(_height, _width, _screen, _diff_path, _retry_func):
         / 38
         * 5
     )
-    ui = classes.InGameUI(diff_multiplier, 1, bg, 0.6, (width, height), map.hp())
+    ui = classes.InGameUI(
+        diff_multiplier, 1, bg, 1, (width, height), map.hp(), current_time
+    )
 
     music = pg.mixer.music
     music.load(audio)

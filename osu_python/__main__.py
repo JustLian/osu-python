@@ -95,7 +95,7 @@ def run():
     global focused, fps_clock, screen, scene, width, height, font
     pg.init()
 
-    fps = Config.cfg['fps']
+    fps = Config.cfg["fps"]
     fps_clock = pg.time.Clock()
 
     root.info('Running osu!python at {} fps'.format(fps))
