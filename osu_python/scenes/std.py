@@ -4,6 +4,7 @@ import os
 from osu_python import classes, utils, map_loader
 from osu_python.classes import Config, game_object
 from osu_python.classes import ui as cui
+from osu_python import utils
 
 
 def click(mouse_pos: t.Tuple[int, int]):
@@ -198,7 +199,8 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu):
     DRAW_PO = False
 
     if os.path.exists(path_to_pause_overlay):
-        pause_overlay = pg.image.load(path_to_pause_overlay)
+        im = pg.image.load(path_to_pause_overlay)
+        pause_overlay = pg.transform.scale(im, (width, height))
         DRAW_PO = True
 
     retry_func = _retry_func
