@@ -116,7 +116,7 @@ func main() {
 	fmt.Println("Downloading source")
 	// resp, err := http.Get("https://github.com/JustLian/osu-python/releases/latest/download/osu-pytyhon.zip")
 	err := download(
-		"https://github.com/JustLian/osu-python/releases/latest/download/osu-pytyhon.zip",
+		"https://github.com/JustLian/osu-python/releases/download/v1.0-pre/osu-python.zip",
 		"./osu_python_installer/latest.zip",
 	)
 	if err != nil {
@@ -190,7 +190,7 @@ func main() {
 	}
 	fmt.Println("Game is ready for running. Downloading osu!python.exe")
 
-	err = download("https://github.com/JustLian/osu-python/releases/latest/download/osu!python.exe", "/osu-python/osu!python.exe")
+	err = download("https://github.com/JustLian/osu-python/releases/download/v1.0-pre/osu!python.exe", "/osu-python/osu!python.exe")
 	if err != nil {
 		fmt.Printf("Couldn't download osu!python executor application. Try again later (%s)", err)
 		return
