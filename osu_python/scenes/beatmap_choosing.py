@@ -1,6 +1,6 @@
 import pygame as pg
 from osu_python.classes import Library
-import random
+from threading import Thread
 from osu_python.classes.ui import beatmap_choosing as bmc
 from osu_python import map_loader, utils
 
