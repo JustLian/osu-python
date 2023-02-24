@@ -154,7 +154,7 @@ def setup(_height, _width, _screen, _diff_path, _retry_func):
         / 38
         * 5
     )
-    ui = classes.InGameUI(diff_multiplier, 1, bg, 1, (width, height), map.hp())
+    ui = classes.InGameUI(diff_multiplier, 1, bg, 0.6, (width, height), map.hp())
 
     music = pg.mixer.music
     music.load(audio)
