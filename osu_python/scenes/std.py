@@ -1,10 +1,9 @@
 import pygame as pg
 import typing as t
+import os
 from osu_python import classes, utils, map_loader
 from osu_python.classes import Config, game_object
-
-
-all_objects = []
+from osu_python.classes import ui as cui
 
 
 def click(mouse_pos: t.Tuple[int, int]):
@@ -47,10 +46,13 @@ def click(mouse_pos: t.Tuple[int, int]):
 
 
 def update(events):
-    global c, ui
+    global c, ui, PAUSED
     ui.drain_hp(current_time)
     for event in events:
-        if (Config.cfg["mouse_buttons"] and event.type == pg.MOUSEBUTTONDOWN) or (
+        if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            PAUSED = True
+
+        if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN) or (
             event.type == pg.KEYDOWN
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
@@ -124,12 +126,16 @@ def draw(screen: pg.Surface):
     ui.draw(screen)
 
 
-def setup(_height, _width, _screen, diff_path):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset
+def setup(_height, _width, _screen, _diff_path, _retry_func):
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, IS_FALL, retry_func, all_objects, pause_overlay, DRAW_PO
+
+    all_objects = []
 
     height = _height
     width = _width
     screen = _screen
+
+    diff_path = _diff_path
 
     pg.mixer.init()
 
@@ -170,16 +176,74 @@ def setup(_height, _width, _screen, diff_path):
     music.load(audio)
     music.play()
 
+    cui.pause.load_skin()
+    btn_play = cui.pause.ButtonContinue(height, width)
+    btn_retry = cui.pause.ButtonRetry(height, width)
+    btn_back = cui.pause.ButtonBack(height, width)
+    mgr = cui.root.UiManager([btn_play, btn_retry, btn_back])
+
+    PAUSED = False
+    IS_FALL = False
+
+    path_to_pause_overlay = Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png"
+    pause_overlay = None
+    DRAW_PO = False
+
+    if os.path.exists(path_to_pause_overlay):
+        pause_overlay = pg.image.load(path_to_pause_overlay)
+        DRAW_PO = True
+
+    retry_func = _retry_func
+
     return tick
 
 
 def tick(dt, events):
-    global music_offset, current_time
+    global PAUSED, pause_overlay
+    if PAUSED:
+        music.stop()
 
-    current_time += dt
-    if abs(music.get_pos() - current_time - music_offset) > 500:
-        music.rewind()
-        music.set_pos(current_time / 1000)
-        music_offset = music.get_pos() - current_time
-    update(events)
-    draw(screen)
+        if IS_FALL:
+            btn_play.toggle_click()
+            btn_play.toggle_hover()
+        
+        mgr.update(events)
+
+        if btn_play.clicked:
+            PAUSED = False
+            btn_play.clicked = False
+
+            music.play()
+
+        elif btn_retry.clicked:
+            retry_func(diff_path)
+        
+        elif btn_back.clicked:
+            # lambda call beatmap choosing scene here
+            pass
+        
+        else:
+            screen.blit(pause_overlay, (0, 0))
+            mgr.draw(screen, dt)
+
+    else:
+        global music_offset, current_time
+
+        current_time += dt
+        if abs(music.get_pos() - current_time - music_offset) > 500:
+            music.rewind()
+            music.set_pos(current_time / 1000)
+            music_offset = music.get_pos() - current_time
+        update(events)
+        draw(screen)
+
+        if PAUSED and not DRAW_PO:
+            s = pg.Surface((width, height))
+            s.fill((0, 0, 0))
+
+            pg.image.save(screen, "./ui/pause/bg_pause.png")
+            im = pg.image.load("./ui/pause/bg_pause.png")
+            im.set_alpha(75)
+
+            s.blit(im, (0, 0))
+            pause_overlay = s

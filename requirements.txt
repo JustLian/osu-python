@@ -3,3 +3,4 @@ slider
 screeninfo
 tinydb
 pathvalidate
+easing-functions

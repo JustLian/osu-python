@@ -156,6 +156,7 @@ def load_map(
             )
 
         if isinstance(obj, slider.beatmap.Spinner):
+            continue
             time = obj.time.total_seconds() * 1000
             endtime = obj.end_time.total_seconds() * 1000
             hitsound = obj.hitsound
@@ -202,20 +203,27 @@ def load_map(
 
 
 def get_background(path: os.PathLike):
-    f = open(path, encoding="utf-8-sig")
+    bg = pg.Surface((640, 480))
+    bg.fill((0, 0, 0))
+    try:
+        f = open(path, encoding="utf-8-sig")
+    except FileNotFoundError:
+        log.warning("Map background was not found in map's directory")
+        return bg
+
+    bg_path = None
     all_lines = f.readlines()
     for i, line in enumerate(all_lines):
         if "[Events]" in line:
             for i2 in range(20):
                 i3 = i2 + i
-                if all_lines[i3].split('"')[0].strip() == "0,0,":
+                if all_lines[i3].startswith("0,0,"):
                     str_path = str(path)
                     bg_path = (
-                        path[: len(str_path) - len(str_path.split("/")[-1])]
+                        path[: len(str_path) - len(str_path.split(Config.path_sep)[-1])]
                         + all_lines[i3].split('"')[1]
                     )
                     break
-    bg = None
     if bg_path:
         try:
             bg = pg.image.load(bg_path)

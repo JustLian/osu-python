@@ -6,6 +6,9 @@ from datetime import datetime
 import typing as t
 
 
+TIME_GO_IN = 0
+
+
 # Initializing display before loading game objects
 for m in get_monitors():
     if m.is_primary:
@@ -40,6 +43,10 @@ root.setLevel(logging.DEBUG)
 Lib = classes.Library
 
 scene = None
+
+
+def run_bm(path):
+    change_scene(scenes.std, path, run_bm)
 
 
 def change_scene(new_scene, *args):
@@ -90,12 +97,18 @@ def run():
 
     fps = Config.cfg["fps"]
     fps_clock = pg.time.Clock()
+
+    root.info('Running osu!python at {} fps'.format(fps))
+
     focused = False
 
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
 
-    change_scene(scenes.loading, lambda p: change_scene(scenes.std, p))
+    change_scene(
+        scenes.loading,
+        lambda *args: change_scene(*args)
+    )
 
     cursor = classes.Cursor(1.5)
 

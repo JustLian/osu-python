@@ -1,6 +1,6 @@
 import typing as t
 import os
-from time import time as now
+import pygame as pg
 
 
 def calculate_fade_in(ar: float) -> float:
@@ -191,3 +191,22 @@ def parse_additional_info(path: os.PathLike):
 def chunks(lst, n):
     """Return continuous n-sized chunks from lst."""
     return [lst[i::n] for i in range(n)]
+
+
+def fit_image_to_screen(image: pg.Surface, size: t.Tuple[int, int]):
+    """Sets sizes of image and keeping aspect ratio"""
+    WIDTH = 0
+    HEIGHT = 1
+    bg = image.get_size()
+    smaller_side = WIDTH if bg[WIDTH] < bg[HEIGHT] else HEIGHT
+    scale = size[smaller_side] / bg[smaller_side]
+    return pg.transform.scale(image, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
+
+
+def inside_a_circle(x, y, c_x, c_y, r) -> bool:
+    """
+    Determines wether potint `(x, y)` is inside
+    a circle with center at `(c_x, c_y)` and
+    radius `r`
+    """
+    return (x - c_x) ** 2 + (y - c_y) ** 2 < r ** 2

@@ -4,6 +4,8 @@ import os
 from logging import getLogger
 import requests, zipfile, io
 from osu_python import map_loader
+from osu_python import scenes
+import pygame as pg
 
 
 log = getLogger("scenes/loading")
@@ -35,6 +37,7 @@ def init_thread():
         z.close()
         log.info("Default skin downloaded")
 
+    phase = 4
     game_object.load_skin()
 
     if len(os.listdir(Config.base_path + "/songs")) == 0:
@@ -64,11 +67,24 @@ def init_thread():
 
 
 def setup(_height, _width, _screen, _next_scene):
-    global success_screen, height, width, screen, next_scene
+    global success_screen, height, width, screen, next_scene, phases
     height = _height
     width = _width
     screen = _screen
     next_scene = _next_scene
+
+    font = pg.font.Font(
+        './ui/aller_bold.ttf',
+        round(height * .1)
+    )
+
+    phases = [
+        font.render("Updating library", True, (255, 255, 255)),
+        font.render("Downloading default skin", True, (255, 255, 255)),
+        font.render("Downloading default beatmapset", True, (255, 255, 255)),
+        font.render("Loading...", True, (255, 255, 255)),
+        font.render("Loading skin", True, (255, 255, 255))
+    ]
 
     success_screen = 0
     Thread(target=init_thread).start()
@@ -77,12 +93,16 @@ def setup(_height, _width, _screen, _next_scene):
 def tick(dt: float, events):
     global success_screen
 
-    if phase != 3:
-        screen.fill((119, 3, 252))
-    else:
+    screen.fill((0, 0, 0))
+    screen.blit(
+        phases[phase],
+        (
+            (width - phases[phase].get_width()) // 2,
+            (height - phases[phase].get_height()) // 2
+        )
+    )
+
+    if phase == 3:
         success_screen += dt
-        screen.fill((221, 133, 230))
-        if success_screen > 1000:
-            # r = Library.search('can you understand me')
-            # diff_p = Library.path_for_diff(r[0], 2)
-            next_scene("./osu_python/map.osu")
+        if success_screen >= 1000:
+            next_scene(scenes.main_menu, next_scene)

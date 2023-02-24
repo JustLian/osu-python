@@ -94,6 +94,7 @@ class InGameUI:
         self.difficulty_multiplier = difficulty_multiplier
         self.mod_multiplier = mod_multiplier
 
+        self.raw_background = utils.fit_image_to_screen(background, monitor_size)
         self.monitor_size = monitor_size
         self.raw_background = self.background_resize(background, monitor_size)
         self.bg_dim = background_dim
