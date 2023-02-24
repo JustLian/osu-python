@@ -4,12 +4,13 @@ from osu_python.classes import Library, Config
 
 
 def load_skin():
-    global ButtonRetry, ButtonReplay
+    global ButtonRetry, ButtonReplay, ButtonBack
 
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
 
     ButtonRetry.im = pg.image.load(path + "/pause-retry.png")
     ButtonReplay.im = pg.image.load(path + "/pause-replay.png")
+    ButtonBack.im = pg.image.load(path + "/menu-back.png")
 
 
 class Button(root.UiElement):
@@ -71,3 +72,23 @@ class ButtonReplay(Button):
 
         self.rect = self.im.get_rect()
         self.rect.left, self.rect.top = self.x, self.y
+
+
+class ButtonBack(Button):
+    im = None
+
+    def __init__(self, height: int, width: int):
+        super().__init__(height, width)
+
+        w_size = ButtonBack.im.get_height() / (height * (3 / 13)) * ButtonBack.im.get_width()
+
+        self.im = pg.transform.scale(
+            ButtonBack.im, (w_size, round(height * (3 / 13)))
+        ).convert_alpha()
+
+        self.im.set_alpha(160)
+
+        self.x, self.y = 0, 0
+
+        self.rect = self.im.get_rect()
+        self.rect.left, self.rect.bottom = 0, height

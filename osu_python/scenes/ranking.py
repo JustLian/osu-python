@@ -30,7 +30,7 @@ def draw(screen):
 
 
 def setup(_height, _width, _screen, _diff_path, _retry_func, _rank, _draw_bg_func, _score, _results, _combo, _accuracy):
-    global height, width, screen, diff_path, retry_func, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, mgr_btns, ranking_panel, ranking_title, h_title, h_panel
+    global height, width, screen, diff_path, retry_func, rank, draw_bg_func, score, results, combo, accuracy, btn_retry, btn_replay, btn_back, mgr_btns, ranking_panel, ranking_title, h_title, h_panel, w_title
 
     height = _height
     width = _width
@@ -47,16 +47,21 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _rank, _draw_bg_fun
     h_title = round(height * (2 / 13))
     h_panel = round(width * (11 / 13))
 
+    w_title = round(width * (12.5 / 17.5))
+
+    ui.ranking.load_skin()
+
     btn_retry = ui.ranking.ButtonRetry(height, width)
     btn_replay = ui.ranking.ButtonReplay(height, width)
+    btn_back = ui.ranking.ButtonBack(height, width)
 
-    mgr_btns = ui.root.UiManager([btn_retry, btn_replay])
+    mgr_btns = ui.root.UiManager([btn_retry, btn_replay, btn_back])
 
-    im = pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking_title.png")
+    im = pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking-title.png")
     w_size = h_title / im.get_height() * im.get_width() 
     ranking_title = pg.transform.scale(im, (w_size, h_title))
 
-    im = pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking_panel.png")
+    im = pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/ranking-panel.png")
     w_size = h_panel / im.get_height() * im.get_width()
     ranking_panel = pg.transform.scale(im, (w_size, h_title))
 
@@ -64,6 +69,9 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _rank, _draw_bg_fun
 def tick(dt, events):
     update(events)
     draw(screen)
+
+    mgr_btns.update(events)
+    mgr_btns.draw(screen, dt)
 
 
 def draw_background(screen):
@@ -73,7 +81,7 @@ def draw_background(screen):
 def draw_title(screen):
     pg.draw.rect(screen, (0, 0, 0) (0, 0, width, h_title))
     screen.blit(ranking_title,
-        (round(width * (12.5 / 17.5)), h_title)
+        (w_title, h_title)
     )
     # TODO: beatmap_title
 
