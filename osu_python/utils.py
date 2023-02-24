@@ -209,4 +209,4 @@ def inside_a_circle(x, y, c_x, c_y, r) -> bool:
     a circle with center at `(c_x, c_y)` and
     radius `r`
     """
-    return (x - c_x) ** 2 + (y - c_y) ** 2 < r ** 2
+    return (x - c_x) ** 2 + (y - c_y) ** 2 < r**2

@@ -98,17 +98,14 @@ def run():
     fps = Config.cfg["fps"]
     fps_clock = pg.time.Clock()
 
-    root.info('Running osu!python at {} fps'.format(fps))
+    root.info("Running osu!python at {} fps".format(fps))
 
     focused = False
 
     pg.display.set_caption("osu!python")
     font = pg.font.SysFont(None, 28)
 
-    change_scene(
-        scenes.loading,
-        lambda *args: change_scene(*args)
-    )
+    change_scene(scenes.loading, lambda *args: change_scene(*args))
 
     cursor = classes.Cursor(1.5)
 

@@ -80,7 +80,10 @@ def load_skin():
     ).convert_alpha()
     _temp = pg.Surface((100, 100), pg.SRCALPHA, 32)
     _temp_img = pg.image.load(path + "/reversearrow.png").convert_alpha()
-    _temp.blit(_temp_img, ((100 - _temp_img.get_width()) / 2, (100 - _temp_img.get_height()) / 2))
+    _temp.blit(
+        _temp_img,
+        ((100 - _temp_img.get_width()) / 2, (100 - _temp_img.get_height()) / 2),
+    )
     Slider.reverse_arrow_img = _temp.convert_alpha()
 
     try:
@@ -770,10 +773,9 @@ class Slider(Circle):
             ind = -((a + 1) % 2)
             self.reverse_arrows.append((*self.body[ind], ind))
         self.last_reverse = 0
-        
+
         self.reverse_arrow = pg.transform.scale(
-            Slider.reverse_arrow_img,
-            (hit_size / 1.28, hit_size / 1.28)
+            Slider.reverse_arrow_img, (hit_size / 1.28, hit_size / 1.28)
         )
 
         self.drawing_score = False
@@ -889,8 +891,10 @@ class Slider(Circle):
             img = self.reverse_arrow
             rotated_frame = pg.transform.rotate(img, -angle)
             offset = (
-                (self.hit_size - img.get_width()) / 2 - (rotated_frame.get_width() - img.get_width()) // 2,
-                (self.hit_size - img.get_height()) / 2 - (rotated_frame.get_height() - img.get_height()) // 2,
+                (self.hit_size - img.get_width()) / 2
+                - (rotated_frame.get_width() - img.get_width()) // 2,
+                (self.hit_size - img.get_height()) / 2
+                - (rotated_frame.get_height() - img.get_height()) // 2,
             )
             rotated_frame.set_alpha((time - self.appear_time) * self.fade_pms)
             screen.blit(rotated_frame, (arrow[0] + offset[0], arrow[1] + offset[1]))

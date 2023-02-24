@@ -7,12 +7,12 @@ import typing as t
 
 
 class OsuLogo(root.UiElement):
-    logo = pg.image.load('./ui/menu/logo.png').convert_alpha()
+    logo = pg.image.load("./ui/menu/logo.png").convert_alpha()
 
     def __init__(self, width: int, height: int):
         self.width, self.height = width, height
-        self.stage1_size = (height * .6, height * .6)
-        self.stage2_size = (height * .3, height * .3)
+        self.stage1_size = (height * 0.6, height * 0.6)
+        self.stage2_size = (height * 0.3, height * 0.3)
         self.right_border = 0
         self.line_height = 0
 
@@ -20,10 +20,7 @@ class OsuLogo(root.UiElement):
 
         self.original_size = self.stage1_size
         self.current_size = self.original_size
-        self.img = pg.transform.scale(
-            OsuLogo.logo,
-            self.original_size
-        )
+        self.img = pg.transform.scale(OsuLogo.logo, self.original_size)
 
         self.rect = self.img.get_rect()
         self.rect.x = width // 2
@@ -33,40 +30,38 @@ class OsuLogo(root.UiElement):
         self.step = 0
 
         self.bm = randint(1, len(Library.db))
-        while 'diffs' not in Library.db.get(doc_id=self.bm):
+        while "diffs" not in Library.db.get(doc_id=self.bm):
             self.bm = randint(1, len(Library.db))
         # print(Library.db.get(doc_id=self.bm)['path'])
 
         # logo animations
         self.size = root.Animation(
-            1, self.original_size, self.original_size, 'LinearInOut'
+            1, self.original_size, self.original_size, "LinearInOut"
         )
-        self.offset = root.Animation(
-            1, [0, 0], [0, 0], 'LinearInOut'
-        )
+        self.offset = root.Animation(1, [0, 0], [0, 0], "LinearInOut")
 
         # gray line animations
-        self.line = root.Animation(
-            1, (0, 0, 0, 0), (0, 0, 0, 0), 'LinearInOut'
-        )
+        self.line = root.Animation(1, (0, 0, 0, 0), (0, 0, 0, 0), "LinearInOut")
 
         super().__init__(True, True)
-    
+
     def toggle_hover(self):
         if not self.hover:
             self.size = root.Animation(
-                250, self.original_size,
+                250,
+                self.original_size,
                 (self.original_size[0] * 1.05, self.original_size[0] * 1.05),
-                'ElasticEaseOut'
+                "ElasticEaseOut",
             )
         else:
             self.size = root.Animation(
-                250, (self.original_size[0] * 1.05, self.original_size[0] * 1.05),
-                self.original_size, 'ElasticEaseOut'
+                250,
+                (self.original_size[0] * 1.05, self.original_size[0] * 1.05),
+                self.original_size,
+                "ElasticEaseOut",
             )
 
         super().toggle_hover()
-
 
     def draw(self, screen: pg.Surface, dt):
         line = self.line(dt)
@@ -85,62 +80,58 @@ class OsuLogo(root.UiElement):
         self.current_size = self.size(dt)
         self.c_offset = self.offset(dt)
 
-        
         x_pos = (self.width - self.current_size[0]) // 2 + self.c_offset[0]
-        draw_logo = (lambda:
-            pg.draw.circle(
-                screen, (248, 119, 176),
-                (self.width // 2 + self.c_offset[0], self.height // 2 + self.c_offset[1]), self.current_size[0] * .465
-            )
-            and
-            screen.blit(pg.transform.scale(self.img, self.current_size), (
-                x_pos,
-                (self.height - self.current_size[1]) // 2 + self.c_offset[1]
-            ))
+        draw_logo = lambda: pg.draw.circle(
+            screen,
+            (248, 119, 176),
+            (self.width // 2 + self.c_offset[0], self.height // 2 + self.c_offset[1]),
+            self.current_size[0] * 0.465,
+        ) and screen.blit(
+            pg.transform.scale(self.img, self.current_size),
+            (x_pos, (self.height - self.current_size[1]) // 2 + self.c_offset[1]),
         )
 
         self.right_border = x_pos + self.current_size[0]
         return draw_logo
-    
+
     def is_colliding(self, pos) -> bool:
         return utils.inside_a_circle(
-            *pos, self.rect.x + self.c_offset[0], self.rect.y + self.c_offset[1], self.current_size[0] / 2
+            *pos,
+            self.rect.x + self.c_offset[0],
+            self.rect.y + self.c_offset[1],
+            self.current_size[0] / 2
         )
-    
+
     def click(self):
         if self.stage == 1:
             self.stage = 2
             self.original_size = self.stage2_size
             self.size = root.Animation(
-                400, self.current_size, self.original_size,
-                'QuinticEaseInOut'
+                400, self.current_size, self.original_size, "QuinticEaseInOut"
             )
             self.offset = root.Animation(
-                300, (0, 0), (
-                    -self.width * .2, 0
-                ), 'QuinticEaseInOut'
+                300, (0, 0), (-self.width * 0.2, 0), "QuinticEaseInOut"
             )
             self.line = root.Animation(
-                500, (self.width, self.stage2_size[0] * .25, 0, 0), (
-                    self.width, self.stage2_size[0] * .5, 255, 50
-                ), 'QuinticEaseOut'
+                500,
+                (self.width, self.stage2_size[0] * 0.25, 0, 0),
+                (self.width, self.stage2_size[0] * 0.5, 255, 50),
+                "QuinticEaseOut",
             )
         else:
             self.stage = 1
             self.original_size = self.stage1_size
             self.size = root.Animation(
-                400, self.current_size, self.original_size,
-                'QuinticEaseInOut'
+                400, self.current_size, self.original_size, "QuinticEaseInOut"
             )
             self.offset = root.Animation(
-                300, (-self.width * .2, 0), (
-                    0, 0
-                ), 'QuinticEaseInOut'
+                300, (-self.width * 0.2, 0), (0, 0), "QuinticEaseInOut"
             )
             self.line = root.Animation(
-                500, (self.width, self.stage2_size[0] * .5, 255, 50), (
-                    self.width, self.stage2_size[0] * .25, 0, 0
-                ), 'QuinticEaseOut'
+                500,
+                (self.width, self.stage2_size[0] * 0.5, 255, 50),
+                (self.width, self.stage2_size[0] * 0.25, 0, 0),
+                "QuinticEaseOut",
             )
 
 
@@ -151,10 +142,12 @@ class Button(root.UiElement):
         left_obj: root.UiElement,
         osu_logo: OsuLogo,
         icon: pg.Surface,
-        text: str, color: tuple,
-        width: int, height: int,
+        text: str,
+        color: tuple,
+        width: int,
+        height: int,
         font: pg.font.Font,
-        on_click: t.Callable = None
+        on_click: t.Callable = None,
     ):
         if on_click:
             self.click = on_click
@@ -165,32 +158,30 @@ class Button(root.UiElement):
         self.last_w = 0
         self.img = icon
         self.right_border = 0
-        self.text = font.render(
-            text, True, (255, 255, 255)
-        )
+        self.text = font.render(text, True, (255, 255, 255))
         self.fb = first_button
 
         if self.fb:
-            self.left_offset = -width * .028
-            self.original_size = width * .1
-            self.exp_size = width * .15
+            self.left_offset = -width * 0.028
+            self.original_size = width * 0.1
+            self.exp_size = width * 0.15
         else:
             self.left_offset = 0
-            self.original_size = width * .128
-            self.exp_size = width * .188
+            self.original_size = width * 0.128
+            self.exp_size = width * 0.188
 
         self.size = root.Animation(
-            1, (self.original_size,), (self.original_size,), 'LinearInOut'
+            1, (self.original_size,), (self.original_size,), "LinearInOut"
         )
 
-        self.offset = width * .015
+        self.offset = width * 0.015
 
         super().__init__()
-    
+
     def draw(self, screen: pg.Surface, dt) -> None:
         if self.logo.stage != 2:
             return
-        
+
         w = self.size(dt)[0]
         self.last_w = w
         h = self.logo.line_height
@@ -200,51 +191,50 @@ class Button(root.UiElement):
         self.right_border = self.left_obj.right_border + w
 
         pg.draw.polygon(
-            screen, self.color,
+            screen,
+            self.color,
             (
                 (self.left_obj.right_border + self.left_offset, bottom),
                 (self.left_obj.right_border + self.offset + self.left_offset, top),
                 (self.left_obj.right_border + w + self.offset, top),
-                (self.left_obj.right_border + w, bottom)
-            )
+                (self.left_obj.right_border + w, bottom),
+            ),
         )
 
         middle = (
             self.left_obj.right_border + (w + self.offset + self.left_offset) // 2,
-            self.height // 2
+            self.height // 2,
         )
 
         img = pg.transform.scale(
-            self.img, (self.logo.line_height * .3, self.logo.line_height * .3)
+            self.img, (self.logo.line_height * 0.3, self.logo.line_height * 0.3)
         )
         img_height = img.get_height()
         screen.blit(
-            img, (
-                middle[0] - img.get_width() // 2,
-                middle[1] - img_height // 2
-            )
+            img, (middle[0] - img.get_width() // 2, middle[1] - img_height // 2)
         )
         screen.blit(
-            self.text, (
-                middle[0] - self.text.get_height(),
-                self.height // 2 + h * .3
-            )
+            self.text, (middle[0] - self.text.get_height(), self.height // 2 + h * 0.3)
         )
 
     def is_colliding(self, pos):
         return (
-            self.left_obj.right_border < pos[0] < self.left_obj.right_border + self.last_w + self.offset
-            and (self.height - self.logo.line_height) // 2 < pos[1] < (self.height + self.logo.line_height) // 2
+            self.left_obj.right_border
+            < pos[0]
+            < self.left_obj.right_border + self.last_w + self.offset
+            and (self.height - self.logo.line_height) // 2
+            < pos[1]
+            < (self.height + self.logo.line_height) // 2
         )
 
     def toggle_hover(self):
         if not self.hover:
             self.size = root.Animation(
-                300, (self.original_size,), (self.exp_size,), 'ElasticEaseOut'
+                300, (self.original_size,), (self.exp_size,), "ElasticEaseOut"
             )
         else:
             self.size = root.Animation(
-                300, (self.exp_size,), (self.original_size,), 'ElasticEaseOut'
+                300, (self.exp_size,), (self.original_size,), "ElasticEaseOut"
             )
 
         super().toggle_hover()

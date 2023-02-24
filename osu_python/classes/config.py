@@ -22,7 +22,7 @@ class Config:
     base_path = "/osu-python"
     cfg = {}
     skin_ini = {}
-    path_sep = '/' if os.name == 'posix' else '\\'
+    path_sep = "/" if os.name == "posix" else "\\"
 
     @classmethod
     def init(cls):

@@ -52,7 +52,11 @@ def update(events):
         if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             PAUSED = True
 
-        if (Config.cfg['mouse_buttons'] and event.type == pg.MOUSEBUTTONDOWN and event.button in [1, 3]) or (
+        if (
+            Config.cfg["mouse_buttons"]
+            and event.type == pg.MOUSEBUTTONDOWN
+            and event.button in [1, 3]
+        ) or (
             event.type == pg.KEYDOWN
             and int(event.key)
             in [Config.cfg["keys"]["key1"], Config.cfg["keys"]["key2"]]
@@ -185,7 +189,9 @@ def setup(_height, _width, _screen, _diff_path, _retry_func):
     PAUSED = False
     IS_FALL = False
 
-    path_to_pause_overlay = Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png"
+    path_to_pause_overlay = (
+        Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png"
+    )
     pause_overlay = None
     DRAW_PO = False
 
@@ -206,7 +212,7 @@ def tick(dt, events):
         if IS_FALL:
             btn_play.toggle_click()
             btn_play.toggle_hover()
-        
+
         mgr.update(events)
 
         if btn_play.clicked:
@@ -217,11 +223,11 @@ def tick(dt, events):
 
         elif btn_retry.clicked:
             retry_func(diff_path)
-        
+
         elif btn_back.clicked:
             # lambda call beatmap choosing scene here
             pass
-        
+
         else:
             screen.blit(pause_overlay, (0, 0))
             mgr.draw(screen, dt)

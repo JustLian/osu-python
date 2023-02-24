@@ -7,7 +7,7 @@ class Animation:
     def __init__(self, duration: int, start_values: list, end_values: list, func: str):
         """
         This class is used for playing animations easily.
-        
+
         Parameters
         ----------
         duration : int
@@ -27,13 +27,13 @@ class Animation:
         self.t = 0
         self.e = duration
         self.last = None
-        
+
         e = getattr(easing, func)
         self.easing = [
             e(start_values[n], end_values[n], duration)
             for n in range(len(start_values))
         ]
-    
+
     def __call__(self, dt: float) -> list:
         """
         Calculates new values from time between frames
@@ -64,18 +64,22 @@ class UiElement:
             Should object be rendered? (this param can be changed using UiElement.toggle_show method)
         """
 
-        assert hasattr(self, 'draw'), "Class {} doesn't have `draw` method (required)".format(self.__class__)
-        if not hasattr(self, 'is_colliding'):
+        assert hasattr(
+            self, "draw"
+        ), "Class {} doesn't have `draw` method (required)".format(self.__class__)
+        if not hasattr(self, "is_colliding"):
             self.is_colliding = lambda *args: False
 
         self.enabled = enabled
 
         if enabled:
-            assert hasattr(self, 'click'), "Class {} doesn't have `click` method".format(self.__class__)
+            assert hasattr(
+                self, "click"
+            ), "Class {} doesn't have `click` method".format(self.__class__)
 
         self.shown = shown
         self.hover = False
-    
+
     def toggle_show(self, force_value: bool = None) -> bool:
         """
         Toggle/set visibility of object.
@@ -85,7 +89,7 @@ class UiElement:
         force_value : bool
             Sets visibility of object to passed value
             If None, toggles visibility
-        
+
         Returns
         -------
         True if visibility changed, False otherwise
@@ -94,12 +98,12 @@ class UiElement:
         if force_value is None:
             self.shown = not self.shown
             return True
-        
+
         r = self.shown != force_value
         self.shown = force_value
 
         return r
-    
+
     def toggle_click(self, force_value: bool = None) -> bool:
         """
         Toggle/set is object should be enabled.
@@ -108,7 +112,7 @@ class UiElement:
         ----------
         force_value : bool
             Enables object if passed arg is True, disables otherwise
-        
+
         Returns
         -------
         True if object enabled/disabled, False if nothing changed
@@ -117,24 +121,22 @@ class UiElement:
         if force_value is None:
             self.enabled = not self.enabled
             return True
-        
+
         r = self.enabled != force_value
         self.enabled = force_value
 
         return r
 
     def toggle_hover(self):
-            """
-            Toggles hover effects. Don't call this method manually
-            """
+        """
+        Toggles hover effects. Don't call this method manually
+        """
 
-            self.hover = not self.hover
+        self.hover = not self.hover
 
 
 class UiManager:
-    def __init__(
-        self, objects: t.Sequence[UiElement] = []
-    ):
+    def __init__(self, objects: t.Sequence[UiElement] = []):
         """
         Class for managing UIs
         This class will handle drawing objects, calling
@@ -148,7 +150,7 @@ class UiManager:
         """
 
         self.objects = list(objects)
-    
+
     def draw(self, screen: pg.Surface, dt: int):
         """Draws all UI elements os `screen`"""
 
@@ -160,7 +162,6 @@ class UiManager:
                     draw_after.append(f)
         for f in draw_after:
             f()
-        
 
     def update(self, events):
         """Updates UI"""
@@ -177,10 +178,10 @@ class UiManager:
                 for obj in self.objects:
                     if obj.enabled and obj.is_colliding(mouse):
                         obj.click()
-    
+
     def remove_obj(self, obj: UiElement):
         self.objects.remove(obj)
-    
+
     def add_obj(self, obj: UiElement, index: int = -1):
         if index == -1:
             self.objects.append(obj)

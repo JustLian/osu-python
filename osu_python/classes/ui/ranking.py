@@ -23,7 +23,7 @@ class Button(root.UiElement):
         self.x_p = self.width / 17.5
 
         self.clicked = False
-    
+
     def draw(self, screen: pg.Surface, dt: float):
         if self.hover:
             self.im.set_alpha(255)
@@ -31,10 +31,10 @@ class Button(root.UiElement):
         else:
             self.im.set_alpha(160)
             screen.blit(self.im, self.rect)
-    
+
     def click(self):
         self.clicked = True
-    
+
     def is_colliding(self, coords: tuple):
         if self.rect.collidepoint(coords):
             return True
@@ -46,7 +46,9 @@ class ButtonRetry(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
-        w_size = round(self.y_p * 1.5 / ButtonRetry.im.get_height() * ButtonRetry.im.get_width())
+        w_size = round(
+            self.y_p * 1.5 / ButtonRetry.im.get_height() * ButtonRetry.im.get_width()
+        )
 
         self.im = pg.transform.scale(
             ButtonRetry.im, (w_size, round(self.y_p * 1.5))
@@ -66,7 +68,9 @@ class ButtonReplay(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
-        w_size = round(self.y_p * 1.5 / ButtonReplay.im.get_height() * ButtonReplay.im.get_width())
+        w_size = round(
+            self.y_p * 1.5 / ButtonReplay.im.get_height() * ButtonReplay.im.get_width()
+        )
 
         self.im = pg.transform.scale(
             ButtonReplay.im, (w_size, round(self.y_p * 1.5))
@@ -86,7 +90,9 @@ class ButtonBack(Button):
     def __init__(self, height: int, width: int):
         super().__init__(height, width)
 
-        w_size = round((height * (3 / 13)) / ButtonBack.im.get_height() * ButtonBack.im.get_width())
+        w_size = round(
+            (height * (3 / 13)) / ButtonBack.im.get_height() * ButtonBack.im.get_width()
+        )
 
         self.im = pg.transform.scale(
             ButtonBack.im, (w_size, round(height * (3 / 13)))

@@ -14,10 +14,12 @@ def change_bms(new_bms_index, new_diff_index):
     old_bms_index, bms_index = bms_index, new_bms_index
     diff_index = new_diff_index
     dp = Library.path_for_diff(Library.db.get(doc_id=bms_index), diff_index)
-    old_bg, bg = bg, utils.fit_image_to_screen(
-        map_loader.get_background(dp),
-        (width, height)
-    ).convert_alpha()
+    old_bg, bg = (
+        bg,
+        utils.fit_image_to_screen(
+            map_loader.get_background(dp), (width, height)
+        ).convert_alpha(),
+    )
     bg.set_alpha(120)
 
 
@@ -29,16 +31,13 @@ def update(events):
         if event.type == pg.MOUSEWHEEL:
             scroll[2] += event.y * 10
             scroll[0] += abs(event.y * 10)
-        
+
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             m = pg.mouse.get_pos()
             for c in cards:
                 if c.is_colliding(m):
-                    diff_mgr.update(
-                        c.data
-                    )
+                    diff_mgr.update(c.data)
                     break
-
 
     if not lock_above and cards_above < BUFFER_CARDS and BUFFER_CARDS - cards_above < 3:
         if add_card_above():
@@ -61,7 +60,7 @@ def add_card_above():
     while _cur <= _lim:
         d = Library.db.get(doc_id=_last_index + _cur)
         _exit = False
-        while d is None or 'diffs' not in d or d['diffs'] == []:
+        while d is None or "diffs" not in d or d["diffs"] == []:
             _cur += 1
             _lim += 1
             if _cur >= len(Library.db):
@@ -72,10 +71,10 @@ def add_card_above():
             return 0
 
         cards.insert(
-            0, bmc.BeatmapSetCard(
-                _last_index + _cur, bms_card_height, font,
-                height_constant
-            )
+            0,
+            bmc.BeatmapSetCard(
+                _last_index + _cur, bms_card_height, font, height_constant
+            ),
         )
         _cur += 1
         scroll[1] -= bms_card_height
@@ -88,7 +87,7 @@ def add_card_below():
     while _cur >= _lim:
         d = Library.db.get(doc_id=_last_index + _cur)
         _exit = False
-        while d is None or 'diffs' not in d or d['diffs'] == []:
+        while d is None or "diffs" not in d or d["diffs"] == []:
             _cur -= 1
             _lim -= 1
             if _last_index + _cur < 0:
@@ -100,8 +99,7 @@ def add_card_below():
 
         cards.append(
             bmc.BeatmapSetCard(
-                _last_index + _cur, bms_card_height, font,
-                height_constant
+                _last_index + _cur, bms_card_height, font, height_constant
             )
         )
         _cur -= 1
@@ -117,7 +115,10 @@ def draw(dt: float):
     mgr.draw(screen, dt)
 
     lh = bms_card_height // 2
-    scroll[1] = max(min(scroll[2] + scroll[1], bms_card_height * 3.7), -bms_card_height * len(cards) + bms_card_height * 3.7)
+    scroll[1] = max(
+        min(scroll[2] + scroll[1], bms_card_height * 3.7),
+        -bms_card_height * len(cards) + bms_card_height * 3.7,
+    )
     scroll[0] *= 0.95
     scroll[2] *= 0.9
     cards_below, cards_above = 0, 0
@@ -130,7 +131,9 @@ def draw(dt: float):
         lh += bms_card_height * 1.01
 
 
-def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: int, func):
+def setup(
+    _height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: int, func
+):
     global height, width, screen, old_bg, old_bms_index, bms_index, diff_index, bg, bms_card_height, cards, scroll, cards_above, cards_below, font, data, height_constant, lock_above, lock_below, diff_mgr, mgr
     height = _height
     width = _width
@@ -154,21 +157,18 @@ def setup(_height, _width, _screen: pg.Surface, _bms_index: int, _diff_index: in
     scroll = [0, bms_card_height * -4, 0]
     lock_below = False
     lock_above = False
-    font = pg.font.Font('./ui/aller_light.ttf', round(bms_card_height * .5))
+    font = pg.font.Font("./ui/aller_light.ttf", round(bms_card_height * 0.5))
     _cur, _lim = -BUFFER_CARDS - 4, BUFFER_CARDS + 4
     while _cur <= _lim:
         d = Library.db.get(doc_id=bms_index + _cur)
-        while d is None or 'diffs' not in d or d['diffs'] == []:
+        while d is None or "diffs" not in d or d["diffs"] == []:
             _cur += 1
             _lim += 1
             d = Library.db.get(doc_id=bms_index + _cur)
 
         data.append(d)
         cards.append(
-            bmc.BeatmapSetCard(
-                bms_index + _cur, bms_card_height, font,
-                height_constant
-            )
+            bmc.BeatmapSetCard(bms_index + _cur, bms_card_height, font, height_constant)
         )
         _cur += 1
 

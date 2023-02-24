@@ -73,17 +73,14 @@ def setup(_height, _width, _screen, _next_scene):
     screen = _screen
     next_scene = _next_scene
 
-    font = pg.font.Font(
-        './ui/aller_bold.ttf',
-        round(height * .1)
-    )
+    font = pg.font.Font("./ui/aller_bold.ttf", round(height * 0.1))
 
     phases = [
         font.render("Updating library", True, (255, 255, 255)),
         font.render("Downloading default skin", True, (255, 255, 255)),
         font.render("Downloading default beatmapset", True, (255, 255, 255)),
         font.render("Loading...", True, (255, 255, 255)),
-        font.render("Loading skin", True, (255, 255, 255))
+        font.render("Loading skin", True, (255, 255, 255)),
     ]
 
     success_screen = 0
@@ -98,8 +95,8 @@ def tick(dt: float, events):
         phases[phase],
         (
             (width - phases[phase].get_width()) // 2,
-            (height - phases[phase].get_height()) // 2
-        )
+            (height - phases[phase].get_height()) // 2,
+        ),
     )
 
     if phase == 3:
