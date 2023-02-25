@@ -265,7 +265,7 @@ func main() {
 	}
 	fmt.Println("Game is ready for running. Downloading osu!python.exe")
 
-	err = download("https://github.com/JustLian/osu-python/releases/latest/download/osu!python.exe", "/osu-python/")
+	err = download("https://github.com/JustLian/osu-python/releases/latest/download/osu.python.exe", "/osu-python/")
 	if err != nil {
 		fmt.Printf("Couldn't download osu!python executor application. Try downloading it from osu!python latest release page: https://github.com/JustLian/osu-python (%s)\n", err)
 	}
