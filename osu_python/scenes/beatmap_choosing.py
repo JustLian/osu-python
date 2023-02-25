@@ -30,7 +30,7 @@ def update(events):
     mgr.update(events)
     if btn_back.clicked:
         func2(scenes.main_menu, func2)
-    
+
     for event in events:
         if event.type == pg.MOUSEWHEEL:
             scroll[2] += event.y * 10
@@ -180,9 +180,7 @@ def setup(
     load_skin()
     btn_back = ButtonBack(height, width)
     mgr = root.UiManager([btn_back])
-    diff_mgr = bmc.DifficultyManager(
-        height, func, font, mgr
-    )
+    diff_mgr = bmc.DifficultyManager(height, func, font, mgr)
     change_bms(_bms_index, _diff_index)
 
 

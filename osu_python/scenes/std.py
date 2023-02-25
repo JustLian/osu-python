@@ -55,7 +55,11 @@ def update(events):
         FAILED = True
         btn_play.toggle_show()
     for event in events:
-        if (not PAUSED or FAILED) and event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+        if (
+            (not PAUSED or FAILED)
+            and event.type == pg.KEYDOWN
+            and event.key == pg.K_ESCAPE
+        ):
             PAUSED = True
 
         if (
@@ -136,7 +140,19 @@ def draw(screen: pg.Surface):
     ui.draw(screen)
     if len(all_objects) == 0:
         music.stop()
-        ranking(bm_name, author, retry_func, back_to_menu, utils.calculate_rank(ui.accuracy), bg, ui.score, ui.scores, ui.max_combo, ui.accuracy)
+        ranking(
+            bm_name,
+            author,
+            retry_func,
+            back_to_menu,
+            utils.calculate_rank(ui.accuracy),
+            bg,
+            ui.score,
+            ui.scores,
+            ui.max_combo,
+            ui.accuracy,
+        )
+
 
 def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ranking):
     global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu, ranking, author, bm_name, bg, STARTED, wait_time
@@ -165,7 +181,6 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
 
     def hit_callback(score: int):
         ui.hit(score)
-    
 
     queue, audio, bg, map = map_loader.load_map(
         diff_path, scale, add_x, add_y, hit_callback
@@ -206,12 +221,25 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
     wait_time = 0
 
     try:
-        fail_overlay = utils.fit_image_to_screen(pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/fail-background.png").convert_alpha(), screen.get_size())
+        fail_overlay = utils.fit_image_to_screen(
+            pg.image.load(
+                Config.base_path
+                + "/skins/"
+                + Config.cfg["skin"]
+                + "/fail-background.png"
+            ).convert_alpha(),
+            screen.get_size(),
+        )
     except FileNotFoundError:
         fail_overlay = None
-        
+
     try:
-        pause_overlay = utils.fit_image_to_screen(pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png").convert_alpha(), screen.get_size())
+        pause_overlay = utils.fit_image_to_screen(
+            pg.image.load(
+                Config.base_path + "/skins/" + Config.cfg["skin"] + "/pause-overlay.png"
+            ).convert_alpha(),
+            screen.get_size(),
+        )
     except FileNotFoundError:
         pause_overlay = None
 
@@ -276,7 +304,7 @@ def tick(dt, events):
             pause_overlay = pg.Surface(screen.get_size())
             pause_overlay.blit(screen, (0, 0))
             screen.set_alpha(255)
-        
+
         if FAILED and not fail_overlay:
             screen.set_alpha(75)
             fail_overlay = pg.Surface(screen.get_size())

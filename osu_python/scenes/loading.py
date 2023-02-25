@@ -61,21 +61,21 @@ def init_thread():
         os.rmdir(Config.base_path + "/loading_temp")
 
         Library.update()
-    
-    if os.path.isdir(Config.base_path + '/bmi'):
-        arr = os.listdir(Config.base_path + '/bmi')
+
+    if os.path.isdir(Config.base_path + "/bmi"):
+        arr = os.listdir(Config.base_path + "/bmi")
         if arr == []:
-            os.remove(Config.base_path + '/bmi')
+            os.remove(Config.base_path + "/bmi")
         else:
             phase = 5
             log.info("Unpacking beatmapsets pack")
-            
+
             for f in arr:
-                log.info('Extracting {}'.format(f))
-                z = zipfile.ZipFile(Config.base_path + '/bmi/' + f)
-                z.extractall(Config.base_path + '/songs')
+                log.info("Extracting {}".format(f))
+                z = zipfile.ZipFile(Config.base_path + "/bmi/" + f)
+                z.extractall(Config.base_path + "/songs")
                 z.close()
-            
+
             log.info("Beatmapsets pack extracted. Updating library")
             Library.update()
 
@@ -98,7 +98,7 @@ def setup(_height, _width, _screen, _next_scene):
         font.render("Downloading default beatmapset", True, (255, 255, 255)),
         font.render("Loading...", True, (255, 255, 255)),
         font.render("Loading skin", True, (255, 255, 255)),
-        font.render("Unpacking beatmapsets", True, (255, 255, 255))
+        font.render("Unpacking beatmapsets", True, (255, 255, 255)),
     ]
 
     success_screen = 0

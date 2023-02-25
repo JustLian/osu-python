@@ -225,4 +225,3 @@ def calculate_rank(accuracy) -> str:
         return "C"
     else:
         return "D"
-    

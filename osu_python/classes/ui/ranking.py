@@ -12,7 +12,9 @@ def load_skin():
     try:
         ButtonRetry.im = pg.image.load(path + "/pause-retry.png").convert_alpha()
     except FileNotFoundError:
-        ButtonRetry.im = pg.image.load(default_path + "/pause-retry.png").convert_alpha()
+        ButtonRetry.im = pg.image.load(
+            default_path + "/pause-retry.png"
+        ).convert_alpha()
     try:
         ButtonBack.im = pg.image.load(path + "/menu-back.png").convert_alpha()
     except FileNotFoundError:

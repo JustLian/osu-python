@@ -45,7 +45,9 @@ def load_numbers_skin():
 
     scaling = height * 0.06 / nums_imgs["0"].get_height()
     for s, img in nums_imgs.items():
-        nums_imgs[s] = pg.transform.scale(img, (img.get_width() * scaling, img.get_height() * scaling))
+        nums_imgs[s] = pg.transform.scale(
+            img, (img.get_width() * scaling, img.get_height() * scaling)
+        )
 
     try:
         score_overlap = Config.skin_ini["[Fonts]"]["ScoreOverlap"]
@@ -186,7 +188,10 @@ def draw(screen):
 
 def draw_rank(screen):
     scaling = (height * 0.6) / ranking_img.get_height()
-    img = pg.transform.scale(ranking_img, (ranking_img.get_width() * scaling, ranking_img.get_height() * scaling))
+    img = pg.transform.scale(
+        ranking_img,
+        (ranking_img.get_width() * scaling, ranking_img.get_height() * scaling),
+    )
     screen.blit(img, (width * 0.9 - img.get_width(), height * 0.9 - img.get_height()))
 
 
@@ -197,7 +202,8 @@ def draw_accuracy(screen):
         gap = nums_imgs[v].get_width() - score_overlap
         offset_x -= gap
         screen.blit(
-            nums_imgs[v], (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.72)
+            nums_imgs[v],
+            (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.72),
         )
 
 
@@ -209,7 +215,8 @@ def draw_score(screen):
     for v in reversed(numbers):
         offset_x -= nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.22)
+            nums_imgs[v],
+            (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.22),
         )
 
 
@@ -220,7 +227,8 @@ def draw_combo(screen):
         gap = nums_imgs[v].get_width() - score_overlap
         offset_x += gap
         screen.blit(
-            nums_imgs[v], (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.72)
+            nums_imgs[v],
+            (offset_x + (gap - nums_imgs[v].get_width()) / 2, height * 0.72),
         )
 
 
@@ -231,7 +239,11 @@ def draw_scores(screen):
     for v in str(results["300"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.34 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v],
+            (
+                offset_x + (20 - nums_imgs[v].get_width()) / 2,
+                height * 0.34 + (img.get_height() - nums_imgs[v].get_height()) / 2,
+            ),
         )
 
     img = utils.fit_image_to_screen(score_100_img, [height / 16] * 2)
@@ -240,7 +252,11 @@ def draw_scores(screen):
     for v in str(results["100"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.44 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v],
+            (
+                offset_x + (20 - nums_imgs[v].get_width()) / 2,
+                height * 0.44 + (img.get_height() - nums_imgs[v].get_height()) / 2,
+            ),
         )
 
     img = utils.fit_image_to_screen(score_50_img, [height / 16] * 2)
@@ -249,7 +265,11 @@ def draw_scores(screen):
     for v in str(results["50"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.54 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v],
+            (
+                offset_x + (20 - nums_imgs[v].get_width()) / 2,
+                height * 0.54 + (img.get_height() - nums_imgs[v].get_height()) / 2,
+            ),
         )
 
     img = utils.fit_image_to_screen(miss_img, [height / 16] * 2)
@@ -258,7 +278,11 @@ def draw_scores(screen):
     for v in str(results["0"]):
         offset_x += nums_imgs["0"].get_width() - score_overlap
         screen.blit(
-            nums_imgs[v], (offset_x + (20 - nums_imgs[v].get_width()) / 2, height * 0.64 + (img.get_height() - nums_imgs[v].get_height()) / 2)
+            nums_imgs[v],
+            (
+                offset_x + (20 - nums_imgs[v].get_width()) / 2,
+                height * 0.64 + (img.get_height() - nums_imgs[v].get_height()) / 2,
+            ),
         )
 
 

@@ -200,7 +200,12 @@ class Library:
         """
         diff = mp["diffs"][diff_index]
         diff_path = "{}\\{}.osu".format(
-            mp["path"], sanitize_str("{} - {} ({}) [{}]".format(diff["artist"], mp["title"], mp["creator"], diff["version"]))
+            mp["path"],
+            sanitize_str(
+                "{} - {} ({}) [{}]".format(
+                    diff["artist"], mp["title"], mp["creator"], diff["version"]
+                )
+            ),
         )
         _temp = ""
         for symbol in diff_path:
