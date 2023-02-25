@@ -1,3 +1,4 @@
+from time import sleep
 import pygame as pg
 import typing as t
 import os
@@ -138,7 +139,7 @@ def draw(screen: pg.Surface):
         ranking(bm_name, author, retry_func, back_to_menu, utils.calculate_rank(ui.accuracy), bg, ui.score, ui.scores, ui.max_combo, ui.accuracy)
 
 def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ranking):
-    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu, ranking, author, bm_name, bg
+    global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu, ranking, author, bm_name, bg, STARTED, wait_time
 
     all_objects = []
 
@@ -164,6 +165,7 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
 
     def hit_callback(score: int):
         ui.hit(score)
+    
 
     queue, audio, bg, map = map_loader.load_map(
         diff_path, scale, add_x, add_y, hit_callback
@@ -190,7 +192,6 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
 
     music = pg.mixer.music
     music.load(audio)
-    music.play()
 
     cui.pause.load_skin()
     btn_play = cui.pause.ButtonContinue(height, width)
@@ -201,6 +202,8 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
     PAUSED = False
     FAILED = False
     IS_FALL = False
+    STARTED = False
+    wait_time = 0
 
     try:
         fail_overlay = utils.fit_image_to_screen(pg.image.load(Config.base_path + "/skins/" + Config.cfg["skin"] + "/fail-background.png").convert_alpha(), screen.get_size())
@@ -218,7 +221,17 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
 
 
 def tick(dt, events):
-    global PAUSED, FAILED, pause_overlay, fail_overlay
+    global PAUSED, FAILED, STARTED, pause_overlay, fail_overlay, wait_time
+
+    if not STARTED and wait_time < 3000:
+        wait_time += dt
+        screen.fill((0, 0, 0))
+        ui.draw_background(screen)
+        return
+    elif not STARTED:
+        STARTED = True
+        music.play()
+
     if PAUSED or FAILED:
         music.pause()
 

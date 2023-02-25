@@ -9,9 +9,19 @@ import typing as t
 import pygame as pg
 from osu_python.__main__ import width, height
 from osu_python.classes.game_object import Spinner
+from glob import glob   
 
 
 log = logging.getLogger("map_loader")
+
+
+def update():
+    """Loads all new .osz files from `songs` dir"""
+    new = glob(Config.base_path + '/songs/*.osz')
+    log.info("found {} .osz files. Unpacking...".format(len(new)))
+    for o in new:
+        unpack(o)
+        os.remove(o)
 
 
 def unpack(path: os.PathLike) -> bool:

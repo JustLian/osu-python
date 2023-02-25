@@ -17,7 +17,7 @@ pg.display.init()
 screen = pg.display.set_mode((width, height), flags=pg.FULLSCREEN | pg.DOUBLEBUF)
 
 
-from osu_python import classes, scenes
+from osu_python import classes, scenes, map_loader
 
 
 Config = classes.Config
@@ -54,6 +54,9 @@ def change_scene(new_scene, *args):
     global scene
 
     root.info("Switching scene {} to {}".format(scene, new_scene))
+
+    map_loader.update()
+    Lib.update()
 
     scene = new_scene
     scene.setup(height, width, screen, *args)

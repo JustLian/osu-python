@@ -3,8 +3,8 @@ import pygame as pg
 from glob import glob
 from random import choice
 from osu_python import utils
-from osu_python.classes import ui
 from osu_python import scenes
+from osu_python.classes import ui
 
 
 log = getLogger("scenes/main_menu")
@@ -16,6 +16,7 @@ def calc_bg_offset(pos):
 
 def setup(_height, _width, _screen: pg.Surface, play_fn):
     global height, width, screen, bg, logo, mgr, global_bg_offset
+
     height = _height
     width = _width
     screen = _screen

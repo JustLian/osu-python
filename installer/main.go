@@ -211,6 +211,13 @@ func main() {
 		}
 	}
 
+	if _, err := os.Stat("/osu-python/bmi"); os.IsNotExist(err) {
+		err := os.Mkdir("/osu-python/bmi", os.ModePerm)
+		if err != nil {
+			fmt.Println("Couldn't create directory for additional beatmapsets pack. Please create folder /osu-python/bmi manually.")
+		}
+	}
+
 	// Unpacking files
 	fmt.Println("Unpacking source")
 	unzip("./osu_python_installer/osu-python.zip", "/osu-python/source")
@@ -260,12 +267,19 @@ func main() {
 
 	err = download("https://github.com/JustLian/osu-python/releases/download/v1.0-pre/osu!python.exe", "/osu-python/")
 	if err != nil {
-		fmt.Printf("Couldn't download osu!python executor application. Try again later (%s)", err)
-		return
+		fmt.Printf("Couldn't download osu!python executor application. Try downloading it from osu!python latest release page: https://github.com/JustLian/osu-python (%s)\n", err)
 	}
 
 	fmt.Println("Cleaning up temp folder")
 	os.RemoveAll("./osu_python_installer")
+
+	fmt.Println("Everything is ready, you can launch the game now.\nPLEASE READ: Game will crash if you have less than 18 beatmapsets loaded. If you already have osu! installed use this guide to import your osu! maps into osu!python: https://github.com/JustLian/osu-python/wiki/Game-settings. Otherwise, wait for this download to complete")
+
+	err = download("https://files.catbox.moe/mdjula.zip", "/osu-python/bmi")
+	if err != nil {
+		fmt.Printf("Couldn't download additional beatmapsets pack. Try again later or download manually from https://files.catbox.moe/mdjula.zip (%s)", err)
+		return
+	}
 
 	fmt.Println("Installing completed!")
 }
