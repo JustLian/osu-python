@@ -96,8 +96,6 @@ class InGameUI:
         self.mod_multiplier = mod_multiplier
 
         self.raw_background = utils.fit_image_to_screen(background, monitor_size)
-        self.monitor_size = monitor_size
-        self.raw_background = self.background_resize(background, monitor_size)
         self.bg_dim = background_dim
         self.background = self.get_dimmed_bg().convert_alpha()
 
@@ -235,15 +233,6 @@ class InGameUI:
         """Sets background dim"""
         self.bg_dim = dim
         self.background = self.get_dimmed_bg()
-
-    def background_resize(self, background: pg.Surface, size: t.Tuple[int, int]):
-        """Sets sizes of background image and keeping aspect ratio"""
-        WIDTH = 0
-        HEIGHT = 1
-        bg = background.get_size()
-        smaller_side = WIDTH if bg[WIDTH] < bg[HEIGHT] else HEIGHT
-        scale = size[smaller_side] / bg[smaller_side]
-        return pg.transform.scale(background, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
 
     def drain_hp(self, current_time):
         self.hp -= (

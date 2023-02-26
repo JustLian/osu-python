@@ -200,7 +200,14 @@ def fit_image_to_screen(image: pg.Surface, size: t.Tuple[int, int]):
     bg = image.get_size()
     smaller_side = WIDTH if bg[WIDTH] < bg[HEIGHT] else HEIGHT
     scale = size[smaller_side] / bg[smaller_side]
-    return pg.transform.scale(image, (bg[WIDTH] * scale, bg[HEIGHT] * scale))
+    ns = (bg[WIDTH] * scale, bg[HEIGHT] * scale)
+    if ns[WIDTH] < size[WIDTH]:
+        coeff = size[WIDTH] / ns[WIDTH]
+        ns = (
+            ns[0] * coeff,
+            ns[1] * coeff,
+        )
+    return pg.transform.scale(image, ns)
 
 
 def inside_a_circle(x, y, c_x, c_y, r) -> bool:
