@@ -11,9 +11,9 @@ def load_skin():
 
     path = Config.base_path + "/skins/" + Config.cfg["skin"]
 
-    ButtonContinue.im = pg.image.load(path + "/pause-continue.png")
-    ButtonRetry.im = pg.image.load(path + "/pause-retry.png")
-    ButtonBack.im = pg.image.load(path + "/pause-back.png")
+    ButtonContinue.im = pg.image.load(path + "/pause-continue.png").convert_alpha()
+    ButtonRetry.im = pg.image.load(path + "/pause-retry.png").convert_alpha()
+    ButtonBack.im = pg.image.load(path + "/pause-back.png").convert_alpha()
 
 
 class Button(root.UiElement):
@@ -43,8 +43,19 @@ class Button(root.UiElement):
         self.clicked = True
 
     def is_colliding(self, coords: tuple):
-        if self.rect.collidepoint(coords):
-            return True
+        if self.hover:
+            x = self.x - round((COEFF - 1) * self.x_p * 5 / 2)
+            y = self.y - round((COEFF - 1) * self.y_p * 5 / 2)
+            w, h = self.im2.get_size()
+        else:
+            x, y = self.x, self.y
+            w, h = self.im1.get_size()
+        
+        return (
+            x <= coords[0] <= x + w
+            and
+            y <= coords[1] <= y + h
+        )
 
 
 class ButtonContinue(Button):

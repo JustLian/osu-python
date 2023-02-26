@@ -1,28 +1,32 @@
 import json
 import os
 from osu_python.utils import parse_ini
+from logging import getLogger
+
+
+log = getLogger('config')
 
 
 class Config:
     """
     osu!python config class
     use Config.obj object to access config
-
-    ```json
-    'songs-folders': [
-        'list of abs paths to songs folders'
-    ],
-    'keys': {
-        'key1': 1st keyboard key,
-        'key2': 2nd keyboard key
-    }
-    ```
     """
 
     base_path = "/osu-python"
     cfg = {}
     skin_ini = {}
     path_sep = "/" if os.name == "posix" else "\\"
+    default = {
+        "songs-folders": [
+            os.path.abspath("{}/songs".format(base_path))
+        ],
+        "keys": {"key1": 120, "key2": 122},
+        "skin": "default",
+        "fps": 60,
+        "mouse_buttons": True,
+        "bg_dim": 0.8
+    }
 
     @classmethod
     def init(cls):
@@ -45,21 +49,12 @@ class Config:
             os.mkdir(cls.base_path)
 
         if not os.path.isfile("{}/config.json".format(cls.base_path)):
+            log.info('Creating configuration file')
             with open(
                 "{}/config.json".format(cls.base_path), "w", encoding="utf8"
             ) as f:
-                json.dump(
-                    {
-                        "songs-folders": [
-                            os.path.abspath("{}/songs".format(cls.base_path))
-                        ],
-                        "keys": {"key1": 120, "key2": 122},
-                        "skin": "default",
-                        "fps": 60,
-                        "mouse_buttons": True,
-                    },
-                    f,
-                )
+                json.dump(cls.default, f)
+        
 
     @classmethod
     def load(cls):
@@ -67,6 +62,13 @@ class Config:
         cls.check_cfg()
         with open("{}/config.json".format(Config.base_path), "r", encoding="utf8") as f:
             cls.cfg = json.load(f)
+        
+        # check for unset keys
+        for key in cls.default.keys():
+            if key not in cls.cfg:
+                log.warning('Creating {} key in config.'.format(key))
+                cls.cfg[key] = cls.default[key]
+        cls.dump()
 
     @classmethod
     def dump(cls):
