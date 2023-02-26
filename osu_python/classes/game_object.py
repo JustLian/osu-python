@@ -5,6 +5,7 @@ from osu_python.classes.ui import beatmap_choosing
 from logging import getLogger
 from os.path import isdir
 from math import degrees, atan2, ceil, floor
+from osu_python import utils
 
 
 log = getLogger("game_object")
@@ -784,6 +785,7 @@ class Slider(Circle):
         self.k, self.b = 0, 0
 
         self.hover = False
+        self.follow_size = self.hit_size
 
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
@@ -860,7 +862,8 @@ class Slider(Circle):
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
-        if self.rect.collidepoint(pg.mouse.get_pos()):
+        x, y = pg.mouse.get_pos()
+        if utils.inside_a_circle(x, y, self.rect.centerx, self.rect.centery, self.follow_size):
             self.hover = True
         else:
             self.hover = False
@@ -1010,6 +1013,8 @@ class Slider(Circle):
             ).convert_alpha(),
             (self.rect.x - size_diff, self.rect.y - size_diff),
         )
+
+        self.follow_size = round(new_size / 2)
 
     def get_score(self):
         """Gets score (used in drawing score)"""
