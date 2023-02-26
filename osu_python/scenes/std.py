@@ -108,7 +108,7 @@ def draw(screen: pg.Surface):
     global ui
     screen.fill((0, 0, 0))
 
-    ui.draw_background(screen)
+    ui.draw_bg_std(screen)
 
     tmp = []
     dac = []
@@ -201,6 +201,7 @@ def setup(_height, _width, _screen, _diff_path, _switch, _back_to_menu, _ranking
         / 38
         * 5
     )
+
     ui = classes.InGameUI(
         diff_multiplier, 1, bg, Config.cfg['bg_dim'], (width, height), map.hp(), current_time
     )

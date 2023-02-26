@@ -101,6 +101,12 @@ class InGameUI:
         self.bg_dim = background_dim
         self.background = self.get_dimmed_bg().convert_alpha()
 
+        wb, hb = background.get_size()
+        hnb = monitor_size[0] / wb * hb
+        self.nas_bg = pg.transform.scale(background, (monitor_size[0], hnb))
+        self.nas_bg.set_alpha(255 - self.bg_dim * 255)
+        self.y_nas_bg = round((self.nas_bg.get_height() - monitor_size[1]) / 2)
+
         full_width = 0
         for n in range(10):
             full_width += score_imgs[str(n)].get_width()
@@ -250,3 +256,6 @@ class InGameUI:
             (current_time - self.last_hp_drain) * 0.000005 * (1 + self.map_hp / 2)
         )
         self.last_hp_drain = current_time
+    
+    def draw_bg_std(self, screen: pg.Surface):
+        screen.blit(self.nas_bg, (0, -1 * self.y_nas_bg))
