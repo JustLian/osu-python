@@ -50,12 +50,8 @@ class Button(root.UiElement):
         else:
             x, y = self.x, self.y
             w, h = self.im1.get_size()
-        
-        return (
-            x <= coords[0] <= x + w
-            and
-            y <= coords[1] <= y + h
-        )
+
+        return x <= coords[0] <= x + w and y <= coords[1] <= y + h
 
 
 class ButtonContinue(Button):

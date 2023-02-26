@@ -124,7 +124,7 @@ class DifficultyCard(root.UiElement):
         font: pg.font.Font,
         img: pg.Surface,
         dest: t.Tuple[int, int],
-        mgr
+        mgr,
     ):
         self.click = func
         self.img = img
@@ -157,10 +157,9 @@ class DifficultyCard(root.UiElement):
         super().__init__()
 
     def draw(self, screen: pg.Surface, _):
-        screen.blit(self.img, (
-            self.dest[0] + self.mgr.x_offset,
-            self.dest[1] + self.mgr.scroll
-        ))
+        screen.blit(
+            self.img, (self.dest[0] + self.mgr.x_offset, self.dest[1] + self.mgr.scroll)
+        )
 
     def is_colliding(self, pos) -> bool:
         return self.rect.collidepoint(pos)
@@ -193,8 +192,7 @@ class DifficultyManager:
         self.scroll = 0
         self.x_offset = -self.el_offset - self.w * 1.25
         self.x_offset_animation = root.Animation(
-            300, (self.x_offset,), (0,),
-            'CubicEaseOut'
+            300, (self.x_offset,), (0,), "CubicEaseOut"
         )
         for e in self.elements:
             self.mgr.remove_obj(e)
@@ -224,7 +222,7 @@ class DifficultyManager:
                     self.font,
                     self.img.copy(),
                     (self.el_offset, self.el_offset + offset),
-                    self
+                    self,
                 )
             )
             offset += self.h
@@ -237,7 +235,7 @@ class DifficultyManager:
 
         for e in self.elements:
             self.mgr.add_obj(e, 0)
-    
+
     def update_scroll(self, y: float):
         if self.max_scroll <= self.scroll + y * 20 <= 0:
             self.scroll += y * 20

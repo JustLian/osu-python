@@ -202,7 +202,13 @@ def setup(_height, _width, _screen, _diff_path, _switch, _back_to_menu, _ranking
         * 5
     )
     ui = classes.InGameUI(
-        diff_multiplier, 1, bg, Config.cfg['bg_dim'], (width, height), map.hp(), current_time
+        diff_multiplier,
+        1,
+        bg,
+        Config.cfg["bg_dim"],
+        (width, height),
+        map.hp(),
+        current_time,
     )
 
     music = pg.mixer.music

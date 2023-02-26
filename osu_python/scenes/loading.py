@@ -76,7 +76,7 @@ def init_thread():
                 z.extractall(Config.base_path + "/songs")
                 z.close()
                 os.remove(Config.base_path + "/bmi/" + f)
-            
+
             os.rmdir(Config.base_path + "/bmi/")
 
             log.info("Beatmapsets pack extracted. Updating library")

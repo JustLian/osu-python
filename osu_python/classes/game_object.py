@@ -863,11 +863,13 @@ class Slider(Circle):
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
         x, y = pg.mouse.get_pos()
-        if utils.inside_a_circle(x, y, self.rect.centerx, self.rect.centery, self.follow_size):
+        if utils.inside_a_circle(
+            x, y, self.rect.centerx, self.rect.centery, self.follow_size
+        ):
             self.hover = True
         else:
             self.hover = False
-        
+
         if not self.drawing_score:
             self.draw_body(screen, time)
             self.draw_tick_points(screen, time)
