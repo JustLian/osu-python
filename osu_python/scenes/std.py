@@ -154,7 +154,7 @@ def draw(screen: pg.Surface):
         )
 
 
-def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ranking):
+def setup(_height, _width, _screen, _diff_path, _switch, _back_to_menu, _ranking):
     global current_time, circle, scores, add_x, add_y, m, n, focused, ui, fps_clock, screen, height, width, music, screen, music_offset, btn_play, btn_retry, btn_back, mgr, diff_path, PAUSED, FAILED, IS_FALL, retry_func, all_objects, pause_overlay, fail_overlay, DRAW_PO, back_to_menu, ranking, author, bm_name, bg, STARTED, wait_time
 
     all_objects = []
@@ -243,7 +243,8 @@ def setup(_height, _width, _screen, _diff_path, _retry_func, _back_to_menu, _ran
     except FileNotFoundError:
         pause_overlay = None
 
-    retry_func = _retry_func
+    def retry_func() -> None:
+        _switch(_diff_path, _switch, _back_to_menu, _ranking)
 
     return tick
 

@@ -31,10 +31,14 @@ def update(events):
     if btn_back.clicked:
         func2(scenes.main_menu, func2)
 
+    mouse = pg.mouse.get_pos()
     for event in events:
         if event.type == pg.MOUSEWHEEL:
-            scroll[2] += event.y * 10
-            scroll[0] += abs(event.y * 10)
+            if mouse[0] <= diff_mgr.el_offset + diff_mgr.w:
+                diff_mgr.update_scroll(event.y)
+            else:
+                scroll[2] += event.y * 10
+                scroll[0] += abs(event.y * 10)
 
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             m = pg.mouse.get_pos()

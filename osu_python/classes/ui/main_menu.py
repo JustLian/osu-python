@@ -32,7 +32,6 @@ class OsuLogo(root.UiElement):
         self.bm = randint(1, len(Library.db))
         while "diffs" not in Library.db.get(doc_id=self.bm):
             self.bm = randint(1, len(Library.db))
-        # print(Library.db.get(doc_id=self.bm)['path'])
 
         # logo animations
         self.size = root.Animation(

@@ -124,9 +124,11 @@ class DifficultyCard(root.UiElement):
         font: pg.font.Font,
         img: pg.Surface,
         dest: t.Tuple[int, int],
+        mgr
     ):
         self.click = func
         self.img = img
+        self.mgr = mgr
 
         h = self.img.get_height()
 
@@ -155,7 +157,10 @@ class DifficultyCard(root.UiElement):
         super().__init__()
 
     def draw(self, screen: pg.Surface, _):
-        screen.blit(self.img, self.dest)
+        screen.blit(self.img, (
+            self.dest[0],
+            self.dest[1] + self.mgr.scroll
+        ))
 
     def is_colliding(self, pos) -> bool:
         return self.rect.collidepoint(pos)
@@ -166,18 +171,24 @@ class DifficultyManager:
         self, height: int, func: t.Callable, font: pg.font.Font, mgr: root.UiManager
     ):
         size = BeatmapSetCard.bg.get_size()
+        self.height = height
         self.h = height // 8
-        w = round(self.h * size[0] / size[1])
+        self.w = round(self.h * size[0] / size[1])
         self.offset = height * 0.05
         self.el_offset = height * 0.05
-        self.img = pg.transform.scale(BeatmapSetCard.bg, (w, self.h))
+        self.img = pg.transform.scale(BeatmapSetCard.bg, (self.w, self.h))
         self.font = font
         self.func = func
         self.mgr = mgr
 
+        self.max_scroll = 0
+
+        self.scroll = 0
+
         self.elements = []
 
     def update(self, data: dict):
+        self.scroll = 0
         for e in self.elements:
             self.mgr.remove_obj(e)
 
@@ -192,7 +203,7 @@ class DifficultyManager:
                 self.func(
                     scenes.std,
                     Library.path_for_diff(data, x),
-                    f,
+                    lambda *args: self.func(scenes.std, *args),
                     lambda: self.func(scenes.beatmap_choosing, bm, 0, self.func),
                     lambda *args: self.func(scenes.ranking, *args),
                 )
@@ -206,9 +217,20 @@ class DifficultyManager:
                     self.font,
                     self.img.copy(),
                     (self.el_offset, self.el_offset + offset),
+                    self
                 )
             )
             offset += self.h
 
+        m = len(self.elements) * (self.offset + self.h) - self.height
+        if m > 0:
+            self.max_scroll = -m - self.el_offset
+        else:
+            self.max_scroll = 0
+
         for e in self.elements:
-            self.mgr.add_obj(e)
+            self.mgr.add_obj(e, 0)
+    
+    def update_scroll(self, y: float):
+        if self.max_scroll <= self.scroll + y * 20 <= 0:
+            self.scroll += y * 20

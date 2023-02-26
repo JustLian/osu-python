@@ -65,7 +65,7 @@ def init_thread():
     if os.path.isdir(Config.base_path + "/bmi"):
         arr = os.listdir(Config.base_path + "/bmi")
         if arr == []:
-            os.remove(Config.base_path + "/bmi")
+            os.rmdir(Config.base_path + "/bmi")
         else:
             phase = 5
             log.info("Unpacking beatmapsets pack")
@@ -75,6 +75,9 @@ def init_thread():
                 z = zipfile.ZipFile(Config.base_path + "/bmi/" + f)
                 z.extractall(Config.base_path + "/songs")
                 z.close()
+                os.remove(Config.base_path + "/bmi/" + f)
+            
+            os.rmdir(Config.base_path + "/bmi/")
 
             log.info("Beatmapsets pack extracted. Updating library")
             Library.update()
