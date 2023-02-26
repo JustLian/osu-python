@@ -24,10 +24,11 @@ def change_bms(new_bms_index, new_diff_index):
     bg.set_alpha(120)
 
 
-def update(events):
+def update(events, dt):
     global scroll, lock_above, lock_below
 
     mgr.update(events)
+    diff_mgr.update_x_offset(dt)
     if btn_back.clicked:
         func2(scenes.main_menu, func2)
 
@@ -190,4 +191,4 @@ def setup(
 
 def tick(dt: float, events):
     draw(dt)
-    update(events)
+    update(events, dt)

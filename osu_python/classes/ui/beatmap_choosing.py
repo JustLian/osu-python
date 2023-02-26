@@ -158,7 +158,7 @@ class DifficultyCard(root.UiElement):
 
     def draw(self, screen: pg.Surface, _):
         screen.blit(self.img, (
-            self.dest[0],
+            self.dest[0] + self.mgr.x_offset,
             self.dest[1] + self.mgr.scroll
         ))
 
@@ -181,6 +181,8 @@ class DifficultyManager:
         self.func = func
         self.mgr = mgr
 
+        self.x_offset_animation = lambda _: [0]
+
         self.max_scroll = 0
 
         self.scroll = 0
@@ -189,6 +191,11 @@ class DifficultyManager:
 
     def update(self, data: dict):
         self.scroll = 0
+        self.x_offset = -self.el_offset - self.w * 1.25
+        self.x_offset_animation = root.Animation(
+            300, (self.x_offset,), (0,),
+            'CubicEaseOut'
+        )
         for e in self.elements:
             self.mgr.remove_obj(e)
 
@@ -234,3 +241,6 @@ class DifficultyManager:
     def update_scroll(self, y: float):
         if self.max_scroll <= self.scroll + y * 20 <= 0:
             self.scroll += y * 20
+
+    def update_x_offset(self, dt: float):
+        self.x_offset = self.x_offset_animation(dt)[0]
