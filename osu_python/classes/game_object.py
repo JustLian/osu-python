@@ -783,6 +783,8 @@ class Slider(Circle):
 
         self.k, self.b = 0, 0
 
+        self.hover = False
+
     def calc_slider_edges(self, slider: list):
         """Calculates list of slider edges"""
         x = [p[0] for p in slider]
@@ -858,6 +860,11 @@ class Slider(Circle):
 
     def draw(self, screen: pg.Surface, time: int):
         """Draws slider for passed time"""
+        if self.rect.collidepoint(pg.mouse.get_pos()):
+            self.hover = True
+        else:
+            self.hover = False
+        
         if not self.drawing_score:
             self.draw_body(screen, time)
             self.draw_tick_points(screen, time)
@@ -868,7 +875,7 @@ class Slider(Circle):
             self.draw_tick_points(screen, time)
             self.draw_reverse_arrows(screen, time, 2)
             self.draw_slider_ball(screen, time)
-            if self.touching:
+            if self.touching and self.hover:
                 for point in self.tick_points:
                     if abs(time - point[2]) <= 50:
                         self.hit_callback(10)
